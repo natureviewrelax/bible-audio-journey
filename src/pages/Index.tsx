@@ -48,9 +48,9 @@ const Index = () => {
     }
   };
 
-  const handleAudioUploaded = (verseIndex: number, audioUrl: string) => {
+  const handleAudioUploaded = (audioUrl: string) => {
     const updatedVerses = verses.map((verse, index) => {
-      if (index === verseIndex) {
+      if (index === currentVerseIndex) {
         return { ...verse, audio: audioUrl };
       }
       return verse;
@@ -92,7 +92,7 @@ const Index = () => {
                 key={`${verse.book}-${verse.chapter}-${verse.verse}`}
                 verse={verse}
                 isPlaying={index === currentVerseIndex}
-                onAudioUploaded={(audioUrl) => handleAudioUploaded(index, audioUrl)}
+                onAudioUploaded={index === currentVerseIndex ? handleAudioUploaded : undefined}
               />
             ))}
           </div>
