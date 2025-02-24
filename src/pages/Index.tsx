@@ -48,6 +48,16 @@ const Index = () => {
     }
   };
 
+  const handleAudioUploaded = (audioUrl: string) => {
+    const updatedVerses = verses.map((verse, index) => {
+      if (index === currentVerseIndex) {
+        return { ...verse, audio: audioUrl };
+      }
+      return verse;
+    });
+    setVerses(updatedVerses);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
@@ -82,6 +92,7 @@ const Index = () => {
                 key={`${verse.book}-${verse.chapter}-${verse.verse}`}
                 verse={verse}
                 isPlaying={index === currentVerseIndex}
+                onAudioUploaded={index === currentVerseIndex ? handleAudioUploaded : undefined}
               />
             ))}
           </div>
