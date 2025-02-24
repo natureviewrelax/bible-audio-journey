@@ -1,7 +1,6 @@
 
 import { BibleBook, BibleVerse, BibleChapter } from "@/types/bible";
 
-// Using direct data from Thiago Bodruk's Bible JSON
 const BIBLE_BOOKS = [
   { name: "Gênesis", chapters: 50 },
   { name: "Êxodo", chapters: 40 },
@@ -72,18 +71,23 @@ const BIBLE_BOOKS = [
 ];
 
 export class BibleService {
-  private static async fetchBibleData(book: string): Promise<any> {
+  private static bibleData: any = null;
+
+  private static async fetchBibleData(): Promise<any> {
+    if (this.bibleData) {
+      return this.bibleData;
+    }
+
     try {
-      // Replace this URL with the actual path to your JSON files
-      const response = await fetch(`https://raw.githubusercontent.com/thiagobodruk/biblia/master/json/ara.json`);
+      const response = await fetch('https://raw.githubusercontent.com/thiagobodruk/biblia/master/json/acf.json');
       if (!response.ok) {
         throw new Error('Failed to fetch Bible data');
       }
-      const data = await response.json();
-      return data.find((b: any) => b.name === book);
+      this.bibleData = await response.json();
+      return this.bibleData;
     } catch (error) {
       console.error("Error fetching Bible data:", error);
-      return null;
+      throw error;
     }
   }
 
@@ -91,15 +95,17 @@ export class BibleService {
     return BIBLE_BOOKS;
   }
 
-  static async getChapter(book: string, chapter: number): Promise<BibleVerse[]> {
+  static async getChapter(bookName: string, chapter: number): Promise<BibleVerse[]> {
     try {
-      const bookData = await this.fetchBibleData(book);
-      if (!bookData || !bookData.chapters || !bookData.chapters[chapter - 1]) {
+      const bibleData = await this.fetchBibleData();
+      const book = bibleData.find((b: any) => b.name === bookName);
+      
+      if (!book || !book.chapters || !book.chapters[chapter - 1]) {
         return [];
       }
 
-      return bookData.chapters[chapter - 1].map((verse: string, index: number) => ({
-        book,
+      return book.chapters[chapter - 1].map((verse: string, index: number) => ({
+        book: bookName,
         chapter,
         verse: index + 1,
         text: verse,
@@ -118,13 +124,12 @@ export class BibleService {
     try {
       const results: BibleVerse[] = [];
       const searchQuery = query.toLowerCase();
+      const bibleData = await this.fetchBibleData();
 
-      // We'll need to implement a more efficient search strategy for production
-      for (const book of BIBLE_BOOKS) {
-        const bookData = await this.fetchBibleData(book.name);
-        if (!bookData || !bookData.chapters) continue;
+      for (const book of bibleData) {
+        if (!book.chapters) continue;
 
-        bookData.chapters.forEach((chapter: string[], chapterIndex: number) => {
+        book.chapters.forEach((chapter: string[], chapterIndex: number) => {
           chapter.forEach((verse: string, verseIndex: number) => {
             if (verse.toLowerCase().includes(searchQuery)) {
               results.push({
