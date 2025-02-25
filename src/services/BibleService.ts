@@ -1,4 +1,3 @@
-
 import { BibleBook, BibleVerse, BibleChapter } from "@/types/bible";
 
 const BIBLE_BOOKS = [
@@ -70,8 +69,19 @@ const BIBLE_BOOKS = [
   { name: "Apocalipse", chapters: 22 }
 ];
 
+const BIBLE_AUDIO_BASE_URL = "https://www.divinerevelations.info/documents/bible/portuguese_mp3_bible/portuguese_bsp_nt_drama";
+
 export class BibleService {
   private static bibleData: any = null;
+
+  private static getBookAudioUrl(bookName: string): string {
+    const bookFileName = bookName.toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/[^a-z]/g, ''); // Remove caracteres especiais
+    
+    return `${BIBLE_AUDIO_BASE_URL}/${bookFileName}.mp3`;
+  }
 
   private static async fetchBibleData(): Promise<any> {
     if (this.bibleData) {
@@ -104,11 +114,14 @@ export class BibleService {
         return [];
       }
 
+      const defaultAudioUrl = this.getBookAudioUrl(bookName);
+
       return book.chapters[chapter - 1].map((verse: string, index: number) => ({
         book: bookName,
         chapter,
         verse: index + 1,
         text: verse,
+        defaultAudioUrl,
       }));
     } catch (error) {
       console.error("Error fetching chapter:", error);
@@ -128,6 +141,7 @@ export class BibleService {
 
       for (const book of bibleData) {
         if (!book.chapters) continue;
+        const defaultAudioUrl = this.getBookAudioUrl(book.name);
 
         book.chapters.forEach((chapter: string[], chapterIndex: number) => {
           chapter.forEach((verse: string, verseIndex: number) => {
@@ -137,12 +151,12 @@ export class BibleService {
                 chapter: chapterIndex + 1,
                 verse: verseIndex + 1,
                 text: verse,
+                defaultAudioUrl,
               });
             }
           });
         });
 
-        // Limit results to prevent performance issues
         if (results.length >= 100) break;
       }
 

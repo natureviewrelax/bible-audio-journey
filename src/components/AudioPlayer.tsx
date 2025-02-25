@@ -9,10 +9,12 @@ interface Props {
 }
 
 export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
+  const audioSource = verse.audio || verse.defaultAudioUrl || "";
+  
   return (
     <div className="w-full max-w-3xl mx-auto mt-4">
       <AudioPlayer
-        src={verse.audio || ""}
+        src={audioSource}
         onEnded={onEnded}
         autoPlayAfterSrcChange={false}
         showJumpControls={false}

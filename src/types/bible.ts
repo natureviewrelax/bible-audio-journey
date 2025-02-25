@@ -5,6 +5,7 @@ export interface BibleVerse {
   verse: number;
   text: string;
   audio?: string;
+  defaultAudioUrl?: string;
 }
 
 export interface BibleChapter {
