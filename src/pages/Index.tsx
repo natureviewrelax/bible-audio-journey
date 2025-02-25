@@ -4,7 +4,6 @@ import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
 import { Navigation } from "@/components/Navigation";
 import { VerseDisplay } from "@/components/VerseDisplay";
-import { VerseAudioPlayer } from "@/components/AudioPlayer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -93,16 +92,10 @@ const Index = () => {
                 verse={verse}
                 isPlaying={index === currentVerseIndex}
                 onAudioUploaded={index === currentVerseIndex ? handleAudioUploaded : undefined}
+                onEnded={handleVerseEnd}
               />
             ))}
           </div>
-
-          {verses.length > 0 && (
-            <VerseAudioPlayer
-              verse={verses[currentVerseIndex]}
-              onEnded={handleVerseEnd}
-            />
-          )}
         </div>
       </div>
     </div>
