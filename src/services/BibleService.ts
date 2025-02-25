@@ -71,16 +71,85 @@ const BIBLE_BOOKS = [
 
 const BIBLE_AUDIO_BASE_URL = "https://www.divinerevelations.info/documents/bible/portuguese_mp3_bible/portuguese_bsp_nt_drama";
 
+const AUDIO_FILE_MAPPING: { [key: string]: string } = {
+  "Gênesis": "01 Genesis",
+  "Êxodo": "02 Exodo",
+  "Levítico": "03 Levitico",
+  "Números": "04 Numeros",
+  "Deuteronômio": "05 Deuteronomio",
+  "Josué": "06 Josue",
+  "Juízes": "07 Judges",
+  "Rute": "08 Ruth",
+  "1 Samuel": "09 1 Samuel",
+  "2 Samuel": "10 2 Samuel",
+  "1 Reis": "11 1 Kings",
+  "2 Reis": "12 2 Kings",
+  "1 Crônicas": "13 1 Cronicas",
+  "2 Crônicas": "14 2 Cronicas",
+  "Esdras": "15 Esdras",
+  "Neemias": "16 Nehemiah",
+  "Ester": "17 Ester",
+  "Jó": "18 Job",
+  "Salmos": "19 Salmos",
+  "Provérbios": "20 Proverbios",
+  "Eclesiastes": "21 Eclesiastes",
+  "Cânticos": "22 Song of Solomon",
+  "Isaías": "23 Isaias",
+  "Jeremias": "24 Jeremias",
+  "Lamentações": "25 Lamentations",
+  "Ezequiel": "26 Ezequiel",
+  "Daniel": "27 Daniel",
+  "Oséias": "28 Oseas",
+  "Joel": "29 Joel",
+  "Amós": "30 Amos",
+  "Obadias": "31 Obadiah",
+  "Jonas": "32 Jonah",
+  "Miquéias": "33 Micah",
+  "Naum": "34 Nahum",
+  "Habacuque": "35 Habakkuk",
+  "Sofonias": "36 Zephaniah",
+  "Ageu": "37 Haggai",
+  "Zacarias": "38 Zechariah",
+  "Malaquias": "39 Malaquias",
+  "Mateus": "40 Sao Mateus",
+  "Marcos": "41 Sao Marcos",
+  "Lucas": "42 Sao Lucas",
+  "João": "43 Sao Joao",
+  "Atos": "44 Atos",
+  "Romanos": "45 Romanos",
+  "1 Coríntios": "46 1 Corintios",
+  "2 Coríntios": "47 2 Corintios",
+  "Gálatas": "48 Galatas",
+  "Efésios": "49 Efesios",
+  "Filipenses": "50 Filipenses",
+  "Colossenses": "51 Colossenses",
+  "1 Tessalonicenses": "52 1 Tessalonissenses",
+  "2 Tessalonicenses": "53 2 Tessalonissenses",
+  "1 Timóteo": "54 1 Timoteo",
+  "2 Timóteo": "55 2 Timoteo",
+  "Tito": "56 Tito",
+  "Filemom": "57 Filemon",
+  "Hebreus": "58 Hebreus",
+  "Tiago": "59 Sao Tiago",
+  "1 Pedro": "60 1 Pedro",
+  "2 Pedro": "61 2 Pedro",
+  "1 João": "62 1 Sao Joao",
+  "2 João": "63 2 Sao Joao",
+  "3 João": "64 3 Sao Joao",
+  "Judas": "65 Sao Judas",
+  "Apocalipse": "66 Apocalipse"
+};
+
 export class BibleService {
   private static bibleData: any = null;
 
   private static getBookAudioUrl(bookName: string): string {
-    const bookFileName = bookName.toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
-      .replace(/[^a-z]/g, ''); // Remove caracteres especiais
-    
-    return `${BIBLE_AUDIO_BASE_URL}/${bookFileName}.mp3`;
+    const audioFileName = AUDIO_FILE_MAPPING[bookName];
+    if (!audioFileName) {
+      console.error(`Audio file mapping not found for book: ${bookName}`);
+      return "";
+    }
+    return `${BIBLE_AUDIO_BASE_URL}/${audioFileName}.mp3`;
   }
 
   private static async fetchBibleData(): Promise<any> {

@@ -19,15 +19,6 @@ export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
         autoPlayAfterSrcChange={false}
         showJumpControls={false}
         layout="horizontal"
-        customControlsSection={[
-          AudioPlayer.MAIN_CONTROLS,
-          AudioPlayer.VOLUME_CONTROLS
-        ]}
-        customProgressBarSection={[
-          AudioPlayer.PROGRESS_BAR,
-          AudioPlayer.CURRENT_TIME,
-          AudioPlayer.DURATION
-        ]}
       />
     </div>
   );
