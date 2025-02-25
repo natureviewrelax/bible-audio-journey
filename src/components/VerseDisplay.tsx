@@ -10,7 +10,7 @@ interface Props {
 
 export const VerseDisplay = ({ verse, isPlaying, onAudioUploaded }: Props) => {
   return (
-    <div className={`p-6 rounded-lg bg-card shadow-sm transition-all duration-300 ${isPlaying ? 'ring-2 ring-gold' : ''}`}>
+    <div className={`p-6 rounded-lg bg-card shadow-sm transition-all duration-300 ${isPlaying ? 'ring-2 ring-primary' : ''}`}>
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1">
           <div className="text-sm text-muted-foreground mb-2">

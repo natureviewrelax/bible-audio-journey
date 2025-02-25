@@ -32,10 +32,7 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
 
     try {
       // Here we'll add the actual upload logic later
-      // For now, we'll just simulate an upload
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Create an object URL for testing
+      // For now, we'll just create an object URL
       const audioUrl = URL.createObjectURL(file);
       onAudioUploaded(audioUrl);
       
