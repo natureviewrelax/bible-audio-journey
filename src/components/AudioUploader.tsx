@@ -28,12 +28,22 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
       return;
     }
 
-    setIsUploading(true);
-
     try {
-      // Here we'll add the actual upload logic later
-      // For now, we'll just create an object URL
+      setIsUploading(true);
+
+      // Criar uma URL para o arquivo de áudio
       const audioUrl = URL.createObjectURL(file);
+      
+      // Verificar se o áudio pode ser reproduzido
+      const audio = new Audio();
+      audio.src = audioUrl;
+      
+      await new Promise((resolve, reject) => {
+        audio.oncanplaythrough = resolve;
+        audio.onerror = reject;
+        audio.load();
+      });
+
       onAudioUploaded(audioUrl);
       
       toast({
@@ -41,9 +51,10 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
         description: `Áudio adicionado para ${verse.book} ${verse.chapter}:${verse.verse}`,
       });
     } catch (error) {
+      console.error("Erro no upload do áudio:", error);
       toast({
         title: "Erro no upload",
-        description: "Ocorreu um erro ao fazer upload do arquivo.",
+        description: "Ocorreu um erro ao fazer upload do arquivo. Verifique se o arquivo é um áudio válido.",
         variant: "destructive",
       });
     } finally {
@@ -51,13 +62,15 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
     }
   };
 
+  const inputId = `audio-upload-${verse.book}-${verse.chapter}-${verse.verse}`.replace(/\s+/g, '-');
+
   return (
     <div className="flex items-center gap-2">
       <input
         type="file"
         accept="audio/*"
         className="hidden"
-        id={`audio-upload-${verse.book}-${verse.chapter}-${verse.verse}`}
+        id={inputId}
         onChange={handleFileSelect}
         disabled={isUploading}
       />
@@ -65,7 +78,7 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
         variant="outline"
         size="sm"
         disabled={isUploading}
-        onClick={() => document.getElementById(`audio-upload-${verse.book}-${verse.chapter}-${verse.verse}`)?.click()}
+        onClick={() => document.getElementById(inputId)?.click()}
       >
         <Upload className="h-4 w-4 mr-2" />
         {isUploading ? "Enviando..." : "Adicionar Áudio"}
