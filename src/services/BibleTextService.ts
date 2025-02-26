@@ -8,7 +8,7 @@ export class BibleTextService {
     }
 
     try {
-      const response = await fetch('https://raw.githubusercontent.com/thiagobodruk/biblia/master/json/acf.json');
+      const response = await fetch('https://github.com/natureviewrelax/bible-audio-journey/blob/main/public/acf.json');
       if (!response.ok) {
         throw new Error('Failed to fetch Bible data');
       }
