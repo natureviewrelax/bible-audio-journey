@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
@@ -47,7 +46,8 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
 
       // Criar nome único para o arquivo
       const fileExt = file.name.split('.').pop();
-      const fileName = `${verse.book}_${verse.chapter}_${verse.verse}_${Date.now()}.${fileExt}`;
+      const sanitizedBook = verse.book.replace(/[^a-zA-Z0-9]/g, '_');
+      const fileName = `${sanitizedBook}_${verse.chapter}_${verse.verse}_${Date.now()}.${fileExt}`;
       
       // Upload do arquivo para o Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
