@@ -10,6 +10,7 @@ interface Props {
 }
 
 export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
+  // Priorize o áudio do upload (verse.audio) sobre o defaultAudioUrl
   const audioSource = verse.audio || verse.defaultAudioUrl || "";
   
   useEffect(() => {
@@ -18,13 +19,17 @@ export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
       chapter: verse.chapter,
       verse: verse.verse,
       audio: verse.audio,
-      defaultAudioUrl: verse.defaultAudioUrl
+      defaultAudioUrl: verse.defaultAudioUrl,
+      usingAudio: verse.audio ? "Upload" : "Default"
     });
     console.log("AudioPlayer - Using audio source:", audioSource);
   }, [verse, audioSource]);
 
   const handlePlay = () => {
-    console.log("Audio started playing");
+    console.log("Audio started playing:", {
+      source: audioSource,
+      type: verse.audio ? "Upload" : "Default"
+    });
   };
 
   const handleEnded = () => {
@@ -34,6 +39,14 @@ export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
 
   const handleError = (e: any) => {
     console.error("Audio player error:", e);
+    console.error("Failed audio source:", audioSource);
+  };
+
+  const handleLoadStart = () => {
+    console.log("Audio loading started:", {
+      source: audioSource,
+      type: verse.audio ? "Upload" : "Default"
+    });
   };
 
   return (
@@ -43,9 +56,11 @@ export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
         onPlay={handlePlay}
         onEnded={handleEnded}
         onError={handleError}
+        onLoadStart={handleLoadStart}
         autoPlayAfterSrcChange={false}
         showJumpControls={false}
         layout="horizontal"
+        className={verse.audio ? "bg-primary/5" : ""}
       />
     </div>
   );

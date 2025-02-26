@@ -18,6 +18,7 @@ export const VerseDisplay = ({ verse, isPlaying, onAudioUploaded, onEnded }: Pro
           <div className="flex-1">
             <div className="text-sm text-muted-foreground mb-2">
               {verse.book} {verse.chapter}:{verse.verse}
+              {verse.audio && <span className="ml-2 text-primary">(Áudio personalizado)</span>}
             </div>
             <p className="text-xl font-serif leading-relaxed">{verse.text}</p>
           </div>
