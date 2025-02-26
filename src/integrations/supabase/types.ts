@@ -42,6 +42,33 @@ export type Database = {
         }
         Relationships: []
       }
+      verse_audio: {
+        Row: {
+          audio_path: string
+          book: string
+          chapter: number
+          created_at: string
+          id: string
+          verse: number
+        }
+        Insert: {
+          audio_path: string
+          book: string
+          chapter: number
+          created_at?: string
+          id?: string
+          verse: number
+        }
+        Update: {
+          audio_path?: string
+          book?: string
+          chapter?: number
+          created_at?: string
+          id?: string
+          verse?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

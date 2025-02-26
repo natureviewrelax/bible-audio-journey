@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { BibleVerse } from "@/types/bible";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Props {
   verse: BibleVerse;
@@ -44,35 +45,40 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
       setIsUploading(true);
       console.log("Starting upload process");
 
-      // Criar uma URL para o arquivo de áudio
-      const audioUrl = URL.createObjectURL(file);
-      console.log("Created audio URL:", audioUrl);
+      // Criar nome único para o arquivo
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${verse.book}_${verse.chapter}_${verse.verse}_${Date.now()}.${fileExt}`;
       
-      // Verificar se o áudio pode ser reproduzido
-      const audio = new Audio();
-      
-      const checkAudio = new Promise((resolve, reject) => {
-        audio.oncanplaythrough = () => {
-          console.log("Audio can play through");
-          resolve(true);
-        };
-        audio.onerror = (e) => {
-          console.error("Audio error:", e);
-          reject(new Error("Erro ao carregar o áudio"));
-        };
-        audio.onloadstart = () => console.log("Audio started loading");
-        audio.onloadedmetadata = () => console.log("Audio metadata loaded");
-      });
+      // Upload do arquivo para o Supabase Storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('bible_audio')
+        .upload(fileName, file);
 
-      audio.src = audioUrl;
-      console.log("Set audio source");
-      
-      await checkAudio;
-      console.log("Audio validated successfully");
+      if (uploadError) {
+        throw uploadError;
+      }
 
-      // Atualizar o estado com a nova URL do áudio
-      onAudioUploaded(audioUrl);
-      console.log("Audio URL passed to parent component");
+      // Obter URL pública do arquivo
+      const { data: { publicUrl } } = supabase.storage
+        .from('bible_audio')
+        .getPublicUrl(fileName);
+
+      // Salvar metadados no banco de dados
+      const { error: dbError } = await supabase
+        .from('verse_audio')
+        .upsert({
+          book: verse.book,
+          chapter: verse.chapter,
+          verse: verse.verse,
+          audio_path: fileName
+        });
+
+      if (dbError) {
+        throw dbError;
+      }
+
+      console.log("Audio uploaded successfully:", publicUrl);
+      onAudioUploaded(publicUrl);
       
       toast({
         title: "Áudio adicionado",

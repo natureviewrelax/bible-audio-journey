@@ -1,5 +1,5 @@
-
 import { BibleBook, BibleVerse, BibleChapter } from "@/types/bible";
+import { supabase } from "@/integrations/supabase/client";
 
 const BIBLE_BOOKS = [
   { name: "Gênesis", chapters: 50 },
@@ -175,6 +175,26 @@ export class BibleService {
     return BIBLE_BOOKS;
   }
 
+  private static async getCustomAudio(bookName: string, chapter: number, verse: number): Promise<string | null> {
+    const { data, error } = await supabase
+      .from('verse_audio')
+      .select('audio_path')
+      .eq('book', bookName)
+      .eq('chapter', chapter)
+      .eq('verse', verse)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('bible_audio')
+      .getPublicUrl(data.audio_path);
+
+    return publicUrl;
+  }
+
   static async getChapter(bookName: string, chapter: number): Promise<BibleVerse[]> {
     try {
       const bibleData = await this.fetchBibleData();
@@ -186,13 +206,19 @@ export class BibleService {
 
       const defaultAudioUrl = this.getBookAudioUrl(bookName);
 
-      return book.chapters[chapter - 1].map((verse: string, index: number) => ({
-        book: bookName,
-        chapter,
-        verse: index + 1,
-        text: verse,
-        defaultAudioUrl,
+      const verses = await Promise.all(book.chapters[chapter - 1].map(async (verse: string, index: number) => {
+        const customAudio = await this.getCustomAudio(bookName, chapter, index + 1);
+        return {
+          book: bookName,
+          chapter,
+          verse: index + 1,
+          text: verse,
+          defaultAudioUrl,
+          audio: customAudio || undefined,
+        };
       }));
+
+      return verses;
     } catch (error) {
       console.error("Error fetching chapter:", error);
       return [];
@@ -213,19 +239,23 @@ export class BibleService {
         if (!book.chapters) continue;
         const defaultAudioUrl = this.getBookAudioUrl(book.name);
 
-        book.chapters.forEach((chapter: string[], chapterIndex: number) => {
-          chapter.forEach((verse: string, verseIndex: number) => {
+        for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
+          const chapter = book.chapters[chapterIndex];
+          for (let verseIndex = 0; verseIndex < chapter.length; verseIndex++) {
+            const verse = chapter[verseIndex];
             if (verse.toLowerCase().includes(searchQuery)) {
+              const customAudio = await this.getCustomAudio(book.name, chapterIndex + 1, verseIndex + 1);
               results.push({
                 book: book.name,
                 chapter: chapterIndex + 1,
                 verse: verseIndex + 1,
                 text: verse,
                 defaultAudioUrl,
+                audio: customAudio || undefined,
               });
             }
-          });
-        });
+          }
+        }
 
         if (results.length >= 100) break;
       }
