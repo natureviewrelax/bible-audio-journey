@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { UserPlus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +14,7 @@ export const SignUpForm = () => {
   const [isSigningUp, setIsSigningUp] = useState(false);
   const { signUp } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,6 +45,9 @@ export const SignUpForm = () => {
           title: "Cadastro realizado com sucesso",
           description: "Verifique seu email para confirmar sua conta.",
         });
+        
+        // Redireciona para a página de login após cadastro bem-sucedido
+        navigate('/login');
       }
     } finally {
       setIsSigningUp(false);

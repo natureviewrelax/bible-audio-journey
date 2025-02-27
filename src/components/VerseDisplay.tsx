@@ -15,6 +15,9 @@ export const VerseDisplay = ({ verse, isPlaying, onAudioUploaded, onEnded }: Pro
   const { userRole } = useAuth();
   const canUploadAudio = userRole === 'admin' || userRole === 'editor';
 
+  // Log para debug
+  console.log("Rendering VerseDisplay:", { verse, isPlaying, userRole, canUploadAudio });
+
   return (
     <div className={`p-6 rounded-lg bg-card shadow-sm transition-all duration-300 ${isPlaying ? 'ring-2 ring-primary' : ''}`}>
       <div className="flex flex-col gap-4">

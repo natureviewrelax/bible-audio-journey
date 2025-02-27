@@ -11,10 +11,12 @@ export class BibleService {
 
   static async getChapter(bookName: string, chapter: number): Promise<BibleVerse[]> {
     try {
+      console.log(`Fetching chapter ${chapter} from book ${bookName}`);
       const bibleData = await BibleTextService.fetchBibleData();
       const book = bibleData.find((b: any) => b.name === bookName);
       
       if (!book || !book.chapters || !book.chapters[chapter - 1]) {
+        console.error(`Chapter not found: ${bookName} ${chapter}`);
         return [];
       }
 
@@ -32,6 +34,7 @@ export class BibleService {
         };
       }));
 
+      console.log(`Loaded ${verses.length} verses from ${bookName} ${chapter}`);
       return verses;
     } catch (error) {
       console.error("Error fetching chapter:", error);
@@ -45,6 +48,7 @@ export class BibleService {
     }
 
     try {
+      console.log(`Searching for: "${query}"`);
       const results: BibleVerse[] = [];
       const searchQuery = query.toLowerCase();
       const bibleData = await BibleTextService.fetchBibleData();
@@ -74,6 +78,7 @@ export class BibleService {
         if (results.length >= 100) break;
       }
 
+      console.log(`Found ${results.length} verses matching "${query}"`);
       return results;
     } catch (error) {
       console.error("Error searching verses:", error);

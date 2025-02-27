@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { LogIn } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +13,7 @@ export const LoginForm = () => {
   const [isSigningIn, setIsSigningIn] = useState(false);
   const { signIn } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +34,8 @@ export const LoginForm = () => {
           title: "Login realizado com sucesso",
           description: "Bem-vindo de volta!",
         });
+        // Redireciona para a página inicial após login bem-sucedido
+        navigate('/');
       }
     } finally {
       setIsSigningIn(false);

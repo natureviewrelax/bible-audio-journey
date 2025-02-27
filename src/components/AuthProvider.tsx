@@ -15,6 +15,11 @@ interface AuthContextType {
   loading: boolean;
 }
 
+// Interface para definir o formato dos dados retornados pela função RPC
+interface UserRoleResult {
+  role_name: string;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -63,9 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      // Como a tabela user_roles não está nas definições de tipos, usamos uma abordagem mais genérica
       const { data, error } = await supabase
-        .rpc('get_user_roles')
+        .rpc<UserRoleResult>('get_user_roles')
         .single();
 
       if (error) {
