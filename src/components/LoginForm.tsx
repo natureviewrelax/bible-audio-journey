@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { LogIn } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -75,6 +76,13 @@ export const LoginForm = () => {
           <LogIn className="h-4 w-4 mr-2" />
           {isSigningIn ? "Entrando..." : "Entrar"}
         </Button>
+        
+        <div className="text-center text-sm mt-4">
+          Ainda não tem uma conta?{" "}
+          <Link to="/signup" className="text-primary hover:underline">
+            Cadastre-se
+          </Link>
+        </div>
       </form>
     </div>
   );

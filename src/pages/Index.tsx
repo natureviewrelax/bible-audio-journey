@@ -6,7 +6,7 @@ import { Navigation } from "@/components/Navigation";
 import { VerseDisplay } from "@/components/VerseDisplay";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, LogIn, LogOut, User } from "lucide-react";
+import { Search, LogIn, LogOut, UserPlus } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { Link } from "react-router-dom";
 
@@ -82,12 +82,20 @@ const Index = () => {
                 </Button>
               </>
             ) : (
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/login">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Entrar
-                </Link>
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/login">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Entrar
+                  </Link>
+                </Button>
+                <Button variant="default" size="sm" asChild>
+                  <Link to="/signup">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Cadastrar
+                  </Link>
+                </Button>
+              </div>
             )}
           </div>
         </div>
