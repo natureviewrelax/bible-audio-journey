@@ -6,7 +6,9 @@ import { Navigation } from "@/components/Navigation";
 import { VerseDisplay } from "@/components/VerseDisplay";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, LogIn, LogOut, User } from "lucide-react";
+import { useAuth } from "@/components/AuthProvider";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [books, setBooks] = useState<BibleBook[]>([]);
@@ -15,6 +17,7 @@ const Index = () => {
   const [verses, setVerses] = useState<BibleVerse[]>([]);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const { user, userRole, signOut } = useAuth();
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -60,7 +63,34 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
-        <h1 className="text-4xl font-serif text-center mb-8">Bíblia em Áudio</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-serif">Bíblia em Áudio</h1>
+          <div className="flex items-center gap-2">
+            {user ? (
+              <>
+                <div className="text-sm text-muted-foreground mr-2">
+                  <span className="font-medium">{user.email}</span>
+                  {userRole && (
+                    <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded text-xs">
+                      {userRole}
+                    </span>
+                  )}
+                </div>
+                <Button variant="outline" size="sm" onClick={() => signOut()}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" asChild>
+                <Link to="/login">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Entrar
+                </Link>
+              </Button>
+            )}
+          </div>
+        </div>
         
         <div className="max-w-4xl mx-auto">
           <div className="flex gap-4 mb-6">

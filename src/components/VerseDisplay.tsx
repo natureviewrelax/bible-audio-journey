@@ -2,6 +2,7 @@
 import { BibleVerse } from "@/types/bible";
 import { AudioUploader } from "./AudioUploader";
 import { VerseAudioPlayer } from "./AudioPlayer";
+import { useAuth } from "./AuthProvider";
 
 interface Props {
   verse: BibleVerse;
@@ -11,6 +12,9 @@ interface Props {
 }
 
 export const VerseDisplay = ({ verse, isPlaying, onAudioUploaded, onEnded }: Props) => {
+  const { userRole } = useAuth();
+  const canUploadAudio = userRole === 'admin' || userRole === 'editor';
+
   return (
     <div className={`p-6 rounded-lg bg-card shadow-sm transition-all duration-300 ${isPlaying ? 'ring-2 ring-primary' : ''}`}>
       <div className="flex flex-col gap-4">
@@ -22,7 +26,7 @@ export const VerseDisplay = ({ verse, isPlaying, onAudioUploaded, onEnded }: Pro
             </div>
             <p className="text-xl font-serif leading-relaxed">{verse.text}</p>
           </div>
-          {onAudioUploaded && (
+          {onAudioUploaded && canUploadAudio && (
             <AudioUploader
               verse={verse}
               onAudioUploaded={onAudioUploaded}
