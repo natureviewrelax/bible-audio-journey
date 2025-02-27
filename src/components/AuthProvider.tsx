@@ -63,11 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      // Buscar o papel do usuário diretamente da tabela de user_roles com join na roles
+      // Como a tabela user_roles não está nas definições de tipos, usamos uma abordagem mais genérica
       const { data, error } = await supabase
-        .from('user_roles')
-        .select('role_id, roles!inner(name)')
-        .eq('user_id', userId)
+        .rpc('get_user_roles')
         .single();
 
       if (error) {
@@ -76,8 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (data && data.roles) {
-        setUserRole(data.roles.name as UserRole);
+      if (data && data.role_name) {
+        setUserRole(data.role_name as UserRole);
       } else {
         setUserRole('viewer'); // Default role
       }
