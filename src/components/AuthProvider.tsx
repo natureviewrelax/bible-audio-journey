@@ -63,14 +63,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
+      // Buscar o papel do usuário diretamente da tabela de user_roles com join na roles
       const { data, error } = await supabase
         .from('user_roles')
-        .select('roles(name)')
+        .select('role_id, roles!inner(name)')
         .eq('user_id', userId)
         .single();
 
       if (error) {
-        throw error;
+        console.error('Error fetching user role:', error);
+        setUserRole('viewer'); // Default role on error
+        return;
       }
 
       if (data && data.roles) {
@@ -79,7 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUserRole('viewer'); // Default role
       }
     } catch (error) {
-      console.error('Error fetching user role:', error);
+      console.error('Error in fetchUserRole:', error);
       setUserRole('viewer'); // Default to viewer on error
     }
   };
