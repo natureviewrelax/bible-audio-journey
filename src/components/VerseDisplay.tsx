@@ -33,10 +33,12 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
     };
 
     return (
+      
       <div 
         ref={isPlaying ? ref : null} 
         className="p-4 bg-card rounded-md shadow-sm"
       >
+        <div>
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="text-sm text-muted-foreground mb-1">
@@ -45,7 +47,11 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
             <p className="text-lg">{verse.text}</p>
           </div>
           
-          <div className="flex flex-col items-end space-y-2 ml-4">
+
+        </div>
+
+        <div className="flex flex-col items-end space-y-2 ml-4">
+        <hr></hr>
             {audioUrl && isPlaying && (
               <VerseAudioPlayer
                 verse={verse}
@@ -63,6 +69,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
           </div>
         </div>
       </div>
+      
     );
   }
 );
