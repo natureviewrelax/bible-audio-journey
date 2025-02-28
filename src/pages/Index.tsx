@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Search, LogIn, LogOut, UserPlus } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [books, setBooks] = useState<BibleBook[]>([]);
@@ -18,6 +19,7 @@ const Index = () => {
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const { user, userRole, signOut } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -51,6 +53,11 @@ const Index = () => {
   };
 
   const handleAudioUploaded = (audioUrl: string) => {
+    toast({
+      title: "Áudio adicionado com sucesso",
+      description: "O áudio foi salvo e será reproduzido para este versículo.",
+    });
+    
     const updatedVerses = verses.map((verse, index) => {
       if (index === currentVerseIndex) {
         return { ...verse, audio: audioUrl };
@@ -114,6 +121,19 @@ const Index = () => {
               Pesquisar
             </Button>
           </div>
+
+          {userRole && (
+            <div className="mb-4 p-4 bg-muted rounded-md">
+              <p className="text-sm">
+                <strong>Seu papel:</strong> {userRole}
+                {(userRole === 'admin' || userRole === 'editor') && (
+                  <span className="ml-2 text-green-600">
+                    Você tem permissão para adicionar áudios.
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
 
           <Navigation
             books={books}
