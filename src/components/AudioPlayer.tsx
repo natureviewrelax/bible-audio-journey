@@ -59,7 +59,7 @@ export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
         onLoadStart={handleLoadStart}
         autoPlayAfterSrcChange={false}
         showJumpControls={false}
-        layout="horizontal"
+        layout="horizontal-reverse"
         className={verse.audio ? "bg-primary/5" : ""}
       />
     </div>
