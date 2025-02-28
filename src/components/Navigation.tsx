@@ -3,74 +3,147 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { BibleBook } from "@/types/bible";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
 
 interface Props {
   books: BibleBook[];
   currentBook: string;
   currentChapter: number;
+  currentVerse?: number;
   onBookChange: (book: string) => void;
   onChapterChange: (chapter: number) => void;
+  onVerseChange?: (verse: number) => void;
+  versesCount?: number;
 }
 
 export const Navigation = ({
   books,
   currentBook,
   currentChapter,
+  currentVerse = 1,
   onBookChange,
   onChapterChange,
+  onVerseChange,
+  versesCount = 1,
 }: Props) => {
   const currentBookData = books.find((b) => b.name === currentBook);
   const chapters = currentBookData ? Array.from({ length: currentBookData.chapters }, (_, i) => i + 1) : [];
+  const verses = Array.from({ length: versesCount }, (_, i) => i + 1);
+  
+  const [verseInput, setVerseInput] = useState<string>("");
+  
+  useEffect(() => {
+    if (currentVerse) {
+      setVerseInput(`${currentBook} ${currentChapter}:${currentVerse}`);
+    }
+  }, [currentBook, currentChapter, currentVerse]);
+
+  const handleVerseInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setVerseInput(e.target.value);
+  };
+
+  const handleVerseInputSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Regex para identificar padrões como "Gênesis 1:2"
+    const regex = /^([\wÀ-ÿ\s]+)\s+(\d+):(\d+)$/;
+    const match = verseInput.match(regex);
+    
+    if (match) {
+      const [_, bookName, chapterNum, verseNum] = match;
+      const trimmedBookName = bookName.trim();
+      const bookExists = books.some(book => book.name === trimmedBookName);
+      
+      if (bookExists) {
+        onBookChange(trimmedBookName);
+        onChapterChange(parseInt(chapterNum));
+        if (onVerseChange) {
+          onVerseChange(parseInt(verseNum));
+        }
+      }
+    }
+  };
 
   return (
-    <div className="flex items-center gap-4 p-4">
-      <Select value={currentBook} onValueChange={onBookChange}>
-        <SelectTrigger className="w-[200px]">
-          <SelectValue placeholder="Select book" />
-        </SelectTrigger>
-        <SelectContent>
-          {books.map((book) => (
-            <SelectItem key={book.name} value={book.name}>
-              {book.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+    <div className="flex flex-col space-y-4 p-4">
+      <div className="flex items-center gap-4">
+        <Select value={currentBook} onValueChange={onBookChange}>
+          <SelectTrigger className="w-[200px]">
+            <SelectValue placeholder="Livro" />
+          </SelectTrigger>
+          <SelectContent>
+            {books.map((book) => (
+              <SelectItem key={book.name} value={book.name}>
+                {book.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      <Select
-        value={currentChapter.toString()}
-        onValueChange={(value) => onChapterChange(parseInt(value))}
-      >
-        <SelectTrigger className="w-[100px]">
-          <SelectValue placeholder="Chapter" />
-        </SelectTrigger>
-        <SelectContent>
-          {chapters.map((chapter) => (
-            <SelectItem key={chapter} value={chapter.toString()}>
-              {chapter}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <Select
+          value={currentChapter.toString()}
+          onValueChange={(value) => onChapterChange(parseInt(value))}
+        >
+          <SelectTrigger className="w-[100px]">
+            <SelectValue placeholder="Capítulo" />
+          </SelectTrigger>
+          <SelectContent>
+            {chapters.map((chapter) => (
+              <SelectItem key={chapter} value={chapter.toString()}>
+                {chapter}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => onChapterChange(currentChapter - 1)}
-          disabled={currentChapter <= 1}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => onChapterChange(currentChapter + 1)}
-          disabled={currentChapter >= (currentBookData?.chapters || 1)}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
+        {onVerseChange && (
+          <Select
+            value={currentVerse.toString()}
+            onValueChange={(value) => onVerseChange(parseInt(value))}
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder="Versículo" />
+            </SelectTrigger>
+            <SelectContent>
+              {verses.map((verse) => (
+                <SelectItem key={verse} value={verse.toString()}>
+                  {verse}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => onChapterChange(currentChapter - 1)}
+            disabled={currentChapter <= 1}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => onChapterChange(currentChapter + 1)}
+            disabled={currentChapter >= (currentBookData?.chapters || 1)}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
+
+      <form onSubmit={handleVerseInputSubmit} className="flex gap-2">
+        <Input
+          placeholder="Ex: Gênesis 1:2"
+          value={verseInput}
+          onChange={handleVerseInputChange}
+          className="flex-1"
+        />
+        <Button type="submit">Ir</Button>
+      </form>
     </div>
   );
 };

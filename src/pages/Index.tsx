@@ -15,9 +15,9 @@ const Index = () => {
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [currentBook, setCurrentBook] = useState("Gênesis");
   const [currentChapter, setCurrentChapter] = useState(1);
-  const [verses, setVerses] = useState<BibleVerse[]>([]);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [verses, setVerses] = useState<BibleVerse[]>([]);
   const { user, userRole, signOut } = useAuth();
   const { toast } = useToast();
 
@@ -49,6 +49,14 @@ const Index = () => {
   const handleVerseEnd = () => {
     if (currentVerseIndex < verses.length - 1) {
       setCurrentVerseIndex(currentVerseIndex + 1);
+    }
+  };
+
+  const handleVerseChange = (verseNumber: number) => {
+    // Ajusta para índice baseado em zero (verseNumber começa em 1)
+    const index = verseNumber - 1;
+    if (index >= 0 && index < verses.length) {
+      setCurrentVerseIndex(index);
     }
   };
 
@@ -139,8 +147,11 @@ const Index = () => {
             books={books}
             currentBook={currentBook}
             currentChapter={currentChapter}
+            currentVerse={verses[currentVerseIndex]?.verse}
+            versesCount={verses.length}
             onBookChange={setCurrentBook}
             onChapterChange={setCurrentChapter}
+            onVerseChange={handleVerseChange}
           />
 
           <div className="mt-8 space-y-6">
