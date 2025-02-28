@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { AudioPlayer } from "./AudioPlayer";
+import { VerseAudioPlayer } from "./AudioPlayer"; // Corrigido o nome do componente importado
 import { BibleVerse } from "@/types/bible";
 import { AudioUploader } from "./AudioUploader";
 import { useAuth } from "./AuthProvider";
@@ -42,11 +42,10 @@ export const VerseDisplay = ({ verse, isPlaying = false, onEnded, onAudioUploade
         </div>
         
         <div className="flex flex-col items-end space-y-2 ml-4">
-          {audioUrl && (
-            <AudioPlayer
-              src={audioUrl}
-              isPlaying={isPlaying}
-              onEnded={onEnded}
+          {audioUrl && isPlaying && (
+            <VerseAudioPlayer
+              verse={verse}
+              onEnded={onEnded || (() => {})}
             />
           )}
           
