@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
 import { Navigation } from "@/components/Navigation";
@@ -20,6 +20,9 @@ const Index = () => {
   const [verses, setVerses] = useState<BibleVerse[]>([]);
   const { user, userRole, signOut } = useAuth();
   const { toast } = useToast();
+  
+  // Referência para o versículo atual
+  const activeVerseRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -37,6 +40,17 @@ const Index = () => {
     };
     loadChapter();
   }, [currentBook, currentChapter]);
+
+  // Efeito para rolar para o versículo ativo quando ele mudar
+  useEffect(() => {
+    if (activeVerseRef.current) {
+      // Rolagem suave para o elemento
+      activeVerseRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [currentVerseIndex]);
 
   const handleSearch = async () => {
     if (searchQuery.trim()) {
@@ -158,6 +172,7 @@ const Index = () => {
             {verses.map((verse, index) => (
               <VerseDisplay
                 key={`${verse.book}-${verse.chapter}-${verse.verse}`}
+                ref={index === currentVerseIndex ? activeVerseRef : null}
                 verse={verse}
                 isPlaying={index === currentVerseIndex}
                 onAudioUploaded={index === currentVerseIndex ? handleAudioUploaded : undefined}
