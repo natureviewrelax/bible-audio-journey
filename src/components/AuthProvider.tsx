@@ -68,7 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      // Usando a chamada RPC sem tipagem específica
+      // Usando a chamada RPC sem especificar o nome da função como parâmetro
+      // O nome da função é passado como método
       const { data, error } = await supabase
         .rpc('get_user_roles')
         .single();
