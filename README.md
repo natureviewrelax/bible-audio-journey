@@ -67,3 +67,52 @@ Simply open [Lovable](https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249
 ## I want to use a custom domain - is that possible?
 
 We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+
+
+## Para gerar as versões mobile do seu aplicativo, siga estas etapas:
+
+**Exporte o projeto para o GitHub:**
+
+Clique no botão "Exportar para GitHub" no topo da interface do Lovable
+Siga as instruções para completar a exportação
+Clone o projeto para o seu computador:
+
+
+git clone [URL-DO-SEU-REPOSITÓRIO]
+cd [NOME-DO-PROJETO]
+Instale as dependências:
+
+
+npm install
+Adicione as plataformas iOS e/ou Android:
+
+
+npx cap add ios
+npx cap add android
+Construa o projeto:
+
+
+npm run build
+Sincronize o projeto com as plataformas nativas:
+
+
+npx cap sync
+Execute o aplicativo:
+
+Para Android (requer Android Studio):
+
+npx cap open android
+Para iOS (requer Mac com Xcode):
+
+npx cap open ios
+Importante:
+
+Para iOS, você precisa de um Mac com Xcode instalado
+Para Android, você precisa do Android Studio instalado
+Sempre que fizer alterações no código, execute npm run build seguido de npx cap sync para atualizar as versões nativas
+O arquivo capacitor.config.ts que configurei inclui:
+
+ID e nome do aplicativo
+URL para desenvolvimento hot-reload
+Configurações da tela de splash
+Após abrir o projeto no Android Studio ou Xcode, você poderá compilar e executar o aplicativo em um emulador ou dispositivo físico.
