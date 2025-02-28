@@ -68,8 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
-      // Usando a chamada RPC de forma a evitar problemas de tipagem
-      const { data, error } = await supabase.rpc('get_user_roles', {}).single();
+      // Usando uma abordagem diferente para consultar o papel do usuário
+      // Vamos buscar direto usando uma consulta SQL em vez de RPC
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role_name')
+        .eq('user_id', userId)
+        .single();
 
       if (error) {
         console.error('Error fetching user role:', error);
@@ -77,10 +82,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      // Verificando se data existe e se tem a propriedade role_name
-      if (data && typeof data === 'object' && 'role_name' in data) {
-        const roleResult = data as UserRoleResult;
-        setUserRole(roleResult.role_name as UserRole);
+      if (data && 'role_name' in data) {
+        setUserRole(data.role_name as UserRole);
       } else {
         console.log('Role data structure incorrect:', data);
         setUserRole('viewer'); // Default role
