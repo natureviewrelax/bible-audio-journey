@@ -67,6 +67,9 @@ export const Navigation = ({
 
   return (
     <div className="flex flex-col space-y-4 p-4">
+      <label htmlFor="verse" className="text-sm font-medium text-gray-700">
+        Navegação
+      </label>
       <div className="flex items-center gap-4">
         <Select value={currentBook} onValueChange={onBookChange}>
           <SelectTrigger className="w-[200px]">
@@ -80,6 +83,7 @@ export const Navigation = ({
             ))}
           </SelectContent>
         </Select>
+
 
         <Select
           value={currentChapter.toString()}
@@ -135,15 +139,7 @@ export const Navigation = ({
         </div>
       </div>
 
-      <form onSubmit={handleVerseInputSubmit} className="flex gap-2">
-        <Input
-          placeholder="Ex: Gênesis 1:2"
-          value={verseInput}
-          onChange={handleVerseInputChange}
-          className="flex-1"
-        />
-        <Button type="submit">Ir</Button>
-      </form>
+
     </div>
   );
 };
