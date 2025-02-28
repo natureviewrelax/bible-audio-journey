@@ -34,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (session?.user) {
           // Como não temos uma tabela de papéis definida no tipo, vamos usar um papel padrão
           // Em um ambiente de produção real, você teria uma tabela apropriada
-          checkUserRole(session.user.email);
+          determineUserRole(session.user.email);
         }
       } catch (error) {
         console.error('Error getting session:', error);
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          checkUserRole(session.user.email);
+          determineUserRole(session.user.email);
         } else {
           setUserRole(null);
         }
@@ -65,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Função simplificada para definir o papel do usuário com base no email
   // Esta é uma solução temporária até que você configure uma tabela de papéis adequada
-  const checkUserRole = (email: string | undefined) => {
+  const determineUserRole = (email: string | undefined) => {
     if (!email) {
       setUserRole('viewer');
       return;
@@ -80,7 +80,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUserRole('viewer');
     }
     
-    console.log(`User role set to: ${userRole} for email: ${email}`);
+    // Usando const currentRole para acessar o valor atual ao invés do state que pode não estar atualizado
+    const currentRole = email.includes('admin') ? 'admin' : 
+                        email.includes('editor') ? 'editor' : 'viewer';
+    
+    console.log(`User role set to: ${currentRole} for email: ${email}`);
   };
 
   const signIn = async (email: string, password: string) => {
