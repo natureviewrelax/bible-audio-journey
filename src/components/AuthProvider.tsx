@@ -68,8 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchUserRole = async (userId: string) => {
     try {
+      // Usando a chamada RPC sem tipagem específica
       const { data, error } = await supabase
-        .rpc<UserRoleResult>('get_user_roles')
+        .rpc('get_user_roles')
         .single();
 
       if (error) {
@@ -78,9 +79,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      if (data && data.role_name) {
-        setUserRole(data.role_name as UserRole);
+      // Verificando se data existe e se tem a propriedade role_name
+      if (data && typeof data === 'object' && 'role_name' in data) {
+        const roleResult = data as UserRoleResult;
+        setUserRole(roleResult.role_name as UserRole);
       } else {
+        console.log('Role data structure incorrect:', data);
         setUserRole('viewer'); // Default role
       }
     } catch (error) {
