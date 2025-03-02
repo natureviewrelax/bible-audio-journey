@@ -49,7 +49,10 @@ export class AudioService {
         };
       }
       
-      return data;
+      return {
+        useDefaultAudio: data.use_default_audio,
+        defaultAudioSource: data.default_audio_source
+      };
     } catch (error) {
       console.error("Error in getAudioSettings:", error);
       return { 
@@ -65,8 +68,10 @@ export class AudioService {
         .from('audio_settings')
         .upsert({ 
           id: 1, // Single record for settings
-          ...settings,
-          updated_at: new Date().toISOString()
+          use_default_audio: settings.useDefaultAudio,
+          default_audio_source: settings.defaultAudioSource,
+          updated_at: new Date().toISOString(),
+          updated_by: supabase.auth.getUser().then(res => res.data.user?.id) // Current user ID
         });
       
       if (error) {
