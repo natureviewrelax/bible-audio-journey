@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef } from "react";
 import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
@@ -20,7 +19,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [verses, setVerses] = useState<BibleVerse[]>([]);
   const [showAdminSettings, setShowAdminSettings] = useState(false);
-  const [displayMode, setDisplayMode] = useState<"box" | "inline">("box");
+  const [displayMode, setDisplayMode] = useState<"box" | "inline">("inline");
   const [showAudio, setShowAudio] = useState<boolean>(true);
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [darkTheme, setDarkTheme] = useState<boolean>(false);
@@ -55,7 +54,6 @@ const Index = () => {
     }
   }, [currentVerseIndex]);
 
-  // Apply dark theme class to document
   useEffect(() => {
     if (darkTheme) {
       document.documentElement.classList.add('dark');
