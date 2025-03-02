@@ -6,7 +6,7 @@ import { Navigation } from "@/components/Navigation";
 import { VerseDisplay } from "@/components/VerseDisplay";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, LogIn, LogOut, UserPlus } from "lucide-react";
+import { Search, LogIn, LogOut, UserPlus, Settings } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +18,7 @@ const Index = () => {
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [verses, setVerses] = useState<BibleVerse[]>([]);
+  const [showAdminSettings, setShowAdminSettings] = useState(false);
   const { user, userRole, signOut } = useAuth();
   const { toast } = useToast();
   
@@ -89,6 +90,10 @@ const Index = () => {
     setVerses(updatedVerses);
   };
 
+  const toggleAdminSettings = () => {
+    setShowAdminSettings(!showAdminSettings);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
@@ -105,6 +110,17 @@ const Index = () => {
                     </span>
                   )}
                 </div>
+                {userRole === 'admin' && (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={toggleAdminSettings}
+                    className="mr-2"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    {showAdminSettings ? 'Ocultar Configurações' : 'Configurações'}
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" onClick={() => signOut()}>
                   <LogOut className="h-4 w-4 mr-2" />
                   Sair
@@ -177,6 +193,7 @@ const Index = () => {
                 isPlaying={index === currentVerseIndex}
                 onAudioUploaded={index === currentVerseIndex ? handleAudioUploaded : undefined}
                 onEnded={handleVerseEnd}
+                showAdminSettings={index === currentVerseIndex && showAdminSettings}
               />
             ))}
           </div>
