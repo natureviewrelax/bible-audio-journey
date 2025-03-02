@@ -1,4 +1,3 @@
-
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { BibleVerse } from "@/types/bible";
@@ -8,9 +7,10 @@ import { AudioService } from "@/services/AudioService";
 interface Props {
   verse: BibleVerse;
   onEnded: () => void;
+  isVisible?: boolean;
 }
 
-export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
+export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) => {
   const [useDefaultAudio, setUseDefaultAudio] = useState<boolean>(true);
   const [audioSource, setAudioSource] = useState<string>("");
   
@@ -67,7 +67,7 @@ export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
     });
   };
 
-  if (!audioSource) {
+  if (!audioSource || !isVisible) {
     return <div className="w-full text-sm text-muted-foreground">Áudio não disponível</div>;
   }
 
