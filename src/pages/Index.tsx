@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef } from "react";
 import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
@@ -5,7 +6,7 @@ import { Navigation } from "@/components/Navigation";
 import { VerseDisplay } from "@/components/VerseDisplay";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, LogIn, LogOut, UserPlus, Settings, BookOpen, ListMusic } from "lucide-react";
+import { Search, LogIn, LogOut, UserPlus, Settings, BookOpen, ListMusic, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -21,6 +22,8 @@ const Index = () => {
   const [showAdminSettings, setShowAdminSettings] = useState(false);
   const [displayMode, setDisplayMode] = useState<"box" | "inline">("box");
   const [showAudio, setShowAudio] = useState<boolean>(true);
+  const [showConfig, setShowConfig] = useState<boolean>(false);
+  const [darkTheme, setDarkTheme] = useState<boolean>(false);
   const { user, userRole, signOut } = useAuth();
   const { toast } = useToast();
   
@@ -51,6 +54,15 @@ const Index = () => {
       });
     }
   }, [currentVerseIndex]);
+
+  // Apply dark theme class to document
+  useEffect(() => {
+    if (darkTheme) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkTheme]);
 
   const handleSearch = async () => {
     if (searchQuery.trim()) {
@@ -92,12 +104,38 @@ const Index = () => {
     setShowAdminSettings(!showAdminSettings);
   };
 
+  const toggleConfig = () => {
+    setShowConfig(!showConfig);
+  };
+
+  const toggleTheme = () => {
+    setDarkTheme(!darkTheme);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-4xl font-serif">Bíblia em Áudio</h1>
           <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={toggleTheme}
+              className="mr-2"
+              aria-label={darkTheme ? "Mudar para tema claro" : "Mudar para tema escuro"}
+            >
+              {darkTheme ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={toggleConfig}
+              className="mr-2"
+              aria-label="Configurações do aplicativo"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
             {user ? (
               <>
                 <div className="text-sm text-muted-foreground mr-2">
@@ -116,7 +154,7 @@ const Index = () => {
                     className="mr-2"
                   >
                     <Settings className="h-4 w-4 mr-2" />
-                    {showAdminSettings ? 'Ocultar Configurações' : 'Configurações'}
+                    {showAdminSettings ? 'Ocultar Configurações' : 'Configurações Admin'}
                   </Button>
                 )}
                 <Button variant="outline" size="sm" onClick={() => signOut()}>
@@ -163,7 +201,7 @@ const Index = () => {
               <p className="text-sm">
                 <strong>Seu papel:</strong> {userRole}
                 {(userRole === 'admin' || userRole === 'editor') && (
-                  <span className="ml-2 text-green-600">
+                  <span className="ml-2 text-green-600 dark:text-green-400">
                     Você tem permissão para adicionar áudios.
                   </span>
                 )}
@@ -171,44 +209,68 @@ const Index = () => {
             </div>
           )}
 
-          <div className="p-4 bg-card rounded-md mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium">Opções de Visualização</h2>
-            </div>
-            
-            <div className="flex items-center justify-between space-y-2">
-              <div className="flex items-center space-x-2">
-                <BookOpen className="h-4 w-4" />
-                <span className="text-sm">Modo de Exibição:</span>
-                <div className="flex items-center space-x-2">
-                  <Button 
-                    variant={displayMode === "box" ? "default" : "outline"} 
-                    size="sm"
-                    onClick={() => setDisplayMode("box")}
-                  >
-                    Caixas
-                  </Button>
-                  <Button 
-                    variant={displayMode === "inline" ? "default" : "outline"} 
-                    size="sm"
-                    onClick={() => setDisplayMode("inline")}
-                  >
-                    Texto Contínuo
-                  </Button>
-                </div>
+          {showConfig && (
+            <div className="p-4 bg-card rounded-md mb-6 border border-border shadow-sm">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-medium">Configurações do Aplicativo</h2>
+                <Button variant="ghost" size="sm" onClick={toggleConfig}>
+                  Fechar
+                </Button>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <ListMusic className="h-4 w-4" />
-                <span className="text-sm">Mostrar Áudio:</span>
-                <Switch 
-                  checked={showAudio} 
-                  onCheckedChange={setShowAudio} 
-                  aria-label="Toggle audio player visibility"
-                />
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Sun className="h-4 w-4" />
+                    <span className="text-sm">Tema do Aplicativo:</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm">{darkTheme ? 'Escuro' : 'Claro'}</span>
+                    <Switch 
+                      checked={darkTheme} 
+                      onCheckedChange={toggleTheme} 
+                      aria-label="Alternar tema"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <BookOpen className="h-4 w-4" />
+                    <span className="text-sm">Modo de Exibição:</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Button 
+                      variant={displayMode === "box" ? "default" : "outline"} 
+                      size="sm"
+                      onClick={() => setDisplayMode("box")}
+                    >
+                      Caixas
+                    </Button>
+                    <Button 
+                      variant={displayMode === "inline" ? "default" : "outline"} 
+                      size="sm"
+                      onClick={() => setDisplayMode("inline")}
+                    >
+                      Texto Contínuo
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <ListMusic className="h-4 w-4" />
+                    <span className="text-sm">Mostrar Áudio:</span>
+                  </div>
+                  <Switch 
+                    checked={showAudio} 
+                    onCheckedChange={setShowAudio} 
+                    aria-label="Mostrar player de áudio"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <Navigation
             books={books}
