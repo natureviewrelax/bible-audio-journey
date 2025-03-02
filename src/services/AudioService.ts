@@ -64,6 +64,11 @@ export class AudioService {
 
   static async updateAudioSettings(settings: {useDefaultAudio: boolean, defaultAudioSource: string}): Promise<boolean> {
     try {
+      // Get the current user ID first
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+      
+      // Then update the settings with the userId
       const { error } = await supabase
         .from('audio_settings')
         .upsert({ 
@@ -71,7 +76,7 @@ export class AudioService {
           use_default_audio: settings.useDefaultAudio,
           default_audio_source: settings.defaultAudioSource,
           updated_at: new Date().toISOString(),
-          updated_by: supabase.auth.getUser().then(res => res.data.user?.id) // Current user ID
+          updated_by: userId // Now it's a string (or null), not a Promise
         });
       
       if (error) {
