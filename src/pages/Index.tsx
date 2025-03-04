@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
@@ -58,6 +57,11 @@ const Index = () => {
     }
   };
 
+  const handleChapterSelection = (book: string, chapter: number) => {
+    setCurrentBook(book);
+    setCurrentChapter(chapter);
+  };
+
   const handleVerseEnd = () => {
     if (currentVerseIndex < verses.length - 1) {
       setCurrentVerseIndex(currentVerseIndex + 1);
@@ -110,7 +114,11 @@ const Index = () => {
         />
         
         <div className="max-w-4xl mx-auto">
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar 
+            onSearch={handleSearch} 
+            currentBook={currentBook}
+            onSelectChapter={handleChapterSelection}
+          />
 
           {userRole && <UserRoleInfo userRole={userRole} />}
 

@@ -4,15 +4,20 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { BIBLE_BOOKS } from "@/constants/bibleData";
+import { ChapterSelectionModal } from "@/components/ChapterSelectionModal";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
+  currentBook?: string;
+  onSelectChapter?: (book: string, chapter: number) => void;
 }
 
-export const SearchBar = ({ onSearch }: SearchBarProps) => {
+export const SearchBar = ({ onSearch, currentBook = "Gênesis", onSelectChapter }: SearchBarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState<{name: string, chapters: number}[]>([]);
+  const [selectedBook, setSelectedBook] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -50,8 +55,23 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
 
   const handleSuggestionClick = (bookName: string) => {
     setSearchQuery(bookName);
-    onSearch(bookName);
+    setSelectedBook(bookName);
     setShowSuggestions(false);
+    
+    if (onSelectChapter) {
+      // Open the chapter selection modal instead of directly searching
+      setIsModalOpen(true);
+    } else {
+      // Fallback to regular search if onSelectChapter is not provided
+      onSearch(bookName);
+    }
+  };
+  
+  const handleChapterSelected = (book: string, chapter: number) => {
+    if (onSelectChapter) {
+      onSelectChapter(book, chapter);
+    }
+    setIsModalOpen(false);
   };
 
   return (
@@ -95,6 +115,15 @@ export const SearchBar = ({ onSearch }: SearchBarProps) => {
             ))}
           </ul>
         </div>
+      )}
+      
+      {onSelectChapter && (
+        <ChapterSelectionModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          currentBook={selectedBook || currentBook}
+          onSelectChapter={handleChapterSelected}
+        />
       )}
     </div>
   );
