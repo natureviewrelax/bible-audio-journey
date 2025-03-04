@@ -20,6 +20,13 @@ export const SearchBar = ({ onSearch, currentBook = "Gênesis", onSelectChapter 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  // Update selectedBook when currentBook changes from parent
+  useEffect(() => {
+    if (currentBook) {
+      setSelectedBook(currentBook);
+    }
+  }, [currentBook]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
@@ -107,7 +114,9 @@ export const SearchBar = ({ onSearch, currentBook = "Gênesis", onSelectChapter 
             {suggestions.map((book) => (
               <li 
                 key={book.name}
-                className="px-4 py-2 hover:bg-muted cursor-pointer"
+                className={`px-4 py-2 hover:bg-muted cursor-pointer ${
+                  selectedBook === book.name ? "bg-primary text-primary-foreground" : ""
+                }`}
                 onClick={() => handleSuggestionClick(book.name)}
               >
                 {book.name}
