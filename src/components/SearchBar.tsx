@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,6 @@ export const SearchBar = ({ onSearch, currentBook = "Gênesis", onSelectChapter 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Update selectedBook when currentBook changes from parent
   useEffect(() => {
     if (currentBook) {
       setSelectedBook(currentBook);
@@ -66,10 +64,8 @@ export const SearchBar = ({ onSearch, currentBook = "Gênesis", onSelectChapter 
     setShowSuggestions(false);
     
     if (onSelectChapter) {
-      // Open the chapter selection modal instead of directly searching
       setIsModalOpen(true);
     } else {
-      // Fallback to regular search if onSelectChapter is not provided
       onSearch(bookName);
     }
   };

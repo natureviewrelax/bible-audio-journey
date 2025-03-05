@@ -4,11 +4,11 @@ import { BibleBook, BibleVerse } from "@/types/bible";
 import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
-import { AppHeader } from "@/components/AppHeader";
 import { SearchBar } from "@/components/SearchBar";
 import { UserRoleInfo } from "@/components/UserRoleInfo";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { BibleVerseContent } from "@/components/BibleVerseContent";
+import { TopBar } from "@/components/TopBar";
 
 const Index = () => {
   const [books, setBooks] = useState<BibleBook[]>([]);
@@ -105,7 +105,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
-        <AppHeader 
+        <TopBar 
           darkTheme={darkTheme}
           toggleTheme={toggleTheme}
           toggleConfig={toggleConfig}
