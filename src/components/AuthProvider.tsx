@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+     debugger;
     const getSession = async () => {
       setLoading(true);
       try {
@@ -63,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  //TODO USER ALTERAR
   // Função simplificada para definir o papel do usuário com base no email
   // Esta é uma solução temporária até que você configure uma tabela de papéis adequada
   const determineUserRole = (email: string | undefined) => {
@@ -72,10 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     
     // Verificação básica - em um sistema real, isto viria do banco de dados
-    if (email.includes('admin')) {
+    if (email === 'wendercorrea@bol.com.br') {
       setUserRole('admin');
-    } else if (email.includes('editor')) {
-      setUserRole('editor');
     } else {
       setUserRole('viewer');
     }
