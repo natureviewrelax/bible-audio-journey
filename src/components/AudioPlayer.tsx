@@ -1,17 +1,35 @@
-
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { BibleVerse } from "@/types/bible";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AudioService } from "@/services/AudioService";
 
 interface Props {
   verse: BibleVerse;
   onEnded: () => void;
+  isVisible?: boolean;
 }
 
-export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
-  // Priorize o áudio do upload (verse.audio) sobre o defaultAudioUrl
-  const audioSource = verse.audio || verse.defaultAudioUrl || "";
+export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) => {
+  const [useDefaultAudio, setUseDefaultAudio] = useState<boolean>(true);
+  const [audioSource, setAudioSource] = useState<string>("");
+  
+  useEffect(() => {
+    const loadAudioSettings = async () => {
+      const settings = await AudioService.getAudioSettings();
+      setUseDefaultAudio(settings.useDefaultAudio);
+      
+      if (verse.audio) {
+        setAudioSource(verse.audio);
+      } else if (settings.useDefaultAudio) {
+        setAudioSource(verse.defaultAudioUrl || "");
+      } else {
+        setAudioSource("");
+      }
+    };
+    
+    loadAudioSettings();
+  }, [verse]);
   
   useEffect(() => {
     console.log("AudioPlayer - Current verse:", {
@@ -20,10 +38,10 @@ export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
       verse: verse.verse,
       audio: verse.audio,
       defaultAudioUrl: verse.defaultAudioUrl,
-      usingAudio: verse.audio ? "Upload" : "Default"
+      usingAudio: verse.audio ? "Upload" : (useDefaultAudio ? "Default" : "None")
     });
     console.log("AudioPlayer - Using audio source:", audioSource);
-  }, [verse, audioSource]);
+  }, [verse, audioSource, useDefaultAudio]);
 
   const handlePlay = () => {
     console.log("Audio started playing:", {
@@ -48,6 +66,10 @@ export const VerseAudioPlayer = ({ verse, onEnded }: Props) => {
       type: verse.audio ? "Upload" : "Default"
     });
   };
+
+  if (!audioSource || !isVisible) {
+    return <div className="w-full text-sm text-muted-foreground">Áudio não disponível</div>;
+  }
 
   return (
     <div className="w-full">

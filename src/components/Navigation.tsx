@@ -1,10 +1,11 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import { BibleBook } from "@/types/bible";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import { ChapterSelectionModal } from "@/components/ChapterSelectionModal";
 
 interface Props {
   books: BibleBook[];
@@ -32,6 +33,7 @@ export const Navigation = ({
   const verses = Array.from({ length: versesCount }, (_, i) => i + 1);
   
   const [verseInput, setVerseInput] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   
   useEffect(() => {
     if (currentVerse) {
@@ -65,41 +67,27 @@ export const Navigation = ({
     }
   };
 
+  const handleChapterSelection = (book: string, chapter: number) => {
+    if (book !== currentBook) {
+      onBookChange(book);
+    }
+    onChapterChange(chapter);
+  };
+
   return (
     <div className="flex flex-col space-y-4 p-4">
       <label htmlFor="verse" className="text-sm font-medium text-gray-700">
         Navegação
       </label>
       <div className="flex items-center gap-4">
-        <Select value={currentBook} onValueChange={onBookChange}>
-          <SelectTrigger className="w-[200px]">
-            <SelectValue placeholder="Livro" />
-          </SelectTrigger>
-          <SelectContent>
-            {books.map((book) => (
-              <SelectItem key={book.name} value={book.name}>
-                {book.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-
-        <Select
-          value={currentChapter.toString()}
-          onValueChange={(value) => onChapterChange(parseInt(value))}
+        <Button 
+          variant="outline" 
+          onClick={() => setIsModalOpen(true)}
+          className="flex-1 justify-start"
         >
-          <SelectTrigger className="w-[100px]">
-            <SelectValue placeholder="Capítulo" />
-          </SelectTrigger>
-          <SelectContent>
-            {chapters.map((chapter) => (
-              <SelectItem key={chapter} value={chapter.toString()}>
-                {chapter}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          <BookOpen className="h-4 w-4 mr-2" />
+          {currentBook} {currentChapter}
+        </Button>
 
         {onVerseChange && (
           <Select
@@ -139,7 +127,12 @@ export const Navigation = ({
         </div>
       </div>
 
-
+      <ChapterSelectionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        currentBook={currentBook}
+        onSelectChapter={handleChapterSelection}
+      />
     </div>
   );
 };

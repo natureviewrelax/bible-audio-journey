@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      audio_settings: {
+        Row: {
+          default_audio_source: string
+          id: number
+          updated_at: string
+          updated_by: string | null
+          use_default_audio: boolean
+        }
+        Insert: {
+          default_audio_source?: string
+          id: number
+          updated_at?: string
+          updated_by?: string | null
+          use_default_audio?: boolean
+        }
+        Update: {
+          default_audio_source?: string
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+          use_default_audio?: boolean
+        }
+        Relationships: []
+      }
       rides: {
         Row: {
           created_at: string | null

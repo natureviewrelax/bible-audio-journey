@@ -1,8 +1,23 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+/* Reduce padding for mobile devices */
+@media (max-width: 640px) {
+  #root {
+    padding: 0.25rem;
+  }
+}
+
+/* Medium screens (tablets) */
+@media (min-width: 641px) and (max-width: 1024px) {
+  #root {
+    padding: 0.5rem;
+  }
 }
 
 .logo {
@@ -34,7 +49,13 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 1.5em;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 0.5em;
+  }
 }
 
 .read-the-docs {

@@ -1,28 +1,28 @@
-
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
 import { Navigation } from "@/components/Navigation";
-import { VerseDisplay } from "@/components/VerseDisplay";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, LogIn, LogOut, UserPlus } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
-import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { SearchBar } from "@/components/SearchBar";
+import { UserRoleInfo } from "@/components/UserRoleInfo";
+import { ConfigPanel } from "@/components/ConfigPanel";
+import { BibleVerseContent } from "@/components/BibleVerseContent";
+import { TopBar } from "@/components/TopBar";
 
 const Index = () => {
   const [books, setBooks] = useState<BibleBook[]>([]);
   const [currentBook, setCurrentBook] = useState("Gênesis");
   const [currentChapter, setCurrentChapter] = useState(1);
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
   const [verses, setVerses] = useState<BibleVerse[]>([]);
-  const { user, userRole, signOut } = useAuth();
+  const [showAdminSettings, setShowAdminSettings] = useState(false);
+  const [displayMode, setDisplayMode] = useState<"box" | "inline">("inline");
+  const [showAudio, setShowAudio] = useState<boolean>(true);
+  const [showConfig, setShowConfig] = useState<boolean>(false);
+  const [darkTheme, setDarkTheme] = useState<boolean>(false);
+  const { user, userRole } = useAuth();
   const { toast } = useToast();
-  
-  // Referência para o versículo atual
-  const activeVerseRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -41,23 +41,25 @@ const Index = () => {
     loadChapter();
   }, [currentBook, currentChapter]);
 
-  // Efeito para rolar para o versículo ativo quando ele mudar
   useEffect(() => {
-    if (activeVerseRef.current) {
-      // Rolagem suave para o elemento
-      activeVerseRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
+    if (darkTheme) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  }, [currentVerseIndex]);
+  }, [darkTheme]);
 
-  const handleSearch = async () => {
-    if (searchQuery.trim()) {
-      const results = await BibleService.searchVerses(searchQuery);
+  const handleSearch = async (query: string) => {
+    if (query.trim()) {
+      const results = await BibleService.searchVerses(query);
       setVerses(results);
       setCurrentVerseIndex(0);
     }
+  };
+
+  const handleChapterSelection = (book: string, chapter: number) => {
+    setCurrentBook(book);
+    setCurrentChapter(chapter);
   };
 
   const handleVerseEnd = () => {
@@ -67,7 +69,6 @@ const Index = () => {
   };
 
   const handleVerseChange = (verseNumber: number) => {
-    // Ajusta para índice baseado em zero (verseNumber começa em 1)
     const index = verseNumber - 1;
     if (index >= 0 && index < verses.length) {
       setCurrentVerseIndex(index);
@@ -89,73 +90,48 @@ const Index = () => {
     setVerses(updatedVerses);
   };
 
+  const toggleAdminSettings = () => {
+    setShowAdminSettings(!showAdminSettings);
+  };
+
+  const toggleConfig = () => {
+    setShowConfig(!showConfig);
+  };
+
+  const toggleTheme = () => {
+    setDarkTheme(!darkTheme);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-serif">Bíblia em Áudio</h1>
-          <div className="flex items-center gap-2">
-            {user ? (
-              <>
-                <div className="text-sm text-muted-foreground mr-2">
-                  <span className="font-medium">{user.email}</span>
-                  {userRole && (
-                    <span className="ml-2 bg-primary/10 text-primary px-2 py-0.5 rounded text-xs">
-                      {userRole}
-                    </span>
-                  )}
-                </div>
-                <Button variant="outline" size="sm" onClick={() => signOut()}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Sair
-                </Button>
-              </>
-            ) : (
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" asChild>
-                  <Link to="/login">
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Entrar
-                  </Link>
-                </Button>
-                <Button variant="default" size="sm" asChild>
-                  <Link to="/signup">
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Cadastrar
-                  </Link>
-                </Button>
-              </div>
-            )}
-          </div>
-        </div>
+        <TopBar 
+          darkTheme={darkTheme}
+          toggleTheme={toggleTheme}
+          toggleConfig={toggleConfig}
+          toggleAdminSettings={toggleAdminSettings}
+          showAdminSettings={showAdminSettings}
+        />
         
         <div className="max-w-4xl mx-auto">
-          <div className="flex gap-4 mb-6">
-            <Input
-              type="text"
-              placeholder="Pesquisar versículos..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1"
-            />
-            <Button onClick={handleSearch}>
-              <Search className="h-4 w-4 mr-2" />
-              Pesquisar
-            </Button>
-          </div>
+          <SearchBar 
+            onSearch={handleSearch} 
+            currentBook={currentBook}
+            onSelectChapter={handleChapterSelection}
+          />
 
-          {userRole && (
-            <div className="mb-4 p-4 bg-muted rounded-md">
-              <p className="text-sm">
-                <strong>Seu papel:</strong> {userRole}
-                {(userRole === 'admin' || userRole === 'editor') && (
-                  <span className="ml-2 text-green-600">
-                    Você tem permissão para adicionar áudios.
-                  </span>
-                )}
-              </p>
-            </div>
-          )}
+          {userRole && <UserRoleInfo userRole={userRole} />}
+
+          <ConfigPanel 
+            showConfig={showConfig}
+            toggleConfig={toggleConfig}
+            darkTheme={darkTheme}
+            toggleTheme={toggleTheme}
+            displayMode={displayMode}
+            setDisplayMode={setDisplayMode}
+            showAudio={showAudio}
+            setShowAudio={setShowAudio}
+          />
 
           <Navigation
             books={books}
@@ -168,17 +144,18 @@ const Index = () => {
             onVerseChange={handleVerseChange}
           />
 
-          <div className="mt-8 space-y-6">
-            {verses.map((verse, index) => (
-              <VerseDisplay
-                key={`${verse.book}-${verse.chapter}-${verse.verse}`}
-                ref={index === currentVerseIndex ? activeVerseRef : null}
-                verse={verse}
-                isPlaying={index === currentVerseIndex}
-                onAudioUploaded={index === currentVerseIndex ? handleAudioUploaded : undefined}
-                onEnded={handleVerseEnd}
-              />
-            ))}
+          <div className="mt-8">
+            <BibleVerseContent 
+              verses={verses}
+              currentVerseIndex={currentVerseIndex}
+              handleVerseEnd={handleVerseEnd}
+              handleAudioUploaded={handleAudioUploaded}
+              showAdminSettings={showAdminSettings}
+              displayMode={displayMode}
+              showAudio={showAudio}
+              currentBook={currentBook}
+              currentChapter={currentChapter}
+            />
           </div>
         </div>
       </div>

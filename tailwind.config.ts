@@ -57,6 +57,11 @@ export default {
           DEFAULT: "#D4AF37",
           light: "#F4CF67",
         },
+        black: {
+          DEFAULT: "#000000",
+          light: "#222222",
+          card: "#111111",
+        },
       },
       fontFamily: {
         serif: ["Crimson Text", "serif"],
