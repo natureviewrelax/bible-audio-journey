@@ -8,7 +8,7 @@ export class BibleTextService {
     }
 
     try {
-      const response = await fetch('acf.json');
+      const response = await fetch('KJF.json');
       if (!response.ok) {
         throw new Error('Failed to fetch Bible data');
       }
