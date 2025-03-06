@@ -68,6 +68,8 @@ Simply open [Lovable](https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249
 
 We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
 
+## Link da origem das biblias
+https://github.com/damarals/biblias
 
 ## Para gerar as versões mobile do seu aplicativo, siga estas etapas:
 
