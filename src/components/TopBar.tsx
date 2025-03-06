@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, X, Moon, Sun, Settings, BookOpen, Search, ListMusic, LogIn, LogOut, UserPlus } from "lucide-react";
+import { MoreHorizontal, X, Moon, Sun, Settings, BookOpen, Search, ListMusic, LogIn, LogOut, UserPlus, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import {
@@ -84,10 +84,18 @@ export const TopBar = ({
                 </DropdownMenuItem>
               </>
             ) : (
-              <DropdownMenuItem onClick={() => signOut()} className="flex items-center cursor-pointer">
-                <LogOut className="h-4 w-4 mr-2" />
-                <span>Sair</span>
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem asChild>
+                  <Link to="/profile" className="flex items-center cursor-pointer">
+                    <User className="h-4 w-4 mr-2" />
+                    <span>Perfil</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()} className="flex items-center cursor-pointer">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  <span>Sair</span>
+                </DropdownMenuItem>
+              </>
             )}
           </DropdownMenuContent>
         </DropdownMenu>
