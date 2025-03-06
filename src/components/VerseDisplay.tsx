@@ -56,12 +56,22 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
           <span>{verse.text}</span>
           
           {/* Only show audio player when this verse is playing and audio should be visible */}
-          {isPlaying && showAudio && (
+          {isPlaying && showAudio && audioUrl && (
             <div className="mt-2">
               <VerseAudioPlayer
                 verse={verse}
                 onEnded={onEnded || (() => {})}
                 isVisible={showAudio}
+              />
+            </div>
+          )}
+          
+          {/* Add the uploader for inline mode when user is admin/editor */}
+          {isPlaying && canUploadAudio && onAudioUploaded && (
+            <div className="mt-2">
+              <AudioUploader
+                verse={verse}
+                onAudioUploaded={handleAudioUploaded}
               />
             </div>
           )}
