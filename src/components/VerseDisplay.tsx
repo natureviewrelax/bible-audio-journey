@@ -55,7 +55,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
           <span className="text-sm text-muted-foreground mr-2">{verse.verse}</span>
           <span>{verse.text}</span>
           
-          {/* Only show audio player when this verse is playing and audio should be visible */}
+          {/* Audio player for the current verse */}
           {isPlaying && showAudio && (
             <div className="mt-2">
               <VerseAudioPlayer
@@ -67,7 +67,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
           )}
           
           {/* Always show uploader for admin/editor when the verse is active */}
-          {isPlaying && canUploadAudio && onAudioUploaded && (
+          {isPlaying && canUploadAudio && (
             <div className="mt-2">
               <AudioUploader
                 verse={verse}
@@ -95,8 +95,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
             </div>
           </div>
 
-          <div className="flex flex-col items-end space-y-2 ml-4">
-            <hr />
+          <div className="flex flex-col items-start space-y-2 mt-4">
             {showAudio && (
               <VerseAudioPlayer
                 verse={verse}
@@ -106,7 +105,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
             )}
             
             {/* Always show the uploader for admin or editor */}
-            {canUploadAudio && onAudioUploaded && (
+            {canUploadAudio && (
               <AudioUploader
                 verse={verse}
                 onAudioUploaded={handleAudioUploaded}

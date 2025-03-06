@@ -68,7 +68,11 @@ export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) =>
     });
   };
 
-  if (!audioSource || !isVisible) {
+  if (!isVisible) {
+    return null;
+  }
+
+  if (!audioSource) {
     return <div className="w-full text-sm text-muted-foreground">Áudio não disponível</div>;
   }
 

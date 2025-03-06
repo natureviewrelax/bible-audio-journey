@@ -28,6 +28,16 @@ export const BibleVerseContent = ({
 }: BibleVerseContentProps) => {
   const activeVerseRef = useRef<HTMLDivElement>(null);
 
+  // Ensure we always scroll to the active verse when it changes
+  const scrollToActiveVerse = () => {
+    if (activeVerseRef.current) {
+      activeVerseRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+  };
+
   if (displayMode === "inline") {
     return (
       <div className="p-4 bg-card rounded-md shadow-sm">
