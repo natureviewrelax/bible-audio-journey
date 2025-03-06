@@ -56,7 +56,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
           <span>{verse.text}</span>
           
           {/* Only show audio player when this verse is playing and audio should be visible */}
-          {isPlaying && showAudio && audioUrl && (
+          {isPlaying && showAudio && (
             <div className="mt-2">
               <VerseAudioPlayer
                 verse={verse}
@@ -66,7 +66,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
             </div>
           )}
           
-          {/* Add the uploader for inline mode when user is admin/editor */}
+          {/* Always show uploader for admin/editor when the verse is active */}
           {isPlaying && canUploadAudio && onAudioUploaded && (
             <div className="mt-2">
               <AudioUploader
@@ -79,7 +79,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
       );
     }
 
-    // Regular box mode (original implementation)
+    // Regular box mode
     return (
       <div 
         ref={isPlaying ? ref : null} 
@@ -97,15 +97,15 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
 
           <div className="flex flex-col items-end space-y-2 ml-4">
             <hr />
-            {audioUrl && isPlaying && showAudio && (
+            {showAudio && (
               <VerseAudioPlayer
                 verse={verse}
                 onEnded={onEnded || (() => {})}
-                isVisible={showAudio}
+                isVisible={showAudio && isPlaying}
               />
             )}
             
-            {/* Mostrar o uploader apenas para admin ou editor */}
+            {/* Always show the uploader for admin or editor */}
             {canUploadAudio && onAudioUploaded && (
               <AudioUploader
                 verse={verse}
@@ -114,7 +114,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
             )}
           </div>
           
-          {/* Mostrar configurações de áudio apenas para administradores e quando solicitado */}
+          {/* Show admin settings only for administrators and when requested */}
           {isAdmin && showAdminSettings && (
             <div className="mt-6 border-t pt-4">
               <AdminAudioSettings />

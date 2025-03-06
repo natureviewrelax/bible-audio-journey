@@ -41,7 +41,7 @@ export const BibleVerseContent = ({
               ref={index === currentVerseIndex ? activeVerseRef : null}
               verse={verse}
               isPlaying={index === currentVerseIndex}
-              onAudioUploaded={index === currentVerseIndex ? handleAudioUploaded : undefined}
+              onAudioUploaded={handleAudioUploaded}
               onEnded={handleVerseEnd}
               displayMode="inline"
               showAudio={showAudio}
@@ -60,7 +60,7 @@ export const BibleVerseContent = ({
           ref={index === currentVerseIndex ? activeVerseRef : null}
           verse={verse}
           isPlaying={index === currentVerseIndex}
-          onAudioUploaded={index === currentVerseIndex ? handleAudioUploaded : undefined}
+          onAudioUploaded={handleAudioUploaded}
           onEnded={handleVerseEnd}
           showAdminSettings={index === currentVerseIndex && showAdminSettings}
           displayMode="box"
