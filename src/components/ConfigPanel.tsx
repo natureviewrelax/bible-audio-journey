@@ -1,7 +1,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { BookOpen, ListMusic, Sun } from "lucide-react";
+import { BookOpen, ListMusic, Sun, Save } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ConfigPanelProps {
   showConfig: boolean;
@@ -24,6 +26,32 @@ export const ConfigPanel = ({
   showAudio,
   setShowAudio
 }: ConfigPanelProps) => {
+  const { toast } = useToast();
+  const [hasChanges, setHasChanges] = useState(false);
+
+  // Reset hasChanges when settings panel is opened
+  useEffect(() => {
+    if (showConfig) {
+      setHasChanges(false);
+    }
+  }, [showConfig]);
+
+  // Track changes to settings
+  useEffect(() => {
+    if (showConfig) {
+      setHasChanges(true);
+    }
+  }, [darkTheme, displayMode, showAudio]);
+
+  // Save settings confirmation
+  const handleSaveSettings = () => {
+    toast({
+      title: "Configurações salvas",
+      description: "Suas preferências foram salvas e serão aplicadas automaticamente no próximo acesso.",
+    });
+    setHasChanges(false);
+  };
+
   if (!showConfig) return null;
 
   return (
@@ -84,6 +112,22 @@ export const ConfigPanel = ({
             onCheckedChange={setShowAudio} 
             aria-label="Mostrar player de áudio"
           />
+        </div>
+
+        <div className="pt-2 border-t border-border">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full flex items-center justify-center"
+            onClick={handleSaveSettings}
+            disabled={!hasChanges}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Salvar Configurações
+          </Button>
+          <p className="text-xs text-muted-foreground mt-2 text-center">
+            Suas configurações são salvas automaticamente no navegador.
+          </p>
         </div>
       </div>
     </div>

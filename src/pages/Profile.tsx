@@ -8,12 +8,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { User } from "lucide-react";
+import { User, RefreshCw } from "lucide-react";
+import { SettingsService } from "@/services/SettingsService";
+import { useState } from "react";
 
 const Profile = () => {
   const { user, userRole, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [darkTheme, setDarkTheme] = useState(false);
+  
+  useEffect(() => {
+    // Get the current theme setting
+    const savedSettings = SettingsService.getSettings();
+    if (savedSettings) {
+      setDarkTheme(savedSettings.darkTheme);
+    }
+  }, []);
   
   useEffect(() => {
     if (!loading && !user) {
@@ -30,10 +41,27 @@ const Profile = () => {
     navigate("/login");
   };
 
+  const handleResetSettings = () => {
+    SettingsService.clearSettings();
+    toast({
+      title: "Configurações redefinidas",
+      description: "Todas as configurações do aplicativo foram redefinidas para os valores padrão.",
+    });
+    window.location.reload();
+  };
+
+  const toggleTheme = () => {
+    // Just get the current theme for the profile page
+    const savedSettings = SettingsService.getSettings();
+    if (savedSettings) {
+      setDarkTheme(savedSettings.darkTheme);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background p-4">
-        <TopBar darkTheme={false} toggleTheme={() => {}} toggleConfig={() => {}} />
+        <TopBar darkTheme={darkTheme} toggleTheme={toggleTheme} toggleConfig={() => {}} />
         <div className="flex justify-center items-center h-64">
           <p>Carregando...</p>
         </div>
@@ -43,7 +71,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background p-4">
-      <TopBar darkTheme={false} toggleTheme={() => {}} toggleConfig={() => {}} />
+      <TopBar darkTheme={darkTheme} toggleTheme={toggleTheme} toggleConfig={() => {}} />
       
       <div className="container max-w-md mx-auto">
         <Card className="mt-8">
@@ -72,6 +100,22 @@ const Profile = () => {
                   </div>
                 </div>
               )}
+              
+              <div className="space-y-1 pt-4">
+                <Label>Configurações do Aplicativo</Label>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full mt-1 flex items-center justify-center"
+                  onClick={handleResetSettings}
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Redefinir Configurações
+                </Button>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Isso redefinirá todas as configurações personalizadas do aplicativo.
+                </p>
+              </div>
             </div>
           </CardContent>
           

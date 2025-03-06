@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
@@ -9,6 +10,7 @@ import { UserRoleInfo } from "@/components/UserRoleInfo";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { BibleVerseContent } from "@/components/BibleVerseContent";
 import { TopBar } from "@/components/TopBar";
+import { SettingsService, AppSettings } from "@/services/SettingsService";
 
 const Index = () => {
   const [books, setBooks] = useState<BibleBook[]>([]);
@@ -23,6 +25,25 @@ const Index = () => {
   const [darkTheme, setDarkTheme] = useState<boolean>(false);
   const { user, userRole } = useAuth();
   const { toast } = useToast();
+
+  // Load settings from local storage on initial render
+  useEffect(() => {
+    const savedSettings = SettingsService.getSettings();
+    if (savedSettings) {
+      setDarkTheme(savedSettings.darkTheme);
+      setDisplayMode(savedSettings.displayMode);
+      setShowAudio(savedSettings.showAudio);
+    }
+  }, []);
+
+  // Save settings to local storage whenever they change
+  useEffect(() => {
+    SettingsService.saveSettings({
+      darkTheme,
+      displayMode,
+      showAudio
+    });
+  }, [darkTheme, displayMode, showAudio]);
 
   useEffect(() => {
     const loadBooks = async () => {
