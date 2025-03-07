@@ -4,6 +4,7 @@ export interface AppSettings {
   darkTheme: boolean;
   displayMode: "box" | "inline";
   showAudio: boolean;
+  selectedAuthorId?: string;
 }
 
 const SETTINGS_KEY = "bibliaudio_settings";

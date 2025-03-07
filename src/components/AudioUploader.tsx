@@ -8,6 +8,7 @@ import { BibleVerse, AudioAuthor } from "@/types/bible";
 import { supabase } from "@/integrations/supabase/client";
 import { AuthorService } from "@/services/AuthorService";
 import { AudioService } from "@/services/AudioService";
+import { SettingsService } from "@/services/SettingsService";
 
 interface Props {
   verse: BibleVerse;
@@ -21,18 +22,34 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Load authors when component mounts
-    const loadAuthors = async () => {
+    // Load authors when component mounts and get preferred author from settings
+    const loadAuthorsAndSettings = async () => {
       const authorsList = await AuthorService.getAuthors();
       setAuthors(authorsList);
       
-      // If no author is selected and we have authors, select the first one
-      if (!selectedAuthorId && authorsList.length > 0) {
+      // Get preferred author from settings
+      const settings = SettingsService.getSettings();
+      
+      // Determine which author to select (with priority)
+      // 1. Use verse author if available
+      // 2. Use preferred author from settings
+      // 3. Use the first author in the list
+      if (verse.authorId) {
+        setSelectedAuthorId(verse.authorId);
+      } else if (settings?.selectedAuthorId) {
+        // Find if the preferred author is in the list
+        const authorExists = authorsList.some(author => author.id === settings.selectedAuthorId);
+        if (authorExists) {
+          setSelectedAuthorId(settings.selectedAuthorId);
+        } else if (authorsList.length > 0) {
+          setSelectedAuthorId(authorsList[0].id);
+        }
+      } else if (authorsList.length > 0) {
         setSelectedAuthorId(authorsList[0].id);
       }
     };
 
-    loadAuthors();
+    loadAuthorsAndSettings();
   }, []);
 
   // Update selected author if verse author changes
@@ -147,6 +164,17 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
   const handleAuthorChange = async (value: string) => {
     // Update the selected author
     setSelectedAuthorId(value);
+
+    // Save to settings for future uploads
+    const settings = SettingsService.getSettings() || {
+      darkTheme: false,
+      displayMode: "inline",
+      showAudio: true
+    };
+    SettingsService.saveSettings({
+      ...settings,
+      selectedAuthorId: value
+    });
 
     // If there's already an audio for this verse, update its author
     if (verse.audio) {

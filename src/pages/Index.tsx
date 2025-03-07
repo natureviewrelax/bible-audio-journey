@@ -23,6 +23,7 @@ const Index = () => {
   const [showAudio, setShowAudio] = useState<boolean>(true);
   const [showConfig, setShowConfig] = useState<boolean>(false);
   const [darkTheme, setDarkTheme] = useState<boolean>(false);
+  const [selectedAuthorId, setSelectedAuthorId] = useState<string | undefined>(undefined);
   const { user, userRole } = useAuth();
   const { toast } = useToast();
 
@@ -33,6 +34,7 @@ const Index = () => {
       setDarkTheme(savedSettings.darkTheme);
       setDisplayMode(savedSettings.displayMode);
       setShowAudio(savedSettings.showAudio);
+      setSelectedAuthorId(savedSettings.selectedAuthorId);
     }
   }, []);
 
@@ -41,9 +43,10 @@ const Index = () => {
     SettingsService.saveSettings({
       darkTheme,
       displayMode,
-      showAudio
+      showAudio,
+      selectedAuthorId
     });
-  }, [darkTheme, displayMode, showAudio]);
+  }, [darkTheme, displayMode, showAudio, selectedAuthorId]);
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -157,6 +160,8 @@ const Index = () => {
             setDisplayMode={setDisplayMode}
             showAudio={showAudio}
             setShowAudio={setShowAudio}
+            selectedAuthorId={selectedAuthorId}
+            setSelectedAuthorId={setSelectedAuthorId}
           />
 
           <Navigation

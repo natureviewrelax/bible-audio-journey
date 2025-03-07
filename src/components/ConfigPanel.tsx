@@ -1,9 +1,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { BookOpen, ListMusic, Sun, Save } from "lucide-react";
+import { BookOpen, ListMusic, Sun, Save, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AuthorService } from "@/services/AuthorService";
+import { AudioAuthor } from "@/types/bible";
 
 interface ConfigPanelProps {
   showConfig: boolean;
@@ -14,6 +17,8 @@ interface ConfigPanelProps {
   setDisplayMode: (mode: "box" | "inline") => void;
   showAudio: boolean;
   setShowAudio: (show: boolean) => void;
+  selectedAuthorId?: string;
+  setSelectedAuthorId: (authorId: string) => void;
 }
 
 export const ConfigPanel = ({
@@ -24,10 +29,23 @@ export const ConfigPanel = ({
   displayMode,
   setDisplayMode,
   showAudio,
-  setShowAudio
+  setShowAudio,
+  selectedAuthorId,
+  setSelectedAuthorId
 }: ConfigPanelProps) => {
   const { toast } = useToast();
   const [hasChanges, setHasChanges] = useState(false);
+  const [authors, setAuthors] = useState<AudioAuthor[]>([]);
+
+  useEffect(() => {
+    // Load authors when component mounts
+    const loadAuthors = async () => {
+      const authorsList = await AuthorService.getAuthors();
+      setAuthors(authorsList);
+    };
+
+    loadAuthors();
+  }, []);
 
   // Reset hasChanges when settings panel is opened
   useEffect(() => {
@@ -41,7 +59,7 @@ export const ConfigPanel = ({
     if (showConfig) {
       setHasChanges(true);
     }
-  }, [darkTheme, displayMode, showAudio]);
+  }, [darkTheme, displayMode, showAudio, selectedAuthorId]);
 
   // Save settings confirmation
   const handleSaveSettings = () => {
@@ -113,6 +131,35 @@ export const ConfigPanel = ({
             aria-label="Mostrar player de áudio"
           />
         </div>
+
+        {showAudio && (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <User className="h-4 w-4" />
+              <span className="text-sm">Autor Padrão para Áudio:</span>
+            </div>
+            <div className="w-full max-w-xs">
+              <Select 
+                value={selectedAuthorId} 
+                onValueChange={setSelectedAuthorId}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione um autor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {authors.length === 0 && (
+                    <SelectItem value="">Nenhum autor disponível</SelectItem>
+                  )}
+                  {authors.map(author => (
+                    <SelectItem key={author.id} value={author.id}>
+                      {author.firstName} {author.lastName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
 
         <div className="pt-2 border-t border-border">
           <Button 
