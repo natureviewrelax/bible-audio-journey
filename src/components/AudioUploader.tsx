@@ -25,6 +25,11 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
     const loadAuthors = async () => {
       const authorsList = await AuthorService.getAuthors();
       setAuthors(authorsList);
+      
+      // If no author is selected and we have authors, select the first one
+      if (!selectedAuthorId && authorsList.length > 0) {
+        setSelectedAuthorId(authorsList[0].id);
+      }
     };
 
     loadAuthors();
@@ -32,8 +37,13 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
 
   // Update selected author if verse author changes
   useEffect(() => {
-    setSelectedAuthorId(verse.authorId);
-  }, [verse.authorId]);
+    if (verse.authorId) {
+      setSelectedAuthorId(verse.authorId);
+    } else if (authors.length > 0 && !selectedAuthorId) {
+      // If verse has no author but we have authors in the list, select the first one
+      setSelectedAuthorId(authors[0].id);
+    }
+  }, [verse.authorId, authors]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log("File select event triggered");
@@ -44,10 +54,16 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
       return;
     }
 
+    // Ensure an author is selected
+    if (!selectedAuthorId && authors.length > 0) {
+      setSelectedAuthorId(authors[0].id);
+    }
+
     console.log("File selected:", {
       name: file.name,
       type: file.type,
-      size: file.size
+      size: file.size,
+      selectedAuthor: selectedAuthorId
     });
 
     // Validate file type
@@ -63,7 +79,7 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
 
     try {
       setIsUploading(true);
-      console.log("Starting upload process");
+      console.log("Starting upload process with author:", selectedAuthorId);
 
       // Criar nome único para o arquivo
       const fileExt = file.name.split('.').pop();
@@ -181,6 +197,33 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
 
   return (
     <div className="flex flex-col gap-2">
+      {/* Author selection comes first */}
+      <div className="flex items-center gap-2">
+        <label className="text-sm text-muted-foreground">Autor:</label>
+        <div className="w-full max-w-xs">
+          <Select 
+            value={selectedAuthorId} 
+            onValueChange={handleAuthorChange}
+            disabled={isUploading}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Selecione um autor" />
+            </SelectTrigger>
+            <SelectContent>
+              {authors.length === 0 && (
+                <SelectItem value="">Nenhum autor disponível</SelectItem>
+              )}
+              {authors.map(author => (
+                <SelectItem key={author.id} value={author.id}>
+                  {author.firstName} {author.lastName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      
+      {/* Upload button comes after author selection */}
       <div className="flex items-center gap-2">
         <input
           type="file"
@@ -193,7 +236,7 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
         <Button
           variant="outline"
           size="sm"
-          disabled={isUploading}
+          disabled={isUploading || authors.length === 0}
           onClick={() => {
             console.log("Upload button clicked");
             document.getElementById(inputId)?.click();
@@ -203,31 +246,6 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
           {isUploading ? "Enviando..." : "Adicionar Áudio"}
         </Button>
       </div>
-      
-      {(verse.audio || authors.length > 0) && (
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-muted-foreground">Autor:</label>
-          <div className="w-full max-w-xs">
-            <Select 
-              value={selectedAuthorId} 
-              onValueChange={handleAuthorChange}
-              disabled={isUploading}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione um autor" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Sem autor</SelectItem>
-                {authors.map(author => (
-                  <SelectItem key={author.id} value={author.id}>
-                    {author.firstName} {author.lastName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
