@@ -96,7 +96,7 @@ const Index = () => {
     }
   };
 
-  const handleAudioUploaded = (audioUrl: string) => {
+  const handleAudioUploaded = (audioUrl: string, authorId?: string, authorName?: string) => {
     toast({
       title: "Áudio adicionado com sucesso",
       description: "O áudio foi salvo e será reproduzido para este versículo.",
@@ -104,7 +104,12 @@ const Index = () => {
     
     const updatedVerses = verses.map((verse, index) => {
       if (index === currentVerseIndex) {
-        return { ...verse, audio: audioUrl };
+        return { 
+          ...verse, 
+          audio: audioUrl,
+          authorId: authorId || verse.authorId,
+          authorName: authorName || verse.authorName
+        };
       }
       return verse;
     });

@@ -10,7 +10,7 @@ interface Props {
   verse: BibleVerse;
   isPlaying?: boolean;
   onEnded?: () => void;
-  onAudioUploaded?: (audioUrl: string) => void;
+  onAudioUploaded?: (audioUrl: string, authorId?: string, authorName?: string) => void;
   showAdminSettings?: boolean;
   displayMode?: "box" | "inline";
   showAudio?: boolean;
@@ -38,10 +38,10 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
       setAudioUrl(verse.audio || verse.defaultAudioUrl || null);
     }, [verse]);
 
-    const handleAudioUploaded = (url: string) => {
+    const handleAudioUploaded = (url: string, authorId?: string, authorName?: string) => {
       setAudioUrl(url);
       if (onAudioUploaded) {
-        onAudioUploaded(url);
+        onAudioUploaded(url, authorId, authorName);
       }
     };
 
@@ -54,6 +54,13 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
         >
           <span className="text-sm text-muted-foreground mr-2">{verse.verse}</span>
           <span>{verse.text}</span>
+          
+          {/* Display author if available */}
+          {verse.authorName && (
+            <div className="text-xs text-muted-foreground mt-1">
+              Áudio por: {verse.authorName}
+            </div>
+          )}
           
           {/* Audio player for the current verse */}
           {isPlaying && showAudio && (
@@ -92,6 +99,13 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
                 {verse.book} {verse.chapter}:{verse.verse}
               </div>
               <p className="text-lg">{verse.text}</p>
+              
+              {/* Display author if available */}
+              {verse.authorName && (
+                <div className="text-sm text-muted-foreground mt-1">
+                  Áudio por: {verse.authorName}
+                </div>
+              )}
             </div>
           </div>
 

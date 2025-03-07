@@ -1,5 +1,5 @@
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { VerseDisplay } from "@/components/VerseDisplay";
 import { BibleVerse } from "@/types/bible";
 
@@ -7,7 +7,7 @@ interface BibleVerseContentProps {
   verses: BibleVerse[];
   currentVerseIndex: number;
   handleVerseEnd: () => void;
-  handleAudioUploaded: (audioUrl: string) => void;
+  handleAudioUploaded: (audioUrl: string, authorId?: string, authorName?: string) => void;
   showAdminSettings: boolean;
   displayMode: "box" | "inline";
   showAudio: boolean;
@@ -29,6 +29,10 @@ export const BibleVerseContent = ({
   const activeVerseRef = useRef<HTMLDivElement>(null);
 
   // Ensure we always scroll to the active verse when it changes
+  useEffect(() => {
+    scrollToActiveVerse();
+  }, [currentVerseIndex]);
+
   const scrollToActiveVerse = () => {
     if (activeVerseRef.current) {
       activeVerseRef.current.scrollIntoView({ 

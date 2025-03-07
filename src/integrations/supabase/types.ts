@@ -9,6 +9,51 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      audio_authors: {
+        Row: {
+          biography: string | null
+          created_at: string
+          email: string | null
+          facebook: string | null
+          first_name: string
+          id: string
+          instagram: string | null
+          last_name: string
+          ministry_role: string | null
+          phone: string | null
+          website: string | null
+          youtube: string | null
+        }
+        Insert: {
+          biography?: string | null
+          created_at?: string
+          email?: string | null
+          facebook?: string | null
+          first_name: string
+          id?: string
+          instagram?: string | null
+          last_name: string
+          ministry_role?: string | null
+          phone?: string | null
+          website?: string | null
+          youtube?: string | null
+        }
+        Update: {
+          biography?: string | null
+          created_at?: string
+          email?: string | null
+          facebook?: string | null
+          first_name?: string
+          id?: string
+          instagram?: string | null
+          last_name?: string
+          ministry_role?: string | null
+          phone?: string | null
+          website?: string | null
+          youtube?: string | null
+        }
+        Relationships: []
+      }
       audio_settings: {
         Row: {
           default_audio_source: string
@@ -33,42 +78,10 @@ export type Database = {
         }
         Relationships: []
       }
-      rides: {
-        Row: {
-          created_at: string | null
-          destination: string
-          driver_id: string | null
-          id: string
-          pickup_location: string
-          rider_id: string
-          status: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          destination: string
-          driver_id?: string | null
-          id?: string
-          pickup_location: string
-          rider_id: string
-          status?: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          destination?: string
-          driver_id?: string | null
-          id?: string
-          pickup_location?: string
-          rider_id?: string
-          status?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       verse_audio: {
         Row: {
           audio_path: string
+          author_id: string | null
           book: string
           chapter: number
           created_at: string
@@ -77,6 +90,7 @@ export type Database = {
         }
         Insert: {
           audio_path: string
+          author_id?: string | null
           book: string
           chapter: number
           created_at?: string
@@ -85,13 +99,22 @@ export type Database = {
         }
         Update: {
           audio_path?: string
+          author_id?: string | null
           book?: string
           chapter?: number
           created_at?: string
           id?: string
           verse?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "verse_audio_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "audio_authors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

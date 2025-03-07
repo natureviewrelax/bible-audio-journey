@@ -3,6 +3,7 @@ import { BibleBook, BibleVerse } from "@/types/bible";
 import { BIBLE_BOOKS } from "@/constants/bibleData";
 import { AudioService } from "./AudioService";
 import { BibleTextService } from "./BibleTextService";
+import { AuthorService } from "./AuthorService";
 
 export class BibleService {
   static async getBooks(): Promise<BibleBook[]> {
@@ -23,14 +24,26 @@ export class BibleService {
       const defaultAudioUrl = AudioService.getBookAudioUrl(bookName);
 
       const verses = await Promise.all(book.chapters[chapter - 1].map(async (verse: string, index: number) => {
-        const customAudio = await AudioService.getCustomAudio(bookName, chapter, index + 1);
+        const verseNumber = index + 1;
+        const { url: customAudio, authorId } = await AudioService.getCustomAudio(bookName, chapter, verseNumber);
+        
+        let authorName;
+        if (authorId) {
+          const author = await AuthorService.getAuthor(authorId);
+          if (author) {
+            authorName = `${author.firstName} ${author.lastName}`;
+          }
+        }
+        
         return {
           book: bookName,
           chapter,
-          verse: index + 1,
+          verse: verseNumber,
           text: verse,
           defaultAudioUrl,
           audio: customAudio || undefined,
+          authorId,
+          authorName,
         };
       }));
 
@@ -62,14 +75,26 @@ export class BibleService {
           for (let verseIndex = 0; verseIndex < chapter.length; verseIndex++) {
             const verse = chapter[verseIndex];
             if (verse.toLowerCase().includes(searchQuery)) {
-              const customAudio = await AudioService.getCustomAudio(book.name, chapterIndex + 1, verseIndex + 1);
+              const verseNumber = verseIndex + 1;
+              const { url: customAudio, authorId } = await AudioService.getCustomAudio(book.name, chapterIndex + 1, verseNumber);
+              
+              let authorName;
+              if (authorId) {
+                const author = await AuthorService.getAuthor(authorId);
+                if (author) {
+                  authorName = `${author.firstName} ${author.lastName}`;
+                }
+              }
+
               results.push({
                 book: book.name,
                 chapter: chapterIndex + 1,
-                verse: verseIndex + 1,
+                verse: verseNumber,
                 text: verse,
                 defaultAudioUrl,
                 audio: customAudio || undefined,
+                authorId,
+                authorName,
               });
             }
           }

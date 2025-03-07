@@ -6,6 +6,8 @@ export interface BibleVerse {
   text: string;
   audio?: string;
   defaultAudioUrl?: string;
+  authorId?: string;
+  authorName?: string;
 }
 
 export interface BibleChapter {
@@ -17,4 +19,18 @@ export interface BibleChapter {
 export interface BibleBook {
   name: string;
   chapters: number;
+}
+
+export interface AudioAuthor {
+  id: string;
+  firstName: string;
+  lastName: string;
+  ministryRole?: string;
+  biography?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  facebook?: string;
+  youtube?: string;
+  instagram?: string;
 }
