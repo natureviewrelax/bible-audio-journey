@@ -1,4 +1,4 @@
-importtypescript
+
 import { useEffect, useState } from "react";
 import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
@@ -26,6 +26,7 @@ const Index = () => {
   const { user, userRole } = useAuth();
   const { toast } = useToast();
 
+  // Load settings from local storage on initial render
   useEffect(() => {
     const savedSettings = SettingsService.getSettings();
     if (savedSettings) {
@@ -35,6 +36,7 @@ const Index = () => {
     }
   }, []);
 
+  // Save settings to local storage whenever they change
   useEffect(() => {
     SettingsService.saveSettings({
       darkTheme,
