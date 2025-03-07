@@ -33,39 +33,6 @@ export type Database = {
         }
         Relationships: []
       }
-      rides: {
-        Row: {
-          created_at: string | null
-          destination: string
-          driver_id: string | null
-          id: string
-          pickup_location: string
-          rider_id: string
-          status: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          destination: string
-          driver_id?: string | null
-          id?: string
-          pickup_location: string
-          rider_id: string
-          status?: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          destination?: string
-          driver_id?: string | null
-          id?: string
-          pickup_location?: string
-          rider_id?: string
-          status?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       verse_audio: {
         Row: {
           audio_path: string

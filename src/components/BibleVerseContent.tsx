@@ -1,5 +1,5 @@
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { VerseDisplay } from "@/components/VerseDisplay";
 import { BibleVerse } from "@/types/bible";
 
@@ -28,15 +28,15 @@ export const BibleVerseContent = ({
 }: BibleVerseContentProps) => {
   const activeVerseRef = useRef<HTMLDivElement>(null);
 
-  // Ensure we always scroll to the active verse when it changes
-  const scrollToActiveVerse = () => {
+  // Ensure we scroll to the active verse when it changes
+  useEffect(() => {
     if (activeVerseRef.current) {
       activeVerseRef.current.scrollIntoView({ 
         behavior: 'smooth', 
         block: 'center' 
       });
     }
-  };
+  }, [currentVerseIndex]);
 
   if (displayMode === "inline") {
     return (
