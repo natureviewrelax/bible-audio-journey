@@ -1,14 +1,11 @@
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload } from "lucide-react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { BibleVerse, AudioAuthor } from "@/types/bible";
-import { supabase } from "@/integrations/supabase/client";
-import { AuthorService } from "@/services/AuthorService";
 import { AudioService } from "@/services/AudioService";
-import { SettingsService } from "@/services/SettingsService";
+import { AuthorSelector } from "@/components/audio/AuthorSelector";
+import { AudioFileUploader } from "@/components/audio/AudioFileUploader";
+import { useAudioAuthor } from "@/hooks/use-audio-author";
 
 interface Props {
   verse: BibleVerse;
@@ -17,164 +14,16 @@ interface Props {
 
 export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
   const [isUploading, setIsUploading] = useState(false);
-  const [authors, setAuthors] = useState<AudioAuthor[]>([]);
-  const [selectedAuthorId, setSelectedAuthorId] = useState<string | undefined>(verse.authorId);
   const { toast } = useToast();
+  const { 
+    authors, 
+    selectedAuthorId, 
+    handleAuthorChange 
+  } = useAudioAuthor({ initialAuthorId: verse.authorId });
 
-  useEffect(() => {
-    // Load authors when component mounts and get preferred author from settings
-    const loadAuthorsAndSettings = async () => {
-      const authorsList = await AuthorService.getAuthors();
-      setAuthors(authorsList);
-      
-      // Get preferred author from settings
-      const settings = SettingsService.getSettings();
-      
-      // Determine which author to select (with priority)
-      // 1. Use verse author if available
-      // 2. Use preferred author from settings
-      // 3. Use the first author in the list
-      if (verse.authorId) {
-        setSelectedAuthorId(verse.authorId);
-      } else if (settings?.selectedAuthorId) {
-        // Find if the preferred author is in the list
-        const authorExists = authorsList.some(author => author.id === settings.selectedAuthorId);
-        if (authorExists) {
-          setSelectedAuthorId(settings.selectedAuthorId);
-        } else if (authorsList.length > 0) {
-          setSelectedAuthorId(authorsList[0].id);
-        }
-      } else if (authorsList.length > 0) {
-        setSelectedAuthorId(authorsList[0].id);
-      }
-    };
-
-    loadAuthorsAndSettings();
-  }, []);
-
-  // Update selected author if verse author changes
-  useEffect(() => {
-    if (verse.authorId) {
-      setSelectedAuthorId(verse.authorId);
-    } else if (authors.length > 0 && !selectedAuthorId) {
-      // If verse has no author but we have authors in the list, select the first one
-      setSelectedAuthorId(authors[0].id);
-    }
-  }, [verse.authorId, authors]);
-
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("File select event triggered");
-    const file = event.target.files?.[0];
-    
-    if (!file) {
-      console.log("No file selected");
-      return;
-    }
-
-    // Ensure an author is selected
-    if (!selectedAuthorId && authors.length > 0) {
-      setSelectedAuthorId(authors[0].id);
-    }
-
-    console.log("File selected:", {
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      selectedAuthor: selectedAuthorId
-    });
-
-    // Validate file type
-    if (!file.type.startsWith('audio/')) {
-      console.log("Invalid file type:", file.type);
-      toast({
-        title: "Erro no upload",
-        description: "Por favor, selecione um arquivo de áudio válido.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      setIsUploading(true);
-      console.log("Starting upload process with author:", selectedAuthorId);
-
-      // Criar nome único para o arquivo
-      const fileExt = file.name.split('.').pop();
-      const sanitizedBook = verse.book.replace(/[^a-zA-Z0-9]/g, '_');
-      const fileName = `${sanitizedBook}_${verse.chapter}_${verse.verse}_${Date.now()}.${fileExt}`;
-      
-      // Upload do arquivo para o Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('bible_audio')
-        .upload(fileName, file);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      // Obter URL pública do arquivo
-      const { data: { publicUrl } } = supabase.storage
-        .from('bible_audio')
-        .getPublicUrl(fileName);
-
-      // Salvar metadados no banco de dados
-      const { error: dbError } = await supabase
-        .from('verse_audio')
-        .upsert({
-          book: verse.book,
-          chapter: verse.chapter,
-          verse: verse.verse,
-          audio_path: fileName,
-          author_id: selectedAuthorId || null
-        });
-
-      if (dbError) {
-        throw dbError;
-      }
-
-      console.log("Audio uploaded successfully:", publicUrl);
-      
-      let authorName;
-      if (selectedAuthorId) {
-        const author = authors.find(a => a.id === selectedAuthorId);
-        if (author) {
-          authorName = `${author.firstName} ${author.lastName}`;
-        }
-      }
-      
-      onAudioUploaded(publicUrl, selectedAuthorId, authorName);
-      
-      toast({
-        title: "Áudio adicionado",
-        description: `Áudio adicionado para ${verse.book} ${verse.chapter}:${verse.verse}`,
-      });
-    } catch (error) {
-      console.error("Erro detalhado no upload do áudio:", error);
-      toast({
-        title: "Erro no upload",
-        description: "Ocorreu um erro ao fazer upload do arquivo. Verifique se o arquivo é um áudio válido.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsUploading(false);
-      console.log("Upload process finished");
-    }
-  };
-
-  const handleAuthorChange = async (value: string) => {
+  const handleAuthorSelection = async (value: string) => {
     // Update the selected author
-    setSelectedAuthorId(value);
-
-    // Save to settings for future uploads
-    const settings = SettingsService.getSettings() || {
-      darkTheme: false,
-      displayMode: "inline",
-      showAudio: true
-    };
-    SettingsService.saveSettings({
-      ...settings,
-      selectedAuthorId: value
-    });
+    handleAuthorChange(value);
 
     // If there's already an audio for this verse, update its author
     if (verse.audio) {
@@ -221,59 +70,38 @@ export const AudioUploader = ({ verse, onAudioUploaded }: Props) => {
     }
   };
 
-  const inputId = `audio-upload-${verse.book}-${verse.chapter}-${verse.verse}`.replace(/\s+/g, '-');
+  const handleFileUploaded = (audioUrl: string) => {
+    let authorName;
+    if (selectedAuthorId) {
+      const author = authors.find(a => a.id === selectedAuthorId);
+      if (author) {
+        authorName = `${author.firstName} ${author.lastName}`;
+      }
+    }
+    
+    onAudioUploaded(audioUrl, selectedAuthorId, authorName);
+  };
 
   return (
     <div className="flex flex-col gap-2">
       {/* Author selection comes first */}
       <div className="flex items-center gap-2">
         <label className="text-sm text-muted-foreground">Autor:</label>
-        <div className="w-full max-w-xs">
-          <Select 
-            value={selectedAuthorId} 
-            onValueChange={handleAuthorChange}
-            disabled={isUploading}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Selecione um autor" />
-            </SelectTrigger>
-            <SelectContent>
-              {authors.length === 0 && (
-                <SelectItem value="">Nenhum autor disponível</SelectItem>
-              )}
-              {authors.map(author => (
-                <SelectItem key={author.id} value={author.id}>
-                  {author.firstName} {author.lastName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+        <AuthorSelector
+          authors={authors}
+          selectedAuthorId={selectedAuthorId}
+          onAuthorChange={handleAuthorSelection}
+          disabled={isUploading}
+        />
       </div>
       
       {/* Upload button comes after author selection */}
-      <div className="flex items-center gap-2">
-        <input
-          type="file"
-          accept="audio/*"
-          className="hidden"
-          id={inputId}
-          onChange={handleFileSelect}
-          disabled={isUploading}
-        />
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={isUploading || authors.length === 0}
-          onClick={() => {
-            console.log("Upload button clicked");
-            document.getElementById(inputId)?.click();
-          }}
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          {isUploading ? "Enviando..." : "Adicionar Áudio"}
-        </Button>
-      </div>
+      <AudioFileUploader
+        verse={verse}
+        selectedAuthorId={selectedAuthorId}
+        onAudioUploaded={handleFileUploaded}
+        disabled={isUploading || authors.length === 0}
+      />
     </div>
   );
 };
