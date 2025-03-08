@@ -147,14 +147,15 @@ export const ConfigPanel = ({
                   <SelectValue placeholder="Selecione um autor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {authors.length === 0 && (
-                    <SelectItem value="">Nenhum autor disponível</SelectItem>
+                  {authors.length === 0 ? (
+                    <div className="py-2 px-4 text-sm text-muted-foreground">Nenhum autor disponível</div>
+                  ) : (
+                    authors.map(author => (
+                      <SelectItem key={author.id} value={author.id}>
+                        {author.firstName} {author.lastName}
+                      </SelectItem>
+                    ))
                   )}
-                  {authors.map(author => (
-                    <SelectItem key={author.id} value={author.id}>
-                      {author.firstName} {author.lastName}
-                    </SelectItem>
-                  ))}
                 </SelectContent>
               </Select>
             </div>
