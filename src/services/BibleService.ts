@@ -4,6 +4,7 @@ import { BIBLE_BOOKS } from "@/constants/bibleData";
 import { AudioService } from "./AudioService";
 import { BibleTextService } from "./BibleTextService";
 import { AuthorService } from "./AuthorService";
+import { SettingsService } from "./SettingsService";
 
 export class BibleService {
   static async getBooks(): Promise<BibleBook[]> {
@@ -22,10 +23,17 @@ export class BibleService {
       }
 
       const defaultAudioUrl = AudioService.getBookAudioUrl(bookName);
+      const settings = SettingsService.getSettings();
+      const preferredAuthorId = settings?.selectedAuthorId;
 
       const verses = await Promise.all(book.chapters[chapter - 1].map(async (verse: string, index: number) => {
         const verseNumber = index + 1;
-        const { url: customAudio, authorId } = await AudioService.getCustomAudio(bookName, chapter, verseNumber);
+        const { url: customAudio, authorId } = await AudioService.getCustomAudio(
+          bookName, 
+          chapter, 
+          verseNumber,
+          preferredAuthorId
+        );
         
         let authorName;
         if (authorId) {
@@ -65,6 +73,8 @@ export class BibleService {
       const results: BibleVerse[] = [];
       const searchQuery = query.toLowerCase();
       const bibleData = await BibleTextService.fetchBibleData();
+      const settings = SettingsService.getSettings();
+      const preferredAuthorId = settings?.selectedAuthorId;
 
       for (const book of bibleData) {
         if (!book.chapters) continue;
@@ -76,7 +86,12 @@ export class BibleService {
             const verse = chapter[verseIndex];
             if (verse.toLowerCase().includes(searchQuery)) {
               const verseNumber = verseIndex + 1;
-              const { url: customAudio, authorId } = await AudioService.getCustomAudio(book.name, chapterIndex + 1, verseNumber);
+              const { url: customAudio, authorId } = await AudioService.getCustomAudio(
+                book.name, 
+                chapterIndex + 1, 
+                verseNumber,
+                preferredAuthorId
+              );
               
               let authorName;
               if (authorId) {

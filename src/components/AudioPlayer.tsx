@@ -4,6 +4,7 @@ import "react-h5-audio-player/lib/styles.css";
 import { BibleVerse } from "@/types/bible";
 import { useEffect, useState } from "react";
 import { AudioService } from "@/services/AudioService";
+import { SettingsService } from "@/services/SettingsService";
 
 interface Props {
   verse: BibleVerse;
@@ -20,6 +21,9 @@ export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) =>
       const settings = await AudioService.getAudioSettings();
       setUseDefaultAudio(settings.useDefaultAudio);
       
+      // Determine the audio source with priority:
+      // 1. Custom uploaded audio for this verse
+      // 2. Default audio source (if useDefaultAudio is true)
       if (verse.audio) {
         setAudioSource(verse.audio);
       } else if (settings.useDefaultAudio) {
@@ -39,6 +43,8 @@ export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) =>
       verse: verse.verse,
       audio: verse.audio,
       defaultAudioUrl: verse.defaultAudioUrl,
+      authorId: verse.authorId,
+      authorName: verse.authorName,
       usingAudio: verse.audio ? "Upload" : (useDefaultAudio ? "Default" : "None")
     });
     console.log("AudioPlayer - Using audio source:", audioSource);

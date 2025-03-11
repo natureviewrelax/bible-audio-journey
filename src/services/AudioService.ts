@@ -13,14 +13,32 @@ export class AudioService {
     return `${BIBLE_AUDIO_BASE_URL}/${audioFileName}.mp3`;
   }
 
-  static async getCustomAudio(bookName: string, chapter: number, verse: number): Promise<{ url: string | null; authorId: string | null }> {
-    const { data, error } = await supabase
+  static async getCustomAudio(bookName: string, chapter: number, verse: number, preferredAuthorId?: string): Promise<{ url: string | null; authorId: string | null }> {
+    let query = supabase
       .from('verse_audio')
       .select('audio_path, author_id')
       .eq('book', bookName)
       .eq('chapter', chapter)
-      .eq('verse', verse)
-      .single();
+      .eq('verse', verse);
+    
+    // If a preferred author is specified, try to get that author's audio first
+    if (preferredAuthorId) {
+      const { data: authorData, error: authorError } = await query
+        .eq('author_id', preferredAuthorId)
+        .maybeSingle();
+      
+      if (authorData) {
+        const { data: { publicUrl } } = supabase.storage
+          .from('bible_audio')
+          .getPublicUrl(authorData.audio_path);
+
+        return { url: publicUrl, authorId: authorData.author_id };
+      }
+    }
+    
+    // If no preferred author or that author doesn't have audio for this verse,
+    // fall back to any available audio
+    const { data, error } = await query.maybeSingle();
 
     if (error || !data) {
       return { url: null, authorId: null };
