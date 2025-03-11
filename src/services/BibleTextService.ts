@@ -8,7 +8,7 @@ export class BibleTextService {
     }
 
     try {
-      const response = await fetch('ACF1995WP.json');
+      const response = await fetch('codeshack-output.json');
       if (!response.ok) {
         throw new Error('Failed to fetch Bible data');
       }
