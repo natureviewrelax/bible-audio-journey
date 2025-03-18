@@ -23,7 +23,7 @@ export const AppHeader = ({
 
   return (
     <div className="flex justify-between items-center mb-8">
-      <h1 className="text-4xl font-serif">Bíblia em Áudio</h1>
+      <h1 className="text-4xl font-serif">Bíblia em Áudio JFAC 1848</h1>
       <div className="flex items-center gap-2">
         <Button 
           variant="outline" 

@@ -31,7 +31,7 @@ export const TopBar = ({
 
   return (
     <div className="flex justify-between items-center mb-8 text-left">
-      <h1 className="text-4xl font-serif">Bíblia em Áudio</h1>
+      <h1 className="text-4xl font-serif">Bíblia em Áudio JFAC 1848</h1>
       <div className="flex items-center gap-2">
         {user && (
           <div className="text-sm text-muted-foreground mr-2 hidden md:block">

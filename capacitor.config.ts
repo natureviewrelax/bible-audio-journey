@@ -3,7 +3,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.bibliaudio.app',
-  appName: 'Bíblia em Áudio',
+  appName: 'Bíblia em Áudio JFAC 1848',
   webDir: 'dist',
   bundledWebRuntime: false,
   server: {
