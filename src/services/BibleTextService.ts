@@ -8,7 +8,7 @@ export class BibleTextService {
     }
 
     try {
-      const response = await fetch('SF_20250903_POR_ACF_(PORTUGUESE CORRIGIDA FIEL 1995.json');
+      const response = await fetch('SF_20251803_PORTUGUESEJFAC_1848.json');
       if (!response.ok) {
         throw new Error('Failed to fetch Bible data');
       }
