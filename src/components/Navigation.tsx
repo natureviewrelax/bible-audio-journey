@@ -75,7 +75,7 @@ export const Navigation = ({
   };
 
   return (
-    <div className="flex flex-col space-y-4 p-4">
+    <div className="flex flex-col space-y-4 p-4 sticky top-0 bg-background z-50 shadow-sm border-b">
       <label htmlFor="verse" className="text-sm font-medium text-gray-700">
         Navegação
       </label>
