@@ -134,23 +134,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
-        <TopBar 
-          darkTheme={darkTheme}
-          toggleTheme={toggleTheme}
-          toggleConfig={toggleConfig}
-          toggleAdminSettings={toggleAdminSettings}
-          showAdminSettings={showAdminSettings}
-        />
-        
+
+        {userRole && <UserRoleInfo userRole={userRole} />}
         <div className="max-w-4xl mx-auto">
-          <SearchBar 
-            onSearch={handleSearch} 
-            currentBook={currentBook}
-            onSelectChapter={handleChapterSelection}
-          />
-
-          {userRole && <UserRoleInfo userRole={userRole} />}
-
           <ConfigPanel 
             showConfig={showConfig}
             toggleConfig={toggleConfig}
@@ -164,17 +150,21 @@ const Index = () => {
             setSelectedAuthorId={setSelectedAuthorId}
           />
 
-          <Navigation
-            books={books}
-            currentBook={currentBook}
-            currentChapter={currentChapter}
-            currentVerse={verses[currentVerseIndex]?.verse}
-            versesCount={verses.length}
-            onBookChange={setCurrentBook}
-            onChapterChange={setCurrentChapter}
-            onVerseChange={handleVerseChange}
-          />
-
+        <Navigation
+          books={books}
+          currentBook={currentBook}
+          currentChapter={currentChapter}
+          currentVerse={verses[currentVerseIndex]?.verse}
+          versesCount={verses.length}
+          onBookChange={setCurrentBook}
+          onChapterChange={setCurrentChapter}
+          onVerseChange={handleVerseChange}
+          darkTheme={darkTheme}
+          toggleTheme={toggleTheme}
+          toggleConfig={toggleConfig}
+          toggleAdminSettings={toggleAdminSettings}
+          showAdminSettings={showAdminSettings}
+        />
           <div className="mt-8">
             <BibleVerseContent 
               verses={verses}
@@ -191,7 +181,9 @@ const Index = () => {
         </div>
       </div>
     </div>
+    
   );
+
 };
 
 export default Index;
