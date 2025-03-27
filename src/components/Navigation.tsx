@@ -136,7 +136,13 @@ export const Navigation = ({
               )}
               
               {!user ? (
-                <>
+                <> 
+                 <DropdownMenuItem asChild>
+                <Link to="/" className="flex items-center cursor-pointer">
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  <span>Home</span>
+                </Link>
+              </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/login" className="flex items-center cursor-pointer">
                       <LogIn className="h-4 w-4 mr-2" />

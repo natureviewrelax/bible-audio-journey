@@ -35,7 +35,7 @@ export const LoginForm = () => {
           description: "Bem-vindo de volta!",
         });
         // Redireciona para a página inicial após login bem-sucedido
-        navigate('/');
+        navigate('/Biblia');
       }
     } finally {
       setIsSigningIn(false);
