@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, BookOpen, MoreHorizontal, Moon, Sun, Settings, LogIn, LogOut, UserPlus, User } from "lucide-react";
 import { BibleBook } from "@/types/bible";
 import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
 import { ChapterSelectionModal } from "@/components/ChapterSelectionModal";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
@@ -96,9 +95,7 @@ export const Navigation = ({
   return (
     <div className="flex flex-col space-y-4 p-4 sticky top-0 bg-background z-50 shadow-sm border-b">
       <div className="flex justify-between items-center">
-        <label htmlFor="verse" className="text-sm font-medium text-gray-700">
-          Navegação
-        </label>
+
         <div className="flex items-center gap-2">
           {user && (
             <div className="text-sm text-muted-foreground mr-2 hidden md:block">
@@ -137,7 +134,7 @@ export const Navigation = ({
               
               {!user ? (
                 <> 
-                 <DropdownMenuItem asChild>
+               <DropdownMenuItem asChild>
                 <Link to="/" className="flex items-center cursor-pointer">
                   <UserPlus className="h-4 w-4 mr-2" />
                   <span>Home</span>
@@ -156,11 +153,17 @@ export const Navigation = ({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                  <Link to="/sobre" className="flex items-center cursor-pointer">
+                   <Link to="/videos" className="flex items-center cursor-pointer">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    <span>Vídeos</span>
+                   </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                   <Link to="/sobre" className="flex items-center cursor-pointer">
                     <UserPlus className="h-4 w-4 mr-2" />
                     <span>Sobre</span>
-                  </Link>
-                </DropdownMenuItem>
+                   </Link>
+                  </DropdownMenuItem>
                 </>
               ) : (
                 <>
