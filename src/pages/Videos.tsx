@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 
 interface Video {
   id: string;
@@ -30,11 +31,23 @@ const videos: Video[] = [
 ];
 
 export default function Videos() {
-  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(() => {
+    // Seleciona um vídeo aleatório ao carregar a página
+    const randomIndex = Math.floor(Math.random() * videos.length);
+    return videos[randomIndex].id;
+  });
 
   return (
     <div className="container mx-auto p-4 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-8 text-center text-gray-800">Jornada Bíblica em Vídeo</h1>
+      <div className="flex justify-between items-center mb-8">
+        <Link 
+          to="/"
+          className="inline-flex items-center justify-center px-6 py-3 text-lg font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+        >
+          Voltar para Início
+        </Link>
+        <h1 className="text-3xl font-bold text-center text-gray-800">Jornada Bíblica em Vídeo</h1>
+      </div>
       
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Video Player Section */}
