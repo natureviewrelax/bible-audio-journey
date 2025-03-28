@@ -106,11 +106,10 @@ export const Navigation = ({
               )}
             </div>
           )}
-          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="mr-2 hover:bg-accent hover:text-accent-foreground transition-colors rounded-full shadow-sm border-primary/20">
-                <MoreHorizontal className="h-5 w-5 text-primary" />
+              <Button variant="ghost" size="icon" className="hover:bg-accent hover:text-accent-foreground transition-colors rounded-full">
+                <MoreHorizontal className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-3 shadow-lg rounded-lg border-border/50 bg-background/95 backdrop-blur-sm">
@@ -164,7 +163,8 @@ export const Navigation = ({
                    </Link>
                   </DropdownMenuItem>
                 </>
-              ) : (
+              )}
+              {user && (
                 <>
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center cursor-pointer hover:bg-accent/50 rounded-lg transition-all duration-200 px-3 py-2 mb-1 group">
@@ -210,14 +210,6 @@ export const Navigation = ({
             className="hover:bg-accent hover:text-accent-foreground transition-colors rounded-full shadow-sm border-primary/20"
           >
             <ChevronRight className="h-5 w-5 text-primary" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={toggleConfig}
-            className="hover:bg-accent hover:text-accent-foreground transition-colors rounded-full shadow-sm border-primary/20"
-          >
-            <Settings className="h-5 w-5 text-primary" />
           </Button>
         </div>
       </div>
