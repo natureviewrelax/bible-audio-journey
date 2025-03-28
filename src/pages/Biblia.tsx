@@ -4,11 +4,9 @@ import { BibleBook, BibleVerse } from "@/types/bible";
 import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { useToast } from "@/hooks/use-toast";
-import { SearchBar } from "@/components/SearchBar";
 import { UserRoleInfo } from "@/components/UserRoleInfo";
 import { ConfigPanel } from "@/components/ConfigPanel";
 import { BibleVerseContent } from "@/components/BibleVerseContent";
-import { TopBar } from "@/components/TopBar";
 import { SettingsService, AppSettings } from "@/services/SettingsService";
 
 const Index = () => {
