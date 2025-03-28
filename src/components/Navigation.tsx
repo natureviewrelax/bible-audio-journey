@@ -1,7 +1,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, BookOpen, MoreHorizontal, Moon, Sun, Settings, LogIn, LogOut, UserPlus, User, Menu } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen, MoreHorizontal, Moon, Sun, Settings, LogIn, LogOut, UserPlus, User, Menu, VideoIcon, AtSignIcon, HomeIcon } from "lucide-react";
 import { BibleBook } from "@/types/bible";
 import { useState, useEffect } from "react";
 import { ChapterSelectionModal } from "@/components/ChapterSelectionModal";
@@ -133,7 +133,7 @@ export const Navigation = ({
                 <> 
                <DropdownMenuItem asChild>
                 <Link to="/" className="flex items-center cursor-pointer hover:bg-accent/50 rounded-lg transition-all duration-200 px-3 py-2 mb-1 group">
-                  <UserPlus className="h-4 w-4 mr-2 text-primary group-hover:scale-110 transition-transform" />
+                  <HomeIcon className="h-4 w-4 mr-2 text-primary group-hover:scale-110 transition-transform" />
                   <span className="font-medium">Home</span>
                 </Link>
               </DropdownMenuItem>
@@ -151,7 +151,7 @@ export const Navigation = ({
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                    <Link to="/videos" className="flex items-center cursor-pointer hover:bg-accent/50 rounded-lg transition-all duration-200 px-3 py-2 mb-1 group">
-                    <UserPlus className="h-4 w-4 mr-2 text-primary group-hover:scale-110 transition-transform" />
+                    <VideoIcon className="h-4 w-4 mr-2 text-primary group-hover:scale-110 transition-transform" />
                     <span className="font-medium">Vídeos</span>
                    </Link>
                   </DropdownMenuItem>
