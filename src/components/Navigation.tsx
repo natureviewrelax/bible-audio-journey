@@ -93,7 +93,6 @@ export const Navigation = ({
   };
 
   return (
-    <div className="flex flex-col space-y-4 p-4 sticky top-0 bg-background/95 backdrop-blur-sm z-50 shadow-lg border-b transition-all">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
           {user && (
@@ -181,7 +180,6 @@ export const Navigation = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
 
       <div className="flex items-center gap-4">
         <Button 

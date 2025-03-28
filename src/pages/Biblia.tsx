@@ -133,7 +133,9 @@ const Index = () => {
       <div className="container mx-auto py-8">
 
         {userRole && <UserRoleInfo userRole={userRole} />}
+        
         <div className="max-w-4xl mx-auto">
+        <div className="flex flex-col space-y-4 p-4 sticky top-0 bg-background/95 backdrop-blur-sm z-50 shadow-lg border-b transition-all">
           <ConfigPanel 
             showConfig={showConfig}
             toggleConfig={toggleConfig}
@@ -162,6 +164,7 @@ const Index = () => {
           toggleAdminSettings={toggleAdminSettings}
           showAdminSettings={showAdminSettings}
         />
+        </div>
           <div className="mt-8">
             <BibleVerseContent 
               verses={verses}
