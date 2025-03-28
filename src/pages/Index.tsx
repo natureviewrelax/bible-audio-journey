@@ -1,6 +1,19 @@
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { SettingsService } from "@/services/SettingsService";
 
 const Index = () => {
+  // Load settings from local storage on initial render
+  useEffect(() => {
+    const savedSettings = SettingsService.getSettings();
+    if (savedSettings) {
+      if (savedSettings.darkTheme) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, []);
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="max-w-3xl mx-auto p-8 text-center">
