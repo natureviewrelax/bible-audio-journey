@@ -35,7 +35,7 @@ export const LoginForm = () => {
           description: "Bem-vindo de volta!",
         });
         // Redireciona para a página inicial após login bem-sucedido
-        navigate('/');
+        navigate('/Biblia');
       }
     } finally {
       setIsSigningIn(false);
@@ -84,6 +84,10 @@ export const LoginForm = () => {
           Ainda não tem uma conta?{" "}
           <Link to="/signup" className="text-primary hover:underline">
             Cadastre-se
+          </Link>
+          <br></br>
+          <Link to="/" className="text-primary hover:underline">
+            Home
           </Link>
         </div>
       </form>
