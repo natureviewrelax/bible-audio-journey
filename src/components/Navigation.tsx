@@ -91,6 +91,24 @@ export const Navigation = ({
     }
     onChapterChange(chapter);
   };
+  {onVerseChange && (
+    <Select
+      value={currentVerse.toString()}
+      onValueChange={(value) => onVerseChange(parseInt(value))}
+    >
+      <SelectTrigger className="w-[100px]">
+        <SelectValue placeholder="Versículo" />
+      </SelectTrigger>
+      <SelectContent>
+        {verses.map((verse) => (
+          <SelectItem key={verse} value={verse.toString()}>
+            {verse}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  )}
+
 
   return (
       <div className="flex justify-between items-center">
@@ -192,6 +210,24 @@ export const Navigation = ({
         </Button>
 
         <div className="flex items-center gap-2">
+        {onVerseChange && (
+          <Select
+            value={currentVerse.toString()}
+            onValueChange={(value) => onVerseChange(parseInt(value))}
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue placeholder="Versículo" />
+            </SelectTrigger>
+            <SelectContent>
+              {verses.map((verse) => (
+                <SelectItem key={verse} value={verse.toString()}>
+                  {verse}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
           <Button
             variant="outline"
             size="icon"
@@ -208,8 +244,10 @@ export const Navigation = ({
             disabled={currentChapter >= (currentBookData?.chapters || 1)}
             className="hover:bg-accent hover:text-accent-foreground transition-colors rounded-full shadow-sm border-primary/20"
           >
+            
             <ChevronRight className="h-5 w-5 text-primary" />
           </Button>
+          
         </div>
       </div>
 
