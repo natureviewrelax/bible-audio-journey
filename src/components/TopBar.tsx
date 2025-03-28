@@ -30,9 +30,8 @@ export const TopBar = ({
   const [menuExpanded, setMenuExpanded] = useState(false);
 
   return (
-    <div className="flex justify-between items-center mb-8 text-left">
-  
-      <div className="flex items-center gap-2">
+    <div className="flex justify-between items-center mb-8 text-left transition-all">
+      <div className="flex items-center gap-3">
         {user && (
           <div className="text-sm text-muted-foreground mr-2 hidden md:block">
             <span className="font-medium">{user.email}</span>
@@ -46,23 +45,23 @@ export const TopBar = ({
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="icon" className="mr-2">
-              <MoreHorizontal className="h-4 w-4" />
+            <Button variant="outline" size="icon" className="mr-2 hover:bg-accent hover:text-accent-foreground transition-colors">
+              <MoreHorizontal className="h-5 w-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 p-2">
-            <DropdownMenuItem onClick={toggleTheme} className="flex items-center cursor-pointer">
+          <DropdownMenuContent align="end" className="w-64 p-3 shadow-lg rounded-lg border-border/50">
+            <DropdownMenuItem onClick={toggleTheme} className="flex items-center cursor-pointer hover:bg-accent/50 rounded-md transition-colors px-2 py-1.5">
               {darkTheme ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
               <span>{darkTheme ? 'Tema Claro' : 'Tema Escuro'}</span>
             </DropdownMenuItem>
             
-            <DropdownMenuItem onClick={toggleConfig} className="flex items-center cursor-pointer">
+            <DropdownMenuItem onClick={toggleConfig} className="flex items-center cursor-pointer hover:bg-accent/50 rounded-md transition-colors px-2 py-1.5">
               <Settings className="h-4 w-4 mr-2" />
               <span>Configurações</span>
             </DropdownMenuItem>
             
             {userRole === 'admin' && toggleAdminSettings && (
-              <DropdownMenuItem onClick={toggleAdminSettings} className="flex items-center cursor-pointer">
+              <DropdownMenuItem onClick={toggleAdminSettings} className="flex items-center cursor-pointer hover:bg-accent/50 rounded-md transition-colors px-2 py-1.5">
                 <Settings className="h-4 w-4 mr-2" />
                 <span>{showAdminSettings ? 'Ocultar Configurações Admin' : 'Configurações Admin'}</span>
               </DropdownMenuItem>
@@ -71,13 +70,13 @@ export const TopBar = ({
             {!user ? (
               <>
                 <DropdownMenuItem asChild>
-                  <Link to="/login" className="flex items-center cursor-pointer">
+                  <Link to="/login" className="flex items-center cursor-pointer hover:bg-accent/50 rounded-md transition-colors px-2 py-1.5">
                     <LogIn className="h-4 w-4 mr-2" />
                     <span>Entrar</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/signup" className="flex items-center cursor-pointer">
+                  <Link to="/signup" className="flex items-center cursor-pointer hover:bg-accent/50 rounded-md transition-colors px-2 py-1.5">
                     <UserPlus className="h-4 w-4 mr-2" />
                     <span>Cadastrar</span>
                   </Link>
@@ -86,12 +85,12 @@ export const TopBar = ({
             ) : (
               <>
                 <DropdownMenuItem asChild>
-                  <Link to="/profile" className="flex items-center cursor-pointer">
+                  <Link to="/profile" className="flex items-center cursor-pointer hover:bg-accent/50 rounded-md transition-colors px-2 py-1.5">
                     <User className="h-4 w-4 mr-2" />
                     <span>Perfil</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => signOut()} className="flex items-center cursor-pointer">
+                <DropdownMenuItem onClick={() => signOut()} className="flex items-center cursor-pointer hover:bg-accent/50 rounded-md transition-colors px-2 py-1.5">
                   <LogOut className="h-4 w-4 mr-2" />
                   <span>Sair</span>
                 </DropdownMenuItem>
