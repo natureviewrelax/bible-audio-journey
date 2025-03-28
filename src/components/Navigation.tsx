@@ -1,7 +1,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, BookOpen, MoreHorizontal, Moon, Sun, Settings, LogIn, LogOut, UserPlus, User } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen, MoreHorizontal, Moon, Sun, Settings, LogIn, LogOut, UserPlus, User, Menu } from "lucide-react";
 import { BibleBook } from "@/types/bible";
 import { useState, useEffect } from "react";
 import { ChapterSelectionModal } from "@/components/ChapterSelectionModal";
@@ -108,7 +108,7 @@ export const Navigation = ({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="hover:bg-accent hover:text-accent-foreground transition-colors rounded-full">
-                <MoreHorizontal className="h-5 w-5" />
+                <Menu className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-3 shadow-lg rounded-lg border-border/50 bg-background/95 backdrop-blur-sm">
