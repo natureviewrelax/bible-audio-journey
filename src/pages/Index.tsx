@@ -21,7 +21,6 @@ const Index = () => {
         
         <p className="text-xl text-muted-foreground mb-8">
           Explore a Palavra de Deus através da histórica tradução João Ferreira de Almeida Corrigida de 1848.
-          Desfrute de uma experiência única que combina a leitura do texto com narração em áudio de alta qualidade.
         </p>
 
         <Link 
