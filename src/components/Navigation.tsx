@@ -155,6 +155,12 @@ export const Navigation = ({
                       <span>Cadastrar</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                  <Link to="/sobre" className="flex items-center cursor-pointer">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    <span>Sobre</span>
+                  </Link>
+                </DropdownMenuItem>
                 </>
               ) : (
                 <>

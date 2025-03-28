@@ -85,6 +85,10 @@ export const LoginForm = () => {
           <Link to="/signup" className="text-primary hover:underline">
             Cadastre-se
           </Link>
+          <br></br>
+          <Link to="/" className="text-primary hover:underline">
+            Home
+          </Link>
         </div>
       </form>
     </div>
