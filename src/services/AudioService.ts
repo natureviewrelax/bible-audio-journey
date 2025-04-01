@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { AUDIO_FILE_MAPPING, BIBLE_AUDIO_BASE_URL } from "@/constants/bibleData";
 import { AudioAuthor } from "@/types/bible";
@@ -13,6 +12,43 @@ export class AudioService {
     return `${BIBLE_AUDIO_BASE_URL}/${audioFileName}.mp3`;
   }
 
+  static async getChapterAudio(bookName: string, chapter: number, preferredAuthorId?: string): Promise<Map<number, {url: string, authorId: string | null}>> {
+    const audioMap = new Map<number, {url: string, authorId: string | null}>();
+    
+    let query = supabase
+      .from('verse_audio')
+      .select('audio_path, author_id, verse')
+      .eq('book', bookName)
+      .eq('chapter', chapter);
+    
+    if (preferredAuthorId) {
+      const { data: authorData } = await query.eq('author_id', preferredAuthorId);
+      if (authorData && authorData.length > 0) {
+        data = authorData;
+      }
+    }
+    
+    if (!data) {
+      const { data: allData } = await query;
+      data = allData;
+    }
+
+    if (data && data.length > 0) {
+      for (const audioRecord of data) {
+        const { data: { publicUrl } } = supabase.storage
+          .from('bible_audio')
+          .getPublicUrl(audioRecord.audio_path);
+
+        audioMap.set(audioRecord.verse, {
+          url: publicUrl,
+          authorId: audioRecord.author_id
+        });
+      }
+    }
+
+    return audioMap;
+  }
+
   static async getCustomAudio(bookName: string, chapter: number, verse: number, preferredAuthorId?: string): Promise<{ url: string | null; authorId: string | null }> {
     let query = supabase
       .from('verse_audio')
@@ -21,7 +57,6 @@ export class AudioService {
       .eq('chapter', chapter)
       .eq('verse', verse);
     
-    // If a preferred author is specified, try to get that author's audio first
     if (preferredAuthorId) {
       const { data: authorData, error: authorError } = await query
         .eq('author_id', preferredAuthorId)
@@ -36,8 +71,6 @@ export class AudioService {
       }
     }
     
-    // If no preferred author or that author doesn't have audio for this verse,
-    // fall back to any available audio
     const { data, error } = await query.maybeSingle();
 
     if (error || !data) {
@@ -103,7 +136,6 @@ export class AudioService {
 
   static async getAudioSettings(): Promise<{useDefaultAudio: boolean, defaultAudioSource: string}> {
     try {
-      // Fetch audio settings from the database
       const { data, error } = await supabase
         .from('audio_settings')
         .select('*')
@@ -111,7 +143,6 @@ export class AudioService {
       
       if (error) {
         console.error("Error fetching audio settings:", error);
-        // Default settings if no settings found
         return { 
           useDefaultAudio: true, 
           defaultAudioSource: BIBLE_AUDIO_BASE_URL 
@@ -133,19 +164,17 @@ export class AudioService {
 
   static async updateAudioSettings(settings: {useDefaultAudio: boolean, defaultAudioSource: string}): Promise<boolean> {
     try {
-      // Get the current user ID first
       const { data: { user } } = await supabase.auth.getUser();
       const userId = user?.id;
       
-      // Then update the settings with the userId
       const { error } = await supabase
         .from('audio_settings')
         .upsert({ 
-          id: 1, // Single record for settings
+          id: 1,
           use_default_audio: settings.useDefaultAudio,
           default_audio_source: settings.defaultAudioSource,
           updated_at: new Date().toISOString(),
-          updated_by: userId // Now it's a string (or null), not a Promise
+          updated_by: userId
         });
       
       if (error) {

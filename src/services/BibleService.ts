@@ -25,23 +25,33 @@ export class BibleService {
       const defaultAudioUrl = AudioService.getBookAudioUrl(bookName);
       const settings = SettingsService.getSettings();
       const preferredAuthorId = settings?.selectedAuthorId;
-
-      const verses = await Promise.all(book.chapters[chapter - 1].map(async (verse: string, index: number) => {
-        const verseNumber = index + 1;
-        const { url: customAudio, authorId } = await AudioService.getCustomAudio(
-          bookName, 
-          chapter, 
-          verseNumber,
-          preferredAuthorId
-        );
-        
-        let authorName;
-        if (authorId) {
-          const author = await AuthorService.getAuthor(authorId);
-          if (author) {
-            authorName = `${author.firstName} ${author.lastName}`;
-          }
+      
+      // Get all audio data for this chapter in a single query
+      const chapterAudio = await AudioService.getChapterAudio(bookName, chapter, preferredAuthorId);
+      
+      // Create a map of authors to avoid fetching the same author multiple times
+      const authorMap = new Map();
+      
+      // Get unique author IDs from the audio data
+      const authorIds = new Set<string>();
+      chapterAudio.forEach(audioData => {
+        if (audioData.authorId) {
+          authorIds.add(audioData.authorId);
         }
+      });
+      
+      // Fetch all authors at once
+      for (const authorId of authorIds) {
+        const author = await AuthorService.getAuthor(authorId);
+        if (author) {
+          authorMap.set(authorId, `${author.firstName} ${author.lastName}`);
+        }
+      }
+
+      // Map the verses with their audio data
+      const verses = book.chapters[chapter - 1].map((verse: string, index: number) => {
+        const verseNumber = index + 1;
+        const audioData = chapterAudio.get(verseNumber);
         
         return {
           book: bookName,
@@ -49,11 +59,11 @@ export class BibleService {
           verse: verseNumber,
           text: verse,
           defaultAudioUrl,
-          audio: customAudio || undefined,
-          authorId,
-          authorName,
+          audio: audioData?.url,
+          authorId: audioData?.authorId || undefined,
+          authorName: audioData?.authorId ? authorMap.get(audioData.authorId) : undefined,
         };
-      }));
+      });
 
       console.log(`Loaded ${verses.length} verses from ${bookName} ${chapter}`);
       return verses;
@@ -76,6 +86,8 @@ export class BibleService {
       const settings = SettingsService.getSettings();
       const preferredAuthorId = settings?.selectedAuthorId;
 
+      // We don't optimize the search function since it's not the primary use case
+      // and would require a different optimization approach
       for (const book of bibleData) {
         if (!book.chapters) continue;
         const defaultAudioUrl = AudioService.getBookAudioUrl(book.name);
