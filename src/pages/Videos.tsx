@@ -22,16 +22,17 @@ export default function Videos() {
   useEffect(() => {
     async function fetchVideos() {
       try {
+        // Explicitly type the expected response
         const { data, error } = await supabase
           .from('bible_videos')
-          .select('*');
+          .select('id, youtube_id, title, description');
         
         if (error) {
           throw error;
         }
 
         if (data && data.length > 0) {
-          setVideos(data);
+          setVideos(data as Video[]);
           // Select a random video initially
           const randomIndex = Math.floor(Math.random() * data.length);
           setSelectedVideo(data[randomIndex].youtube_id);

@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import Sobre from "./pages/Sobre";
 import Videos from "./pages/Videos";
+import VideosAdmin from "./pages/VideosAdmin";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/sobre" element={<Sobre />} />
             <Route path="/videos" element={<Videos />} />
+            <Route path="/videos/admin" element={<VideosAdmin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
