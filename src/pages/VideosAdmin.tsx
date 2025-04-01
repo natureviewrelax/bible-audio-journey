@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { AuthGuard } from "@/components/AuthGuard";
-import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Trash2, Plus, Edit, Save } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -11,13 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { toast } from "@/components/ui/use-toast";
-
-interface Video {
-  id: string;
-  youtube_id: string;
-  title: string;
-  description: string;
-}
+import { VideoService, Video } from "@/services/VideoService";
 
 export default function VideosAdmin() {
   const { user, userRole } = useAuth();
@@ -25,7 +18,7 @@ export default function VideosAdmin() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
-  const [newVideo, setNewVideo] = useState<Partial<Video>>({
+  const [newVideo, setNewVideo] = useState<Omit<Video, 'id'>>({
     youtube_id: '',
     title: '',
     description: ''
@@ -38,13 +31,11 @@ export default function VideosAdmin() {
   async function fetchVideos() {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('bible_videos')
-        .select('id, youtube_id, title, description');
+      const { data, error } = await VideoService.fetchVideos();
       
       if (error) throw error;
       
-      setVideos(data as Video[] || []);
+      setVideos(data || []);
     } catch (error) {
       console.error('Error fetching videos:', error);
       toast({
@@ -72,29 +63,23 @@ export default function VideosAdmin() {
     setIsSubmitting(true);
     
     try {
-      // Check if user has admin or editor role
-      if (userRole !== 'admin' && userRole !== 'editor') {
-        throw new Error("Você não tem permissão para adicionar vídeos.");
+      if (!userRole) {
+        throw new Error("É necessário estar autenticado para realizar esta ação.");
       }
 
-      const { data, error } = await supabase
-        .from('bible_videos')
-        .insert([{
-          youtube_id: newVideo.youtube_id,
-          title: newVideo.title,
-          description: newVideo.description
-        }])
-        .select();
+      const { data, error } = await VideoService.addVideo(newVideo, userRole);
       
       if (error) throw error;
 
-      setVideos([...(data as Video[]), ...videos]);
-      
-      setNewVideo({
-        youtube_id: '',
-        title: '',
-        description: ''
-      });
+      if (data) {
+        setVideos([...data, ...videos]);
+        
+        setNewVideo({
+          youtube_id: '',
+          title: '',
+          description: ''
+        });
+      }
       
       toast({
         title: "Vídeo adicionado",
@@ -118,24 +103,22 @@ export default function VideosAdmin() {
     }
 
     try {
-      // Check if user has admin role
-      if (userRole !== 'admin') {
-        throw new Error("Apenas administradores podem excluir vídeos.");
+      if (!userRole) {
+        throw new Error("É necessário estar autenticado para realizar esta ação.");
       }
       
-      const { error } = await supabase
-        .from('bible_videos')
-        .delete()
-        .eq('id', id);
+      const { success, error } = await VideoService.deleteVideo(id, userRole);
       
       if (error) throw error;
       
-      setVideos(videos.filter(video => video.id !== id));
-      
-      toast({
-        title: "Vídeo excluído",
-        description: "O vídeo foi excluído com sucesso."
-      });
+      if (success) {
+        setVideos(videos.filter(video => video.id !== id));
+        
+        toast({
+          title: "Vídeo excluído",
+          description: "O vídeo foi excluído com sucesso."
+        });
+      }
     } catch (error: any) {
       console.error('Error deleting video:', error);
       toast({
@@ -161,25 +144,19 @@ export default function VideosAdmin() {
     setIsSubmitting(true);
     
     try {
-      // Check if user has admin or editor role
-      if (userRole !== 'admin' && userRole !== 'editor') {
-        throw new Error("Você não tem permissão para editar vídeos.");
+      if (!userRole) {
+        throw new Error("É necessário estar autenticado para realizar esta ação.");
       }
       
-      const { error } = await supabase
-        .from('bible_videos')
-        .update({
-          youtube_id: editingVideo.youtube_id,
-          title: editingVideo.title,
-          description: editingVideo.description
-        })
-        .eq('id', editingVideo.id);
+      const { data, error } = await VideoService.updateVideo(editingVideo, userRole);
       
       if (error) throw error;
       
-      setVideos(videos.map(video => 
-        video.id === editingVideo.id ? editingVideo : video
-      ));
+      if (data) {
+        setVideos(videos.map(video => 
+          video.id === editingVideo.id ? data : video
+        ));
+      }
       
       setEditingVideo(null);
       

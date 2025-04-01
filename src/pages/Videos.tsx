@@ -2,15 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
-
-interface Video {
-  id: string;
-  youtube_id: string;
-  title: string;
-  description: string;
-}
+import { VideoService, Video } from "@/services/VideoService";
 
 export default function Videos() {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -18,21 +11,20 @@ export default function Videos() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch videos from Supabase
+  // Fetch videos using VideoService
   useEffect(() => {
     async function fetchVideos() {
+      setIsLoading(true);
+      
       try {
-        // Explicitly type the expected response
-        const { data, error } = await supabase
-          .from('bible_videos')
-          .select('id, youtube_id, title, description');
+        const { data, error } = await VideoService.fetchVideos();
         
         if (error) {
           throw error;
         }
 
         if (data && data.length > 0) {
-          setVideos(data as Video[]);
+          setVideos(data);
           // Select a random video initially
           const randomIndex = Math.floor(Math.random() * data.length);
           setSelectedVideo(data[randomIndex].youtube_id);
