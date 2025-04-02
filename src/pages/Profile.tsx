@@ -23,13 +23,14 @@ export default function Profile() {
         setLoading(true);
         if (!user) throw new Error('No user');
 
-        const { data, error, status } = await supabase
+        // Use the generic version of from to tell TypeScript about the table structure
+        const { data, error } = await supabase
           .from('profiles')
-          .select(`username, website, avatar_url`)
+          .select('username, website, avatar_url')
           .eq('id', user.id)
           .single();
 
-        if (error && status !== 406) {
+        if (error) {
           throw error;
         }
 
@@ -66,7 +67,11 @@ export default function Profile() {
         updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase.from('profiles').upsert(updates);
+      // Use the generic version of from to tell TypeScript about the table structure
+      const { error } = await supabase
+        .from('profiles')
+        .upsert(updates);
+
       if (error) throw error;
       
       toast({
