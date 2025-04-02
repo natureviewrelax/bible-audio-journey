@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
@@ -7,9 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function Profile() {
-  const { user, userRole, supabase } = useAuth();
+  const { user, userRole } = useAuth();
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [website, setWebsite] = useState('');
@@ -49,7 +51,7 @@ export default function Profile() {
     }
 
     getProfile();
-  }, [user, supabase]);
+  }, [user]);
 
   async function updateProfile() {
     try {
