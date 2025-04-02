@@ -40,12 +40,15 @@ export class VideoService {
         throw new Error("Você não tem permissão para adicionar vídeos.");
       }
 
+      console.log("Tentando adicionar vídeo com userRole:", userRole);
+
       const { data, error } = await supabase
         .from('bible_videos')
         .insert([video])
         .select();
       
       if (error) {
+        console.error("Erro Supabase ao adicionar vídeo:", error);
         throw error;
       }
       
@@ -66,7 +69,8 @@ export class VideoService {
         throw new Error("Você não tem permissão para editar vídeos.");
       }
       
-      // Fix: Use maybeSingle instead of single to handle potential missing rows
+      console.log("Tentando atualizar vídeo com userRole:", userRole);
+      
       const { data, error } = await supabase
         .from('bible_videos')
         .update({
@@ -78,6 +82,7 @@ export class VideoService {
         .select();
       
       if (error) {
+        console.error("Erro Supabase ao atualizar vídeo:", error);
         throw error;
       }
       
@@ -103,12 +108,15 @@ export class VideoService {
         throw new Error("Apenas administradores podem excluir vídeos.");
       }
       
+      console.log("Tentando excluir vídeo com userRole:", userRole);
+      
       const { error } = await supabase
         .from('bible_videos')
         .delete()
         .eq('id', id);
       
       if (error) {
+        console.error("Erro Supabase ao excluir vídeo:", error);
         throw error;
       }
       

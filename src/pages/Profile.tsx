@@ -9,6 +9,9 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export default function Profile() {
   const { user, userRole } = useAuth();
@@ -23,7 +26,7 @@ export default function Profile() {
         setLoading(true);
         if (!user) throw new Error('No user');
 
-        // Use the generic version of from to tell TypeScript about the table structure
+        // Usar from('profiles') diretamente, sem typagem genérica que estava causando erro
         const { data, error } = await supabase
           .from('profiles')
           .select('username, website, avatar_url')
@@ -67,7 +70,7 @@ export default function Profile() {
         updated_at: new Date().toISOString(),
       };
 
-      // Use the generic version of from to tell TypeScript about the table structure
+      // Usar from('profiles') diretamente, sem typagem genérica que estava causando erro
       const { error } = await supabase
         .from('profiles')
         .upsert(updates);

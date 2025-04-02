@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from '@supabase/supabase-js';
@@ -31,7 +32,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          determineUserRole(session.user.email);
+          // Buscar perfil do usuário para determinar o papel com base no username
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', session.user.id)
+            .single();
+          
+          // Determinar o papel com base no username ou no email do usuário
+          determineUserRole(session.user.email, profileData?.username);
         }
       } catch (error) {
         console.error('Error getting session:', error);
@@ -48,7 +57,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          determineUserRole(session.user.email);
+          // Buscar perfil do usuário para determinar o papel com base no username
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', session.user.id)
+            .single();
+          
+          // Determinar o papel com base no username ou no email do usuário
+          determineUserRole(session.user.email, profileData?.username);
         } else {
           setUserRole(null);
         }
@@ -60,24 +77,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const determineUserRole = (email: string | undefined) => {
-    if (!email) {
-      setUserRole('viewer');
-      return;
-    }
-    
-    if (email.includes('admin')) {
+  const determineUserRole = (email: string | undefined, username: string | undefined) => {
+    // Verifica primeiro no username, depois no email
+    if (username?.includes('admin') || email?.includes('admin')) {
       setUserRole('admin');
-    } else if (email.includes('editor')) {
+      console.log(`User role set to: admin for user: ${email}`);
+    } else if (username?.includes('editor') || email?.includes('editor')) {
       setUserRole('editor');
+      console.log(`User role set to: editor for user: ${email}`);
     } else {
       setUserRole('viewer');
+      console.log(`User role set to: viewer for user: ${email}`);
     }
-    
-    const currentRole = email.includes('admin') ? 'admin' : 
-                        email.includes('editor') ? 'editor' : 'viewer';
-    
-    console.log(`User role set to: ${currentRole} for email: ${email}`);
   };
 
   const signIn = async (email: string, password: string) => {
