@@ -33,11 +33,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (session?.user) {
           // Buscar perfil do usuário para determinar o papel com base no username
-          const { data: profileData } = await supabase
+          const { data: profileData, error } = await supabase
             .from('profiles')
             .select('username')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
+          
+          if (error && error.code !== 'PGRST116') {
+            console.error('Erro ao buscar perfil:', error);
+          }
           
           // Determinar o papel com base no username ou no email do usuário
           determineUserRole(session.user.email, profileData?.username);
@@ -58,11 +62,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (session?.user) {
           // Buscar perfil do usuário para determinar o papel com base no username
-          const { data: profileData } = await supabase
+          const { data: profileData, error } = await supabase
             .from('profiles')
             .select('username')
             .eq('id', session.user.id)
-            .single();
+            .maybeSingle();
+          
+          if (error && error.code !== 'PGRST116') {
+            console.error('Erro ao buscar perfil em onAuthStateChange:', error);
+          }
           
           // Determinar o papel com base no username ou no email do usuário
           determineUserRole(session.user.email, profileData?.username);
@@ -79,10 +87,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const determineUserRole = (email: string | undefined, username: string | undefined) => {
     // Verifica primeiro no username, depois no email
-    if (username?.includes('admin') || email?.includes('admin')) {
+    if ((username && username.includes('admin')) || (email && email.includes('admin'))) {
       setUserRole('admin');
       console.log(`User role set to: admin for user: ${email}`);
-    } else if (username?.includes('editor') || email?.includes('editor')) {
+    } else if ((username && username.includes('editor')) || (email && email.includes('editor'))) {
       setUserRole('editor');
       console.log(`User role set to: editor for user: ${email}`);
     } else {

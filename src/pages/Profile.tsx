@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthProvider';
 import { AuthGuard } from '@/components/AuthGuard';
 import { Button } from '@/components/ui/button';
@@ -22,18 +22,19 @@ export default function Profile() {
 
   useEffect(() => {
     async function getProfile() {
+      if (!user) return; // Não tenta carregar o perfil se não houver usuário
+
       try {
         setLoading(true);
-        if (!user) throw new Error('No user');
 
         // Usar from('profiles') diretamente, sem typagem genérica que estava causando erro
         const { data, error } = await supabase
           .from('profiles')
           .select('username, website, avatar_url')
           .eq('id', user.id)
-          .single();
+          .maybeSingle(); // Usar maybeSingle em vez de single para evitar erro se não encontrar
 
-        if (error) {
+        if (error && error.code !== 'PGRST116') { // Ignorar erro de "não encontrou resultado"
           throw error;
         }
 
@@ -54,7 +55,9 @@ export default function Profile() {
       }
     }
 
-    getProfile();
+    if (user) {
+      getProfile();
+    }
   }, [user]);
 
   async function updateProfile() {
@@ -91,6 +94,11 @@ export default function Profile() {
     } finally {
       setLoading(false);
     }
+  }
+
+  // Se não houver usuário autenticado, redirecionar para login
+  if (!user) {
+    return <Navigate to="/login" />;
   }
 
   return (
