@@ -1,4 +1,3 @@
-
 import { BibleBook, BibleVerse } from "@/types/bible";
 import { BIBLE_BOOKS } from "@/constants/bibleData";
 import { AudioService } from "./AudioService";
@@ -29,10 +28,7 @@ export class BibleService {
       // Get all audio data for this chapter in a single query
       const chapterAudio = await AudioService.getChapterAudio(bookName, chapter, preferredAuthorId);
       
-      // Create a map of authors to avoid fetching the same author multiple times
-      const authorMap = new Map();
-      
-      // Get unique author IDs from the audio data
+      // Get unique author IDs from the audio data to fetch in batch
       const authorIds = new Set<string>();
       chapterAudio.forEach(audioData => {
         if (audioData.authorId) {
@@ -40,7 +36,8 @@ export class BibleService {
         }
       });
       
-      // Fetch all authors at once
+      // Fetch all authors at once and create a map for quick lookup
+      const authorMap = new Map<string, string>();
       for (const authorId of authorIds) {
         const author = await AuthorService.getAuthor(authorId);
         if (author) {

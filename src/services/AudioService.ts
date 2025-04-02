@@ -16,104 +16,148 @@ export class AudioService {
   static async getChapterAudio(bookName: string, chapter: number, preferredAuthorId?: string): Promise<Map<number, {url: string, authorId: string | null}>> {
     const audioMap = new Map<number, {url: string, authorId: string | null}>();
     
-    let query = supabase
-      .from('verse_audio')
-      .select('audio_path, author_id, verse')
-      .eq('book', bookName)
-      .eq('chapter', chapter);
-    
-    let data = null;
-    
-    if (preferredAuthorId) {
-      const { data: authorData } = await query.eq('author_id', preferredAuthorId);
-      if (authorData && authorData.length > 0) {
-        data = authorData;
+    try {
+      // Create a base query that we can reuse
+      const baseQuery = {
+        book: bookName,
+        chapter: chapter
+      };
+      
+      // If there's a preferred author, try to get their recordings first
+      let records;
+      if (preferredAuthorId) {
+        const { data: preferredData, error: preferredError } = await supabase
+          .from('verse_audio')
+          .select('audio_path, author_id, verse')
+          .match({...baseQuery, author_id: preferredAuthorId});
+        
+        if (!preferredError && preferredData && preferredData.length > 0) {
+          records = preferredData;
+        }
       }
-    }
-    
-    if (!data) {
-      const { data: allData } = await query;
-      data = allData;
-    }
-
-    if (data && data.length > 0) {
-      for (const audioRecord of data) {
-        const { data: { publicUrl } } = supabase.storage
-          .from('bible_audio')
-          .getPublicUrl(audioRecord.audio_path);
-
-        audioMap.set(audioRecord.verse, {
-          url: publicUrl,
-          authorId: audioRecord.author_id
-        });
+      
+      // If no preferred author records found, get all available recordings
+      if (!records) {
+        const { data: allData, error: allError } = await supabase
+          .from('verse_audio')
+          .select('audio_path, author_id, verse')
+          .match(baseQuery);
+        
+        if (allError) {
+          console.error("Error fetching chapter audio:", allError);
+          return audioMap;
+        }
+        
+        records = allData;
       }
-    }
+      
+      // Process the records to get public URLs
+      if (records && records.length > 0) {
+        for (const audioRecord of records) {
+          const { data: { publicUrl } } = supabase.storage
+            .from('bible_audio')
+            .getPublicUrl(audioRecord.audio_path);
 
-    return audioMap;
+          audioMap.set(audioRecord.verse, {
+            url: publicUrl,
+            authorId: audioRecord.author_id
+          });
+        }
+      }
+      
+      return audioMap;
+    } catch (error) {
+      console.error("Error in getChapterAudio:", error);
+      return audioMap;
+    }
   }
 
   static async getCustomAudio(bookName: string, chapter: number, verse: number, preferredAuthorId?: string): Promise<{ url: string | null; authorId: string | null }> {
-    let query = supabase
-      .from('verse_audio')
-      .select('audio_path, author_id')
-      .eq('book', bookName)
-      .eq('chapter', chapter)
-      .eq('verse', verse);
-    
-    if (preferredAuthorId) {
-      const { data: authorData, error: authorError } = await query
-        .eq('author_id', preferredAuthorId)
-        .maybeSingle();
+    try {
+      // Create base query parameters
+      const baseQuery = {
+        book: bookName,
+        chapter: chapter,
+        verse: verse
+      };
       
-      if (authorData) {
-        const { data: { publicUrl } } = supabase.storage
-          .from('bible_audio')
-          .getPublicUrl(authorData.audio_path);
-
-        return { url: publicUrl, authorId: authorData.author_id };
+      let audioRecord = null;
+      
+      // Try to get the preferred author's recording first if specified
+      if (preferredAuthorId) {
+        const { data: authorData, error: authorError } = await supabase
+          .from('verse_audio')
+          .select('audio_path, author_id')
+          .match({...baseQuery, author_id: preferredAuthorId})
+          .maybeSingle();
+        
+        if (!authorError && authorData) {
+          audioRecord = authorData;
+        }
       }
-    }
-    
-    const { data, error } = await query.maybeSingle();
+      
+      // If no preferred author recording found, get any available recording
+      if (!audioRecord) {
+        const { data, error } = await supabase
+          .from('verse_audio')
+          .select('audio_path, author_id')
+          .match(baseQuery)
+          .maybeSingle();
+        
+        if (error || !data) {
+          return { url: null, authorId: null };
+        }
+        
+        audioRecord = data;
+      }
+      
+      // Get the public URL for the audio file
+      const { data: { publicUrl } } = supabase.storage
+        .from('bible_audio')
+        .getPublicUrl(audioRecord.audio_path);
 
-    if (error || !data) {
+      return { 
+        url: publicUrl, 
+        authorId: audioRecord.author_id 
+      };
+    } catch (error) {
+      console.error("Error in getCustomAudio:", error);
       return { url: null, authorId: null };
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('bible_audio')
-      .getPublicUrl(data.audio_path);
-
-    return { url: publicUrl, authorId: data.author_id };
   }
 
   static async getAuthorForAudio(authorId: string): Promise<AudioAuthor | null> {
     if (!authorId) return null;
     
-    const { data, error } = await supabase
-      .from('audio_authors')
-      .select('*')
-      .eq('id', authorId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('audio_authors')
+        .select('*')
+        .eq('id', authorId)
+        .single();
 
-    if (error || !data) {
-      console.error("Error fetching author:", error);
+      if (error || !data) {
+        console.error("Error fetching author:", error);
+        return null;
+      }
+
+      return {
+        id: data.id,
+        firstName: data.first_name,
+        lastName: data.last_name,
+        ministryRole: data.ministry_role,
+        biography: data.biography,
+        email: data.email,
+        phone: data.phone,
+        website: data.website,
+        facebook: data.facebook,
+        youtube: data.youtube,
+        instagram: data.instagram
+      };
+    } catch (error) {
+      console.error("Error in getAuthor:", error);
       return null;
     }
-
-    return {
-      id: data.id,
-      firstName: data.first_name,
-      lastName: data.last_name,
-      ministryRole: data.ministry_role,
-      biography: data.biography,
-      email: data.email,
-      phone: data.phone,
-      website: data.website,
-      facebook: data.facebook,
-      youtube: data.youtube,
-      instagram: data.instagram
-    };
   }
 
   static async updateVerseAudioAuthor(bookName: string, chapter: number, verse: number, authorId: string | null): Promise<boolean> {
@@ -121,9 +165,11 @@ export class AudioService {
       const { error } = await supabase
         .from('verse_audio')
         .update({ author_id: authorId })
-        .eq('book', bookName)
-        .eq('chapter', chapter)
-        .eq('verse', verse);
+        .match({
+          book: bookName,
+          chapter: chapter,
+          verse: verse
+        });
 
       if (error) {
         console.error("Error updating verse audio author:", error);
