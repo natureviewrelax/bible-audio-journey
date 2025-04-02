@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { AUDIO_FILE_MAPPING, BIBLE_AUDIO_BASE_URL } from "@/constants/bibleData";
 import { AudioAuthor } from "@/types/bible";
@@ -20,6 +21,8 @@ export class AudioService {
       .select('audio_path, author_id, verse')
       .eq('book', bookName)
       .eq('chapter', chapter);
+    
+    let data = null;
     
     if (preferredAuthorId) {
       const { data: authorData } = await query.eq('author_id', preferredAuthorId);
