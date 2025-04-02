@@ -1,133 +1,170 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuth } from '@/components/AuthProvider';
+import { AuthGuard } from '@/components/AuthGuard';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from '@/components/ui/use-toast';
+import { Loader2 } from 'lucide-react';
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/components/AuthProvider";
-import { TopBar } from "@/components/TopBar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
-import { User, RefreshCw } from "lucide-react";
-import { SettingsService } from "@/services/SettingsService";
-import { useState } from "react";
+export default function Profile() {
+  const { user, userRole, supabase } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [website, setWebsite] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
 
-const Profile = () => {
-  const { user, userRole, signOut, loading } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [darkTheme, setDarkTheme] = useState(false);
-  
   useEffect(() => {
-    // Get the current theme setting
-    const savedSettings = SettingsService.getSettings();
-    if (savedSettings) {
-      setDarkTheme(savedSettings.darkTheme);
+    async function getProfile() {
+      try {
+        setLoading(true);
+        if (!user) throw new Error('No user');
+
+        const { data, error, status } = await supabase
+          .from('profiles')
+          .select(`username, website, avatar_url`)
+          .eq('id', user.id)
+          .single();
+
+        if (error && status !== 406) {
+          throw error;
+        }
+
+        if (data) {
+          setUsername(data.username || '');
+          setWebsite(data.website || '');
+          setAvatarUrl(data.avatar_url || '');
+        }
+      } catch (error) {
+        console.error('Error loading user data!', error);
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: 'Não foi possível carregar os dados do usuário.',
+        });
+      } finally {
+        setLoading(false);
+      }
     }
-  }, []);
-  
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
+
+    getProfile();
+  }, [user, supabase]);
+
+  async function updateProfile() {
+    try {
+      setLoading(true);
+      if (!user) throw new Error('No user');
+
+      const updates = {
+        id: user.id,
+        username,
+        website,
+        avatar_url: avatarUrl,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase.from('profiles').upsert(updates);
+      if (error) throw error;
+      
+      toast({
+        title: 'Sucesso',
+        description: 'Perfil atualizado com sucesso!',
+      });
+    } catch (error) {
+      console.error('Error updating profile!', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Não foi possível atualizar o perfil.',
+      });
+    } finally {
+      setLoading(false);
     }
-  }, [user, loading, navigate]);
-
-  const handleSignOut = async () => {
-    await signOut();
-    toast({
-      title: "Desconectado",
-      description: "Você desconectou com sucesso.",
-    });
-    navigate("/login");
-  };
-
-  const handleResetSettings = () => {
-    SettingsService.clearSettings();
-    toast({
-      title: "Configurações redefinidas",
-      description: "Todas as configurações do aplicativo foram redefinidas para os valores padrão.",
-    });
-    window.location.reload();
-  };
-
-  const toggleTheme = () => {
-    // Just get the current theme for the profile page
-    const savedSettings = SettingsService.getSettings();
-    if (savedSettings) {
-      setDarkTheme(savedSettings.darkTheme);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background p-4">
-        <TopBar darkTheme={darkTheme} toggleTheme={toggleTheme} toggleConfig={() => {}} />
-        <div className="flex justify-center items-center h-64">
-          <p>Carregando...</p>
-        </div>
-      </div>
-    );
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <TopBar darkTheme={darkTheme} toggleTheme={toggleTheme} toggleConfig={() => {}} />
-      
-      <div className="container max-w-md mx-auto">
-        <Card className="mt-8">
-          <CardHeader className="text-center">
-            <div className="flex justify-center mb-4">
-              <div className="bg-primary/10 p-4 rounded-full">
-                <User className="h-12 w-12 text-primary" />
-              </div>
-            </div>
-            <CardTitle className="text-2xl">Perfil do Usuário</CardTitle>
-            <CardDescription>Gerencie suas informações de conta</CardDescription>
-          </CardHeader>
+    <AuthGuard>
+      <div className="container mx-auto py-8">
+        <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
+          <h1 className="text-2xl font-bold mb-6">Perfil</h1>
           
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-1">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" value={user?.email || ""} readOnly className="bg-muted" />
-              </div>
-              
-              {userRole && (
-                <div className="space-y-1">
-                  <Label htmlFor="role">Função</Label>
-                  <div className="bg-primary/10 text-primary font-medium px-4 py-2 rounded text-center">
-                    {userRole}
-                  </div>
-                </div>
-              )}
-              
-              <div className="space-y-1 pt-4">
-                <Label>Configurações do Aplicativo</Label>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full mt-1 flex items-center justify-center"
-                  onClick={handleResetSettings}
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Redefinir Configurações
-                </Button>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Isso redefinirá todas as configurações personalizadas do aplicativo.
-                </p>
-              </div>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="text"
+                value={user?.email || ''}
+                disabled
+              />
             </div>
-          </CardContent>
-          
-          <CardFooter>
-            <Button onClick={handleSignOut} variant="destructive" className="w-full">
-              Sair da Conta
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
-    </div>
-  );
-};
+            
+            <div>
+              <Label htmlFor="username">Nome de usuário</Label>
+              <Input
+                id="username"
+                type="text"
+                value={username || ''}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="website">Website</Label>
+              <Input
+                id="website"
+                type="url"
+                value={website || ''}
+                onChange={(e) => setWebsite(e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="avatar_url">URL do Avatar</Label>
+              <Input
+                id="avatar_url"
+                type="url"
+                value={avatarUrl || ''}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+              />
+            </div>
 
-export default Profile;
+            <div className="pt-2">
+              <Button 
+                onClick={updateProfile}
+                disabled={loading}
+                className="w-full"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  'Atualizar Perfil'
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Add Admin links if user has admin or editor role */}
+        {userRole && (userRole === 'admin' || userRole === 'editor') && (
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg max-w-md mx-auto">
+            <h2 className="text-xl font-semibold mb-2">Área Administrativa</h2>
+            <div className="flex flex-wrap gap-2">
+              <Link 
+                to="/videos/admin"
+                className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+              >
+                Administrar Vídeos
+              </Link>
+              {/* Add other admin links as needed */}
+            </div>
+          </div>
+        )}
+      </div>
+    </AuthGuard>
+  );
+}

@@ -1,9 +1,7 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from '@supabase/supabase-js';
 
-// Export the UserRole type so it can be imported elsewhere
 export type UserRole = 'admin' | 'editor' | 'viewer' | null;
 
 interface AuthContextType {
@@ -18,7 +16,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<UserRole>(null);
@@ -33,8 +31,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Como não temos uma tabela de papéis definida no tipo, vamos usar um papel padrão
-          // Em um ambiente de produção real, você teria uma tabela apropriada
           determineUserRole(session.user.email);
         }
       } catch (error) {
@@ -64,15 +60,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Função simplificada para definir o papel do usuário com base no email
-  // Esta é uma solução temporária até que você configure uma tabela de papéis adequada
   const determineUserRole = (email: string | undefined) => {
     if (!email) {
       setUserRole('viewer');
       return;
     }
     
-    // Verificação básica - em um sistema real, isto viria do banco de dados
     if (email.includes('admin')) {
       setUserRole('admin');
     } else if (email.includes('editor')) {
@@ -81,7 +74,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUserRole('viewer');
     }
     
-    // Usando const currentRole para acessar o valor atual ao invés do state que pode não estar atualizado
     const currentRole = email.includes('admin') ? 'admin' : 
                         email.includes('editor') ? 'editor' : 'viewer';
     

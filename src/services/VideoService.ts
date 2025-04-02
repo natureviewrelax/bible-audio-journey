@@ -66,6 +66,7 @@ export class VideoService {
         throw new Error("Você não tem permissão para editar vídeos.");
       }
       
+      // Fix: Use maybeSingle instead of single to handle potential missing rows
       const { data, error } = await supabase
         .from('bible_videos')
         .update({
@@ -74,14 +75,18 @@ export class VideoService {
           description: video.description
         })
         .eq('id', video.id)
-        .select()
-        .single();
+        .select();
       
       if (error) {
         throw error;
       }
       
-      return { data: data as Video, error: null };
+      // If no rows were returned, the video might have been deleted
+      if (!data || data.length === 0) {
+        return { data: null, error: new Error("Vídeo não encontrado ou já foi excluído.") };
+      }
+      
+      return { data: data[0] as Video, error: null };
     } catch (error) {
       console.error('Error updating video:', error);
       return { data: null, error: error as Error };
