@@ -70,13 +70,31 @@ export class VideoService {
       }
       
       console.log("Tentando atualizar vídeo com userRole:", userRole);
+      console.log("Dados do vídeo para atualização:", video);
+      
+      // Verificar se o vídeo existe antes de tentar atualizar
+      const { data: existingVideo, error: checkError } = await supabase
+        .from('bible_videos')
+        .select('id')
+        .eq('id', video.id)
+        .maybeSingle();
+      
+      if (checkError) {
+        console.error("Erro ao verificar existência do vídeo:", checkError);
+        throw checkError;
+      }
+      
+      if (!existingVideo) {
+        throw new Error("Vídeo não encontrado.");
+      }
       
       const { data, error } = await supabase
         .from('bible_videos')
         .update({
           youtube_id: video.youtube_id,
           title: video.title,
-          description: video.description
+          description: video.description,
+          updated_at: new Date().toISOString()
         })
         .eq('id', video.id)
         .select();
@@ -86,11 +104,12 @@ export class VideoService {
         throw error;
       }
       
-      // If no rows were returned, the video might have been deleted
+      // Se nenhuma linha foi retornada, o vídeo pode ter sido excluído
       if (!data || data.length === 0) {
         return { data: null, error: new Error("Vídeo não encontrado ou já foi excluído.") };
       }
       
+      console.log("Vídeo atualizado com sucesso:", data[0]);
       return { data: data[0] as Video, error: null };
     } catch (error) {
       console.error('Error updating video:', error);
@@ -109,6 +128,22 @@ export class VideoService {
       }
       
       console.log("Tentando excluir vídeo com userRole:", userRole);
+      
+      // Verificar se o vídeo existe antes de tentar excluir
+      const { data: existingVideo, error: checkError } = await supabase
+        .from('bible_videos')
+        .select('id')
+        .eq('id', id)
+        .maybeSingle();
+      
+      if (checkError) {
+        console.error("Erro ao verificar existência do vídeo:", checkError);
+        throw checkError;
+      }
+      
+      if (!existingVideo) {
+        throw new Error("Vídeo não encontrado.");
+      }
       
       const { error } = await supabase
         .from('bible_videos')
