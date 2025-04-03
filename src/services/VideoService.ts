@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "@/components/AuthProvider";
 
@@ -9,12 +8,22 @@ export interface Video {
   description: string;
 }
 
+// Cache for videos
+let videosCache: Video[] | null = null;
+let videosCacheTimestamp: number | null = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 export class VideoService {
   /**
    * Fetch all videos - public access, no restrictions
    */
   static async fetchVideos(): Promise<{ data: Video[] | null; error: Error | null }> {
     try {
+      // Check if we have valid cached data
+      if (videosCache && videosCacheTimestamp && (Date.now() - videosCacheTimestamp) < CACHE_DURATION) {
+        return { data: videosCache, error: null };
+      }
+
       const { data, error } = await supabase
         .from('bible_videos')
         .select('id, youtube_id, title, description');
@@ -22,6 +31,10 @@ export class VideoService {
       if (error) {
         throw error;
       }
+      
+      // Update cache
+      videosCache = data;
+      videosCacheTimestamp = Date.now();
       
       return { data, error: null };
     } catch (error) {
@@ -160,5 +173,11 @@ export class VideoService {
       console.error('Error deleting video:', error);
       return { success: false, error: error as Error };
     }
+  }
+
+  // Method to manually clear cache
+  static clearCache() {
+    videosCache = null;
+    videosCacheTimestamp = null;
   }
 }
