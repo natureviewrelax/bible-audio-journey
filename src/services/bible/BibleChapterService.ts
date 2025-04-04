@@ -13,15 +13,28 @@ export class BibleChapterService {
       
       let bibleDataCache = BibleCacheService.getBibleCache();
       if (!bibleDataCache) {
+        console.log("No Bible data in cache, fetching from source");
         bibleDataCache = await BibleTextService.fetchBibleData();
+        if (!bibleDataCache) {
+          console.error("Failed to fetch Bible data");
+          return [];
+        }
         BibleCacheService.setBibleCache(bibleDataCache);
       }
       
+      console.log("Bible data cache available, finding book:", bookName);
       const book = bibleDataCache.find((b: any) => b.name === bookName);
-      if (!book || !book.chapters || !book.chapters[chapter - 1]) {
+      if (!book) {
+        console.error(`Book not found: ${bookName}`);
+        return [];
+      }
+      
+      if (!book.chapters || !book.chapters[chapter - 1]) {
         console.error(`Chapter not found: ${bookName} ${chapter}`);
         return [];
       }
+
+      console.log(`Found chapter data for ${bookName} ${chapter} with ${book.chapters[chapter - 1].length} verses`);
 
       const defaultAudioUrl = AudioService.getBookAudioUrl(bookName);
       const settings = SettingsService.getSettings();
@@ -64,7 +77,7 @@ export class BibleChapterService {
         };
       });
 
-      console.log(`Loaded ${verses.length} verses from ${bookName} ${chapter}`);
+      console.log(`Successfully loaded ${verses.length} verses from ${bookName} ${chapter}`);
       return verses;
     } catch (error) {
       console.error("Error fetching chapter:", error);
