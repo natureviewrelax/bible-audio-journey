@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Loader2, Save } from "lucide-react";
-import { DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,9 +29,6 @@ export const VideoEditDialog: React.FC<VideoEditDialogProps> = ({
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Editar Vídeo</DialogTitle>
-        <DialogDescription>
-          Altere os detalhes do vídeo e salve as mudanças.
-        </DialogDescription>
       </DialogHeader>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { supabase } from "@/integrations/supabase/client";
 import { Session, User } from '@supabase/supabase-js';
 
+// Export the UserRole type so it can be imported elsewhere
 export type UserRole = 'admin' | 'editor' | 'viewer' | null;
 
 interface AuthContextType {
@@ -17,7 +18,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<UserRole>(null);
@@ -32,19 +33,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Buscar perfil do usuário para determinar o papel com base no username
-          const { data: profileData, error } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('id', session.user.id)
-            .maybeSingle();
-          
-          if (error && error.code !== 'PGRST116') {
-            console.error('Erro ao buscar perfil:', error);
-          }
-          
-          // Determinar o papel com base no username ou no email do usuário
-          determineUserRole(session.user.email, profileData?.username);
+          // Como não temos uma tabela de papéis definida no tipo, vamos usar um papel padrão
+          // Em um ambiente de produção real, você teria uma tabela apropriada
+          determineUserRole(session.user.email);
         }
       } catch (error) {
         console.error('Error getting session:', error);
@@ -61,19 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Buscar perfil do usuário para determinar o papel com base no username
-          const { data: profileData, error } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('id', session.user.id)
-            .maybeSingle();
-          
-          if (error && error.code !== 'PGRST116') {
-            console.error('Erro ao buscar perfil em onAuthStateChange:', error);
-          }
-          
-          // Determinar o papel com base no username ou no email do usuário
-          determineUserRole(session.user.email, profileData?.username);
+          determineUserRole(session.user.email);
         } else {
           setUserRole(null);
         }
@@ -85,18 +64,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const determineUserRole = (email: string | undefined, username: string | undefined) => {
-    // Verifica primeiro no username, depois no email
-    if ((username && username.includes('admin')) || (email && email.includes('admin'))) {
+  // Função simplificada para definir o papel do usuário com base no email
+  // Esta é uma solução temporária até que você configure uma tabela de papéis adequada
+  const determineUserRole = (email: string | undefined) => {
+    if (!email) {
+      setUserRole('viewer');
+      return;
+    }
+    
+    // Verificação básica - em um sistema real, isto viria do banco de dados
+    if (email.includes('admin')) {
       setUserRole('admin');
-      console.log(`User role set to: admin for user: ${email}`);
-    } else if ((username && username.includes('editor')) || (email && email.includes('editor'))) {
+    } else if (email.includes('editor')) {
       setUserRole('editor');
-      console.log(`User role set to: editor for user: ${email}`);
     } else {
       setUserRole('viewer');
-      console.log(`User role set to: viewer for user: ${email}`);
     }
+    
+    // Usando const currentRole para acessar o valor atual ao invés do state que pode não estar atualizado
+    const currentRole = email.includes('admin') ? 'admin' : 
+                        email.includes('editor') ? 'editor' : 'viewer';
+    
+    console.log(`User role set to: ${currentRole} for email: ${email}`);
   };
 
   const signIn = async (email: string, password: string) => {

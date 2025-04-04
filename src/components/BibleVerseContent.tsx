@@ -33,11 +33,6 @@ export const BibleVerseContent = ({
     scrollToActiveVerse();
   }, [currentVerseIndex]);
 
-  useEffect(() => {
-    // Debug log to check what verses data is coming in
-    console.log("BibleVerseContent - Received verses:", verses?.length || 0);
-  }, [verses]);
-
   const scrollToActiveVerse = () => {
     if (activeVerseRef.current) {
       activeVerseRef.current.scrollIntoView({ 
@@ -46,10 +41,6 @@ export const BibleVerseContent = ({
       });
     }
   };
-
-  if (!verses || verses.length === 0) {
-    return <div className="p-4 text-center">Carregando versículos...</div>;
-  }
 
   if (displayMode === "inline") {
     return (
