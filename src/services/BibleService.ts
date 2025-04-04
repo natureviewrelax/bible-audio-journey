@@ -4,6 +4,9 @@ import { BibleBookService } from "./bible/BibleBookService";
 import { BibleChapterService } from "./bible/BibleChapterService";
 import { BibleSearchService } from "./bible/BibleSearchService";
 import { BibleCacheService } from "./bible/BibleCacheService";
+import { BibleTextService } from "./BibleTextService";
+import { AudioService } from "./AudioService";
+import { SettingsService } from "./SettingsService";
 
 export class BibleService {
   // Get all Bible books
@@ -16,7 +19,7 @@ export class BibleService {
     return BibleChapterService.getChapter(bookName, chapter);
   }
 
-  // Search for verses containing a specific query
+   // Search for verses containing a specific query
   static async searchVerses(query: string): Promise<BibleVerse[]> {
     return BibleSearchService.searchVerses(query);
   }
