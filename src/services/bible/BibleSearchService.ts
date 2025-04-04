@@ -17,10 +17,10 @@ export class BibleSearchService {
       const results: BibleVerse[] = [];
       const searchQuery = query.toLowerCase();
       
-      let bibleDataCache = BibleCacheService.getBibleCache();
+      let bibleDataCache = BibleCacheService.getBibleFullData();
       if (!bibleDataCache) {
         bibleDataCache = await BibleTextService.fetchBibleData();
-        BibleCacheService.setBibleCache(bibleDataCache);
+        BibleCacheService.setBibleFullData(bibleDataCache);
       }
       
       const settings = SettingsService.getSettings();
