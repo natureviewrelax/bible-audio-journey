@@ -8,6 +8,7 @@ import { SettingsService } from "../SettingsService";
 
 export class BibleSearchService {
   static async searchVerses(query: string): Promise<BibleVerse[]> {
+    // Return empty array for empty queries
     if (!query.trim()) {
       return [];
     }
@@ -17,25 +18,34 @@ export class BibleSearchService {
       const results: BibleVerse[] = [];
       const searchQuery = query.toLowerCase();
       
-      let bibleDataCache = BibleCacheService.getBibleFullData();
-      if (!bibleDataCache) {
-        bibleDataCache = await BibleTextService.fetchBibleData();
-        BibleCacheService.setBibleFullData(bibleDataCache);
+      // Get Bible data from cache or fetch it
+      let bibleData = BibleCacheService.getBibleFullData();
+      if (!bibleData) {
+        console.log("Bible data not in cache, fetching from source");
+        bibleData = await BibleTextService.fetchBibleData();
+        BibleCacheService.setBibleFullData(bibleData);
       }
       
+      // Get user's preferred author settings
       const settings = SettingsService.getSettings();
       const preferredAuthorId = settings?.selectedAuthorId;
 
-      for (const book of bibleDataCache) {
+      // Search through all books
+      for (const book of bibleData) {
         if (!book.chapters) continue;
         const defaultAudioUrl = AudioService.getBookAudioUrl(book.name);
 
+        // Search through chapters and verses
         for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
           const chapter = book.chapters[chapterIndex];
           for (let verseIndex = 0; verseIndex < chapter.length; verseIndex++) {
             const verse = chapter[verseIndex];
+            
+            // Check if verse contains the query
             if (verse.toLowerCase().includes(searchQuery)) {
               const verseNumber = verseIndex + 1;
+              
+              // Get custom audio for this verse if available
               const { url: customAudio, authorId } = await AudioService.getCustomAudio(
                 book.name, 
                 chapterIndex + 1, 
@@ -43,6 +53,7 @@ export class BibleSearchService {
                 preferredAuthorId
               );
               
+              // Get author name if available
               let authorName;
               if (authorId) {
                 const cachedAuthorMap = BibleCacheService.getAuthorCache(`${book.name}-${chapterIndex + 1}`);
@@ -56,6 +67,7 @@ export class BibleSearchService {
                 }
               }
 
+              // Add verse to results
               results.push({
                 book: book.name,
                 chapter: chapterIndex + 1,
@@ -70,6 +82,7 @@ export class BibleSearchService {
           }
         }
 
+        // Limit results to prevent performance issues
         if (results.length >= 100) break;
       }
 
