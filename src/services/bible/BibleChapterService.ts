@@ -11,37 +11,44 @@ export class BibleChapterService {
     try {
       console.log(`Fetching chapter ${chapter} from book ${bookName}`);
       
-      let bibleDataCache = BibleCacheService.getBibleCache();
-      if (!bibleDataCache) {
+      // First, ensure we have Bible data in cache
+      let bibleData = BibleCacheService.getBibleFullData();
+      if (!bibleData) {
         console.log("No Bible data in cache, fetching from source");
-        bibleDataCache = await BibleTextService.fetchBibleData();
-        if (!bibleDataCache) {
+        bibleData = await BibleTextService.fetchBibleData();
+        if (!bibleData) {
           console.error("Failed to fetch Bible data");
           return [];
         }
-        BibleCacheService.setBibleCache(bibleDataCache);
+        BibleCacheService.setBibleFullData(bibleData);
       }
       
-      console.log("Bible data cache available, finding book:", bookName);
-      const book = bibleDataCache.find((b: any) => b.name === bookName);
+      // Find the requested book
+      console.log("Finding book:", bookName);
+      const book = bibleData.find((b: any) => b.name === bookName);
       if (!book) {
         console.error(`Book not found: ${bookName}`);
         return [];
       }
       
+      // Check if the chapter exists
       if (!book.chapters || !book.chapters[chapter - 1]) {
         console.error(`Chapter not found: ${bookName} ${chapter}`);
         return [];
       }
 
-      console.log(`Found chapter data for ${bookName} ${chapter} with ${book.chapters[chapter - 1].length} verses`);
+      const chapterData = book.chapters[chapter - 1];
+      console.log(`Found chapter data for ${bookName} ${chapter} with ${chapterData.length} verses`);
 
+      // Get default audio URL and user preferences
       const defaultAudioUrl = AudioService.getBookAudioUrl(bookName);
       const settings = SettingsService.getSettings();
       const preferredAuthorId = settings?.selectedAuthorId;
       
+      // Get audio data for this chapter
       const chapterAudio = await AudioService.getChapterAudio(bookName, chapter, preferredAuthorId);
       
+      // Collect unique author IDs
       const authorIds = new Set<string>();
       chapterAudio.forEach(audioData => {
         if (audioData.authorId) {
@@ -49,6 +56,7 @@ export class BibleChapterService {
         }
       });
       
+      // Get author names from cache or fetch them
       let authorMap = BibleCacheService.getAuthorCache(`${bookName}-${chapter}`);
       if (!authorMap) {
         authorMap = new Map<string, string>();
@@ -61,7 +69,8 @@ export class BibleChapterService {
         BibleCacheService.setAuthorCache(`${bookName}-${chapter}`, authorMap);
       }
 
-      const verses = book.chapters[chapter - 1].map((verse: string, index: number) => {
+      // Map the verses with their audio data
+      const verses = chapterData.map((verse: string, index: number) => {
         const verseNumber = index + 1;
         const audioData = chapterAudio.get(verseNumber);
         

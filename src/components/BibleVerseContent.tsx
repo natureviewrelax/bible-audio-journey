@@ -51,6 +51,7 @@ export const BibleVerseContent = ({
     return <div className="p-4 text-center">Carregando versículos...</div>;
   }
 
+  // Render verses in inline mode
   if (displayMode === "inline") {
     return (
       <div className="p-4 bg-card rounded-md shadow-sm">
@@ -75,6 +76,7 @@ export const BibleVerseContent = ({
     );
   }
 
+  // Render verses in box mode
   return (
     <div className="space-y-6">
       {verses.map((verse, index) => (
