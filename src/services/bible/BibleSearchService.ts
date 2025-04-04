@@ -18,13 +18,9 @@ export class BibleSearchService {
       const results: BibleVerse[] = [];
       const searchQuery = query.toLowerCase();
       
-      // Get Bible data from cache or fetch it
-      let bibleData = BibleCacheService.getBibleFullData();
-      if (!bibleData) {
-        console.log("Bible data not in cache, fetching from source");
-        bibleData = await BibleTextService.fetchBibleData();
-        BibleCacheService.setBibleFullData(bibleData);
-      }
+      // Always fetch fresh Bible data without using cache
+      console.log("Fetching fresh Bible data for search");
+      const bibleData = await BibleTextService.fetchBibleData();
       
       // Get user's preferred author settings
       const settings = SettingsService.getSettings();

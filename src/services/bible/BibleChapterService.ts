@@ -11,16 +11,12 @@ export class BibleChapterService {
     try {
       console.log(`Fetching chapter ${chapter} from book ${bookName}`);
       
-      // First, ensure we have Bible data in cache
-      let bibleData = BibleCacheService.getBibleFullData();
+      // Always fetch fresh Bible data
+      console.log("Fetching fresh Bible data");
+      const bibleData = await BibleTextService.fetchBibleData();
       if (!bibleData) {
-        console.log("No Bible data in cache, fetching from source");
-        bibleData = await BibleTextService.fetchBibleData();
-        if (!bibleData) {
-          console.error("Failed to fetch Bible data");
-          return [];
-        }
-        BibleCacheService.setBibleFullData(bibleData);
+        console.error("Failed to fetch Bible data");
+        return [];
       }
       
       // Find the requested book
