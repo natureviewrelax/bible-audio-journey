@@ -17,7 +17,8 @@ export class BibleService {
       return books;
     } catch (error) {
       console.error("Error fetching Bible books:", error);
-      throw error; // Propagate error to be handled by caller
+      // Return empty array to prevent crashing
+      return [];
     }
   }
 
@@ -30,7 +31,8 @@ export class BibleService {
       return verses;
     } catch (error) {
       console.error(`Error fetching chapter ${chapter} from ${bookName}:`, error);
-      throw error; // Propagate error to be handled by caller
+      // Return empty array to prevent crashing
+      return [];
     }
   }
 
@@ -43,7 +45,8 @@ export class BibleService {
       return results;
     } catch (error) {
       console.error(`Error searching for verses with query "${query}":`, error);
-      throw error; // Propagate error to be handled by caller
+      // Return empty array to prevent crashing
+      return [];
     }
   }
 }

@@ -61,7 +61,7 @@ export const BibleVerseContent = ({
         <div className="space-y-1">
           {verses.map((verse, index) => (
             <VerseDisplay
-              key={`${verse.book}-${verse.chapter}-${verse.verse}`}
+              key={`${verse.book}-${verse.chapter}-${verse.verse}-${index}`}
               ref={index === currentVerseIndex ? activeVerseRef : null}
               verse={verse}
               isPlaying={index === currentVerseIndex}
@@ -81,7 +81,7 @@ export const BibleVerseContent = ({
     <div className="space-y-6">
       {verses.map((verse, index) => (
         <VerseDisplay
-          key={`${verse.book}-${verse.chapter}-${verse.verse}`}
+          key={`${verse.book}-${verse.chapter}-${verse.verse}-${index}`}
           ref={index === currentVerseIndex ? activeVerseRef : null}
           verse={verse}
           isPlaying={index === currentVerseIndex}
@@ -94,4 +94,4 @@ export const BibleVerseContent = ({
       ))}
     </div>
   );
-};
+}

@@ -18,7 +18,8 @@ export class BibleTextService {
       return data;
     } catch (error) {
       console.error("Error fetching Bible data:", error);
-      throw error;
+      // Rethrow to allow calling code to handle the error
+      throw new Error(`Failed to load Bible data: ${error.message}`);
     }
   }
 }

@@ -16,8 +16,8 @@ export class BibleChapterService {
       let bibleData;
       try {
         bibleData = await BibleTextService.fetchBibleData();
-        if (!bibleData) {
-          console.error("Failed to fetch Bible data");
+        if (!bibleData || !Array.isArray(bibleData)) {
+          console.error("Failed to fetch Bible data or invalid format");
           return [];
         }
       } catch (error) {
@@ -115,7 +115,7 @@ export class BibleChapterService {
       }
     } catch (error) {
       console.error("Error fetching chapter:", error);
-      throw error;
+      return [];  // Return empty array instead of throwing to prevent cascading errors
     }
   }
 }

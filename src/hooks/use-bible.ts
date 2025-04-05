@@ -115,7 +115,6 @@ export function useBible() {
   };
 
   const handleRetry = () => {
-    // Since the clearCache method was removed, we don't call it anymore
     // Just force reload of current data directly
     setLoading(true);
     setError(null);
