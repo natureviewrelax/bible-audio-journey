@@ -1,5 +1,5 @@
 
-import { Suspense, lazy } from 'react';
+import { Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,17 +8,17 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/components/AuthProvider";
 import { Loader2 } from "lucide-react";
 
-// Lazy load route components
-const Index = lazy(() => import("./pages/Index"));
-const Biblia = lazy(() => import("./pages/Biblia"));
-const Login = lazy(() => import("./pages/Login"));
-const SignUp = lazy(() => import("./pages/SignUp"));
-const Profile = lazy(() => import("./pages/Profile"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const Sobre = lazy(() => import("./pages/Sobre"));
-const Videos = lazy(() => import("./pages/Videos"));
-const VideosAdmin = lazy(() => import("./pages/VideosAdmin"));
-const Admin = lazy(() => import("./pages/Admin"));
+// Import pages directly instead of using lazy loading
+import Index from "./pages/Index";
+import Biblia from "./pages/Biblia";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
+import Sobre from "./pages/Sobre";
+import Videos from "./pages/Videos";
+import VideosAdmin from "./pages/VideosAdmin";
+import Admin from "./pages/Admin";
 
 // Configure QueryClient with caching
 const queryClient = new QueryClient({
