@@ -11,32 +11,39 @@ export class BibleService {
   // Get all Bible books
   static async getBooks(): Promise<BibleBook[]> {
     try {
-      return await BibleBookService.getBooks();
+      console.log("Fetching Bible books");
+      const books = await BibleBookService.getBooks();
+      console.log(`Successfully fetched ${books.length} Bible books`);
+      return books;
     } catch (error) {
       console.error("Error fetching Bible books:", error);
-      return [];
+      throw error; // Propagate error to be handled by caller
     }
   }
 
   // Get a specific chapter from a book
   static async getChapter(bookName: string, chapter: number): Promise<BibleVerse[]> {
     try {
-      return await BibleChapterService.getChapter(bookName, chapter);
+      console.log(`Fetching chapter ${chapter} from book ${bookName}`);
+      const verses = await BibleChapterService.getChapter(bookName, chapter);
+      console.log(`Successfully fetched ${verses.length} verses from ${bookName} ${chapter}`);
+      return verses;
     } catch (error) {
       console.error(`Error fetching chapter ${chapter} from ${bookName}:`, error);
-      return [];
+      throw error; // Propagate error to be handled by caller
     }
   }
 
    // Search for verses containing a specific query
   static async searchVerses(query: string): Promise<BibleVerse[]> {
     try {
-      return await BibleSearchService.searchVerses(query);
+      console.log(`Searching for verses with query "${query}"`);
+      const results = await BibleSearchService.searchVerses(query);
+      console.log(`Found ${results.length} results for query "${query}"`);
+      return results;
     } catch (error) {
       console.error(`Error searching for verses with query "${query}":`, error);
-      return [];
+      throw error; // Propagate error to be handled by caller
     }
   }
-
-  // We've removed the cache-related methods that were causing issues
 }

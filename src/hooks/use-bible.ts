@@ -19,12 +19,15 @@ export function useBible() {
     const loadBooks = async () => {
       try {
         console.log("Loading Bible books");
+        setLoading(true);
         const booksData = await BibleService.getBooks();
         console.log(`Loaded ${booksData.length} books`);
         setBooks(booksData);
+        setLoading(false);
       } catch (err) {
         console.error("Error loading books:", err);
         setError("Erro ao carregar livros da Bíblia.");
+        setLoading(false);
         toast({ 
           title: "Erro", 
           description: "Não foi possível carregar os livros da Bíblia.", 
@@ -35,8 +38,10 @@ export function useBible() {
     loadBooks();
   }, [toast]);
 
-  // Load chapter effect
+  // Load chapter effect - only run when books are loaded
   useEffect(() => {
+    if (books.length === 0) return; // Don't try to load chapter if books aren't loaded yet
+    
     const loadChapter = async () => {
       try {
         setLoading(true);
@@ -69,7 +74,7 @@ export function useBible() {
       }
     };
     loadChapter();
-  }, [currentBook, currentChapter, toast]);
+  }, [currentBook, currentChapter, books.length, toast]);
 
   const handleSearch = async (query: string) => {
     if (query.trim()) {
