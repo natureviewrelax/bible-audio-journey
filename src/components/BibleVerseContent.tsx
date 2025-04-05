@@ -33,11 +33,6 @@ export const BibleVerseContent = ({
     scrollToActiveVerse();
   }, [currentVerseIndex]);
 
-  useEffect(() => {
-    // Debug log to check what verses data is coming in
-    console.log("BibleVerseContent - Received verses:", verses?.length || 0);
-  }, [verses]);
-
   const scrollToActiveVerse = () => {
     if (activeVerseRef.current) {
       activeVerseRef.current.scrollIntoView({ 
@@ -47,11 +42,6 @@ export const BibleVerseContent = ({
     }
   };
 
-  if (!verses || verses.length === 0) {
-    return <div className="p-4 text-center">Carregando versículos...</div>;
-  }
-
-  // Render verses in inline mode
   if (displayMode === "inline") {
     return (
       <div className="p-4 bg-card rounded-md shadow-sm">
@@ -76,7 +66,6 @@ export const BibleVerseContent = ({
     );
   }
 
-  // Render verses in box mode
   return (
     <div className="space-y-6">
       {verses.map((verse, index) => (
