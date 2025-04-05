@@ -18,17 +18,33 @@ export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) =>
   
   useEffect(() => {
     const loadAudioSettings = async () => {
-      const settings = await AudioService.getAudioSettings();
-      setUseDefaultAudio(settings.useDefaultAudio);
-      
-      // Determine the audio source with priority:
-      // 1. Custom uploaded audio for this verse
-      // 2. Default audio source (if useDefaultAudio is true)
-      if (verse.audio) {
-        setAudioSource(verse.audio);
-      } else if (settings.useDefaultAudio) {
-        setAudioSource(verse.defaultAudioUrl || "");
-      } else {
+      try {
+        console.log("Iniciando carregamento das configurações de áudio");
+        const settings = await AudioService.getAudioSettings();
+        setUseDefaultAudio(settings.useDefaultAudio);
+        
+        // Determine the audio source with priority:
+        // 1. Custom uploaded audio for this verse
+        // 2. Default audio source (if useDefaultAudio is true)
+        let newAudioSource = "";
+        
+        if (verse.audio) {
+          console.log("Usando áudio personalizado");
+          newAudioSource = verse.audio;
+        } else if (settings.useDefaultAudio && verse.defaultAudioUrl) {
+          console.log("Usando áudio padrão");
+          newAudioSource = verse.defaultAudioUrl;
+        }
+        
+        if (!newAudioSource) {
+          console.log("Nenhuma fonte de áudio disponível");
+        } else {
+          console.log("Fonte de áudio definida:", newAudioSource);
+        }
+        
+        setAudioSource(newAudioSource);
+      } catch (error) {
+        console.error("Erro ao carregar configurações de áudio:", error);
         setAudioSource("");
       }
     };
