@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Bíblia em Áudio JFAC 1848</string>
+    <string name="title_activity_main">Bíblia em Áudio JFAC 1848</string>
+    <string name="package_name">com.bibliaudio.app</string>
+    <string name="custom_url_scheme">com.bibliaudio.app</string>
+</resources>
