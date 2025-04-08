@@ -1,48 +1,100 @@
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { BibleService } from "@/services/BibleService";
+import { BibleBook, BibleVerse } from "@/types/bible";
+import { Navigation } from "@/components/Navigation";
 import { useAuth } from "@/components/AuthProvider";
-import { UserRoleInfo } from "@/components/UserRoleInfo";
-import { useBible } from "@/hooks/use-bible";
-import { useBibleSettings } from "@/hooks/use-bible-settings";
-import { BibleNavigationBar } from "@/components/bible/BibleNavigationBar";
-import { BibleContent } from "@/components/bible/BibleContent";
 import { useToast } from "@/hooks/use-toast";
+import { UserRoleInfo } from "@/components/UserRoleInfo";
+import { ConfigPanel } from "@/components/ConfigPanel";
+import { BibleVerseContent } from "@/components/BibleVerseContent";
+import { SettingsService, AppSettings } from "@/services/SettingsService";
 
-const Biblia = () => {
+const Index = () => {
+  const [books, setBooks] = useState<BibleBook[]>([]);
+  const [currentBook, setCurrentBook] = useState("Gênesis");
+  const [currentChapter, setCurrentChapter] = useState(1);
+  const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
+  const [verses, setVerses] = useState<BibleVerse[]>([]);
+  const [showAdminSettings, setShowAdminSettings] = useState(false);
+  const [displayMode, setDisplayMode] = useState<"box" | "inline">("inline");
+  const [showAudio, setShowAudio] = useState<boolean>(true);
+  const [showConfig, setShowConfig] = useState<boolean>(false);
+  const [darkTheme, setDarkTheme] = useState<boolean>(false);
+  const [selectedAuthorId, setSelectedAuthorId] = useState<string | undefined>(undefined);
+  const { user, userRole } = useAuth();
   const { toast } = useToast();
-  const { 
-    books, 
-    currentBook, 
-    setCurrentBook,
-    currentChapter, 
-    setCurrentChapter,
-    currentVerseIndex,
-    verses,
-    setVerses,
-    loading,
-    error,
-    handleVerseEnd,
-    handleVerseChange,
-    handleChapterSelection,
-    handleRetry
-  } = useBible();
 
-  const {
-    showAdminSettings,
-    displayMode,
-    showAudio,
-    showConfig,
-    darkTheme,
-    selectedAuthorId,
-    setSelectedAuthorId,
-    toggleAdminSettings,
-    toggleConfig,
-    toggleTheme,
-    setDisplayMode,
-    setShowAudio
-  } = useBibleSettings();
+  // Load settings from local storage on initial render
+  useEffect(() => {
+    const savedSettings = SettingsService.getSettings();
+    if (savedSettings) {
+      setDarkTheme(savedSettings.darkTheme);
+      setDisplayMode(savedSettings.displayMode);
+      setShowAudio(savedSettings.showAudio);
+      setSelectedAuthorId(savedSettings.selectedAuthorId);
+    }
+  }, []);
 
-  const { userRole } = useAuth();
+  // Save settings to local storage whenever they change
+  useEffect(() => {
+    SettingsService.saveSettings({
+      darkTheme,
+      displayMode,
+      showAudio,
+      selectedAuthorId
+    });
+  }, [darkTheme, displayMode, showAudio, selectedAuthorId]);
+
+  useEffect(() => {
+    const loadBooks = async () => {
+      const booksData = await BibleService.getBooks();
+      setBooks(booksData);
+    };
+    loadBooks();
+  }, []);
+
+  useEffect(() => {
+    const loadChapter = async () => {
+      const versesData = await BibleService.getChapter(currentBook, currentChapter);
+      setVerses(versesData);
+      setCurrentVerseIndex(0);
+    };
+    loadChapter();
+  }, [currentBook, currentChapter]);
+
+  useEffect(() => {
+    if (darkTheme) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkTheme]);
+
+  const handleSearch = async (query: string) => {
+    if (query.trim()) {
+      const results = await BibleService.searchVerses(query);
+      setVerses(results);
+      setCurrentVerseIndex(0);
+    }
+  };
+
+  const handleChapterSelection = (book: string, chapter: number) => {
+    setCurrentBook(book);
+    setCurrentChapter(chapter);
+  };
+
+  const handleVerseEnd = () => {
+    if (currentVerseIndex < verses.length - 1) {
+      setCurrentVerseIndex(currentVerseIndex + 1);
+    }
+  };
+
+  const handleVerseChange = (verseNumber: number) => {
+    const index = verseNumber - 1;
+    if (index >= 0 && index < verses.length) {
+      setCurrentVerseIndex(index);
+    }
+  };
 
   const handleAudioUploaded = (audioUrl: string, authorId?: string, authorName?: string) => {
     toast({
@@ -64,21 +116,27 @@ const Biblia = () => {
     setVerses(updatedVerses);
   };
 
+  const toggleAdminSettings = () => {
+    setShowAdminSettings(!showAdminSettings);
+  };
+
+  const toggleConfig = () => {
+    setShowConfig(!showConfig);
+  };
+
+  const toggleTheme = () => {
+    setDarkTheme(!darkTheme);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
+
         {userRole && <UserRoleInfo userRole={userRole} />}
         
         <div className="max-w-4xl mx-auto">
-          <BibleNavigationBar
-            books={books}
-            currentBook={currentBook}
-            currentChapter={currentChapter}
-            currentVerse={verses[currentVerseIndex]?.verse}
-            versesCount={verses.length}
-            onBookChange={setCurrentBook}
-            onChapterChange={setCurrentChapter}
-            onVerseChange={handleVerseChange}
+        <div className="flex flex-col space-y-4 p-4 sticky top-0 bg-background/95 backdrop-blur-sm z-50 shadow-lg border-b transition-all">
+          <ConfigPanel 
             showConfig={showConfig}
             toggleConfig={toggleConfig}
             darkTheme={darkTheme}
@@ -89,18 +147,29 @@ const Biblia = () => {
             setShowAudio={setShowAudio}
             selectedAuthorId={selectedAuthorId}
             setSelectedAuthorId={setSelectedAuthorId}
-            toggleAdminSettings={toggleAdminSettings}
-            showAdminSettings={showAdminSettings}
           />
-          
+
+        <Navigation
+          books={books}
+          currentBook={currentBook}
+          currentChapter={currentChapter}
+          currentVerse={verses[currentVerseIndex]?.verse}
+          versesCount={verses.length}
+          onBookChange={setCurrentBook}
+          onChapterChange={setCurrentChapter}
+          onVerseChange={handleVerseChange}
+          darkTheme={darkTheme}
+          toggleTheme={toggleTheme}
+          toggleConfig={toggleConfig}
+          toggleAdminSettings={toggleAdminSettings}
+          showAdminSettings={showAdminSettings}
+        />
+        </div>
           <div className="mt-8">
-            <BibleContent
-              loading={loading}
-              error={error}
+            <BibleVerseContent 
               verses={verses}
               currentVerseIndex={currentVerseIndex}
               handleVerseEnd={handleVerseEnd}
-              handleRetry={handleRetry}
               handleAudioUploaded={handleAudioUploaded}
               showAdminSettings={showAdminSettings}
               displayMode={displayMode}
@@ -112,7 +181,9 @@ const Biblia = () => {
         </div>
       </div>
     </div>
+    
   );
+
 };
 
-export default Biblia;
+export default Index;
