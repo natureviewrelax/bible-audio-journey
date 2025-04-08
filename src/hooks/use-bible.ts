@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { BibleService } from "@/services/BibleService";
 import { BibleBook, BibleVerse } from "@/types/bible";
 import { useToast } from "@/hooks/use-toast";
+import { BibleChapterService } from "@/services/bible/BibleChapterService";
+import { SettingsService } from "@/services/SettingsService";
 
 export function useBible() {
   const [books, setBooks] = useState<BibleBook[]>([]);
@@ -14,18 +16,18 @@ export function useBible() {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Load books effect
+  // Carregar livros
   useEffect(() => {
     const loadBooks = async () => {
       try {
-        console.log("Loading Bible books");
+        console.log("Carregando livros da Bíblia");
         setLoading(true);
         const booksData = await BibleService.getBooks();
-        console.log(`Loaded ${booksData.length} books`);
+        console.log(`Carregados ${booksData.length} livros`);
         setBooks(booksData);
         setLoading(false);
       } catch (err) {
-        console.error("Error loading books:", err);
+        console.error("Erro ao carregar livros:", err);
         setError("Erro ao carregar livros da Bíblia.");
         setLoading(false);
         toast({ 
@@ -38,17 +40,17 @@ export function useBible() {
     loadBooks();
   }, [toast]);
 
-  // Load chapter effect - only run when books are loaded
+  // Carregar capítulo
   useEffect(() => {
-    if (books.length === 0) return; // Don't try to load chapter if books aren't loaded yet
+    if (books.length === 0) return;
     
     const loadChapter = async () => {
       try {
         setLoading(true);
         setError(null);
-        console.log(`Loading chapter ${currentChapter} from book ${currentBook}`);
+        console.log(`Carregando capítulo ${currentChapter} do livro ${currentBook}`);
         const versesData = await BibleService.getChapter(currentBook, currentChapter);
-        console.log(`Loaded ${versesData.length} verses`);
+        console.log(`Carregados ${versesData.length} versículos`);
         
         if (versesData.length === 0) {
           setError(`Não foi possível carregar os versículos de ${currentBook} ${currentChapter}.`);
@@ -62,7 +64,7 @@ export function useBible() {
           setCurrentVerseIndex(0);
         }
       } catch (err) {
-        console.error("Error loading chapter:", err);
+        console.error("Erro ao carregar capítulo:", err);
         setError(`Erro ao carregar ${currentBook} ${currentChapter}.`);
         toast({ 
           title: "Erro", 
@@ -76,6 +78,37 @@ export function useBible() {
     loadChapter();
   }, [currentBook, currentChapter, books.length, toast]);
 
+  // Carregar áudio do versículo atual quando mudar
+  useEffect(() => {
+    if (verses.length === 0 || currentVerseIndex < 0 || currentVerseIndex >= verses.length) {
+      return;
+    }
+
+    const loadCurrentVerseAudio = async () => {
+      // Obter configurações para preferência de autor
+      const settings = SettingsService.getSettings();
+      const preferredAuthorId = settings?.selectedAuthorId;
+      
+      try {
+        const currentVerse = verses[currentVerseIndex];
+        console.log(`Carregando áudio para versículo atual: ${currentVerse.book} ${currentVerse.chapter}:${currentVerse.verse}`);
+        
+        const updatedVerse = await BibleChapterService.loadVerseAudio(currentVerse, preferredAuthorId);
+        
+        // Atualizar apenas o versículo atual com seu áudio
+        if (updatedVerse.audio || updatedVerse.authorId) {
+          const updatedVerses = [...verses];
+          updatedVerses[currentVerseIndex] = updatedVerse;
+          setVerses(updatedVerses);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar áudio do versículo atual:", error);
+      }
+    };
+
+    loadCurrentVerseAudio();
+  }, [currentVerseIndex, verses]);
+
   const handleSearch = async (query: string) => {
     if (query.trim()) {
       setLoading(true);
@@ -84,7 +117,7 @@ export function useBible() {
         setVerses(results);
         setCurrentVerseIndex(0);
       } catch (err) {
-        console.error("Error searching verses:", err);
+        console.error("Erro ao buscar versículos:", err);
         toast({ 
           title: "Erro na busca", 
           description: "Não foi possível realizar a busca.", 
@@ -115,14 +148,14 @@ export function useBible() {
   };
 
   const handleRetry = () => {
-    // Just force reload of current data directly
+    // Forçar recarga dos dados atuais
     setLoading(true);
     setError(null);
     
-    // First reload books
+    // Primeiro recarregar livros
     BibleService.getBooks().then(booksData => {
       setBooks(booksData);
-      // Then reload current chapter
+      // Em seguida, recarregar o capítulo atual
       return BibleService.getChapter(currentBook, currentChapter);
     }).then(versesData => {
       if (versesData.length > 0) {
@@ -136,7 +169,7 @@ export function useBible() {
         setError(`Não foi possível carregar os versículos de ${currentBook} ${currentChapter}.`);
       }
     }).catch(err => {
-      console.error("Error reloading content:", err);
+      console.error("Erro ao recarregar conteúdo:", err);
       setError("Erro ao recarregar o conteúdo.");
     }).finally(() => {
       setLoading(false);

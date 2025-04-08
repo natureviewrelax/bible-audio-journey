@@ -6,16 +6,12 @@ import { AudioSettingsService } from "./audio/AudioSettingsService";
 import { AuthorService } from "./AuthorService";
 
 export class AudioService {
-  // Base audio methods
+  // Métodos de áudio base
   static getBookAudioUrl(bookName: string): string {
     return BaseAudioService.getBookAudioUrl(bookName);
   }
 
-  // Verse audio methods
-  static async getChapterAudio(bookName: string, chapter: number, preferredAuthorId?: string): Promise<Map<number, {url: string, authorId: string | null}>> {
-    return VerseAudioService.getChapterAudio(bookName, chapter, preferredAuthorId);
-  }
-
+  // Métodos de áudio de versículos
   static async getCustomAudio(bookName: string, chapter: number, verse: number, preferredAuthorId?: string): Promise<{ url: string | null; authorId: string | null }> {
     return VerseAudioService.getCustomAudio(bookName, chapter, verse, preferredAuthorId);
   }
@@ -24,12 +20,12 @@ export class AudioService {
     return VerseAudioService.updateVerseAudioAuthor(bookName, chapter, verse, authorId);
   }
 
-  // Author methods
+  // Métodos de autor
   static async getAuthorForAudio(authorId: string): Promise<AudioAuthor | null> {
     return AuthorService.getAuthor(authorId);
   }
 
-  // Settings methods
+  // Métodos de configurações
   static async getAudioSettings(): Promise<{useDefaultAudio: boolean, defaultAudioSource: string}> {
     return AudioSettingsService.getAudioSettings();
   }

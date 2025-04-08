@@ -15,17 +15,19 @@ interface Props {
 export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) => {
   const [useDefaultAudio, setUseDefaultAudio] = useState<boolean>(true);
   const [audioSource, setAudioSource] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   
   useEffect(() => {
     const loadAudioSettings = async () => {
       try {
+        setIsLoading(true);
         console.log("Iniciando carregamento das configurações de áudio");
         const settings = await AudioService.getAudioSettings();
         setUseDefaultAudio(settings.useDefaultAudio);
         
-        // Determine the audio source with priority:
-        // 1. Custom uploaded audio for this verse
-        // 2. Default audio source (if useDefaultAudio is true)
+        // Determinar a fonte de áudio com prioridade:
+        // 1. Áudio personalizado para este versículo
+        // 2. Fonte de áudio padrão (se useDefaultAudio for verdadeiro)
         let newAudioSource = "";
         
         if (verse.audio) {
@@ -46,6 +48,8 @@ export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) =>
       } catch (error) {
         console.error("Erro ao carregar configurações de áudio:", error);
         setAudioSource("");
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -92,6 +96,10 @@ export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) =>
 
   if (!isVisible) {
     return null;
+  }
+
+  if (isLoading) {
+    return <div className="w-full text-sm text-muted-foreground">Carregando áudio...</div>;
   }
 
   if (!audioSource) {
