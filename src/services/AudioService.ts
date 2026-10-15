@@ -7,7 +7,6 @@ export class AudioService {
   static getBookAudioUrl(bookName: string): string {
     const audioFileName = AUDIO_FILE_MAPPING[bookName];
     if (!audioFileName) {
-      console.error(`Audio file mapping not found for book: ${bookName}`);
       return "";
     }
     return `${BIBLE_AUDIO_BASE_URL}/${audioFileName}.mp3`;

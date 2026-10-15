@@ -7,6 +7,7 @@ import { randomUUID, scryptSync, randomBytes, timingSafeEqual } from "node:crypt
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { seed } from "./seed.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.API_PORT || 3001;
@@ -155,6 +156,7 @@ const checkPw = (pw, stored) => {
   const h = scryptSync(pw, Buffer.from(salt, "hex"), 64);
   return timingSafeEqual(h, Buffer.from(hash, "hex"));
 };
+seed(db, hashPw);
 const sign = (u) => jwt.sign({ sub: u.id, email: u.email }, JWT_SECRET, { expiresIn: "7d" });
 const publicUser = (u) => ({ id: u.id, email: u.email, created_at: u.created_at });
 
@@ -257,5 +259,12 @@ app.post("/api/storage/upload", auth, upload.single("file"), (req, res) => {
   fs.renameSync(req.file.path, path.join(UPLOAD_DIR, name));
   res.json({ path: name, url: `/uploads/${name}` });
 });
+
+// Frontend compilado (imagem Docker): serve o app e faz fallback de SPA
+const DIST = process.env.DIST_DIR || path.join(__dirname, "..", "dist");
+if (fs.existsSync(DIST)) {
+  app.use(express.static(DIST));
+  app.get(/^\/(?!api\/|uploads\/).*/, (_req, res) => res.sendFile(path.join(DIST, "index.html")));
+}
 
 app.listen(PORT, () => console.log(`API em http://localhost:${PORT} (banco: ${DB_FILE})`));

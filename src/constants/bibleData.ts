@@ -89,7 +89,7 @@ export const AUDIO_FILE_MAPPING: { [key: string]: string } = {
   "Neemias": "16_nehemiah",
   "Ester": "17_ester",
   "Jó": "18_job",
-  "Salmos": "19_salmos",
+  // Salmos (19_salmos.mp3) não existe no servidor de áudio (404), por isso fica sem referência
   "Provérbios": "20_proverbios",
   "Eclesiastes": "21_eclesiastes",
   "Cânticos": "22_song_of_solomon",
