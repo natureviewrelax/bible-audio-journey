@@ -1,7 +1,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { supabase } from "@/integrations/supabase/client";
-import { Session, User } from '@supabase/supabase-js';
+import { api } from "@/integrations/api/client";
+import type { ApiSession as Session, ApiUser as User } from "@/integrations/api/client";
 
 type UserRole = 'admin' | 'editor' | 'viewer' | null;
 
@@ -27,7 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const getSession = async () => {
       setLoading(true);
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await api.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     getSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = api.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
@@ -88,17 +88,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await api.auth.signInWithPassword({ email, password });
     return { error };
   };
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await api.auth.signUp({ email, password });
     return { error };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    await api.auth.signOut();
   };
 
   const value = {

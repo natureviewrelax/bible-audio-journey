@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { BibleVerse } from "@/types/bible";
 import { useToast } from "@/hooks/use-toast";
 
@@ -70,8 +70,8 @@ export const AudioFileUploader = ({
       const sanitizedBook = verse.book.replace(/[^a-zA-Z0-9]/g, '_');
       const fileName = `${sanitizedBook}_${verse.chapter}_${verse.verse}_${Date.now()}.${fileExt}`;
       
-      // Upload do arquivo para o Supabase Storage
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      // Upload do arquivo para o armazenamento da API
+      const { data: uploadData, error: uploadError } = await api.storage
         .from('bible_audio')
         .upload(fileName, file);
 
@@ -80,12 +80,12 @@ export const AudioFileUploader = ({
       }
 
       // Obter URL pública do arquivo
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = api.storage
         .from('bible_audio')
         .getPublicUrl(fileName);
 
       // Salvar metadados no banco de dados
-      const { error: dbError } = await supabase
+      const { error: dbError } = await api
         .from('verse_audio')
         .upsert({
           book: verse.book,

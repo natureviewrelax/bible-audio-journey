@@ -116,3 +116,12 @@ ID e nome do aplicativo
 URL para desenvolvimento hot-reload
 Configurações da tela de splash
 Após abrir o projeto no Android Studio ou Xcode, você poderá compilar e executar o aplicativo em um emulador ou dispositivo físico.
+
+## Banco de dados e API
+
+O projeto usa uma API própria (Node + SQLite, em `server/`) no lugar do Supabase.
+
+- `npm run dev:all` sobe a API (porta 3001) e o Vite (porta 8080, com proxy para `/api` e `/uploads`).
+- Banco: `server/data/bible.db`. Áudios enviados: `server/uploads/`. Ambos ficam fora do git.
+- Variáveis opcionais: `API_PORT`, `DB_FILE`, `UPLOAD_DIR`, `JWT_SECRET` (API) e `VITE_API_URL` (frontend, ex.: build Capacitor).
+- Requer Node 22.5+ (usa `node:sqlite`).

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Loader2 } from "lucide-react";
 
 interface Video {
@@ -18,12 +18,12 @@ export default function Videos() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch videos from Supabase
+  // Fetch videos from the API
   useEffect(() => {
     async function fetchVideos() {
       try {
         // Explicitly type the expected response
-        const { data, error } = await supabase
+        const { data, error } = await api
           .from('bible_videos')
           .select('id, youtube_id, title, description');
         

@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# API local
+server/data/
+server/uploads/
+server/node_modules/
+audios/

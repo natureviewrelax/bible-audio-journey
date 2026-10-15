@@ -1,5 +1,5 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { AUDIO_FILE_MAPPING, BIBLE_AUDIO_BASE_URL } from "@/constants/bibleData";
 import { AudioAuthor } from "@/types/bible";
 
@@ -14,7 +14,7 @@ export class AudioService {
   }
 
   static async getCustomAudio(bookName: string, chapter: number, verse: number, preferredAuthorId?: string): Promise<{ url: string | null; authorId: string | null }> {
-    let query = supabase
+    let query = api
       .from('verse_audio')
       .select('audio_path, author_id')
       .eq('book', bookName)
@@ -28,7 +28,7 @@ export class AudioService {
         .maybeSingle();
       
       if (authorData) {
-        const { data: { publicUrl } } = supabase.storage
+        const { data: { publicUrl } } = api.storage
           .from('bible_audio')
           .getPublicUrl(authorData.audio_path);
 
@@ -44,7 +44,7 @@ export class AudioService {
       return { url: null, authorId: null };
     }
 
-    const { data: { publicUrl } } = supabase.storage
+    const { data: { publicUrl } } = api.storage
       .from('bible_audio')
       .getPublicUrl(data.audio_path);
 
@@ -54,7 +54,7 @@ export class AudioService {
   static async getAuthorForAudio(authorId: string): Promise<AudioAuthor | null> {
     if (!authorId) return null;
     
-    const { data, error } = await supabase
+    const { data, error } = await api
       .from('audio_authors')
       .select('*')
       .eq('id', authorId)
@@ -82,7 +82,7 @@ export class AudioService {
 
   static async updateVerseAudioAuthor(bookName: string, chapter: number, verse: number, authorId: string | null): Promise<boolean> {
     try {
-      const { error } = await supabase
+      const { error } = await api
         .from('verse_audio')
         .update({ author_id: authorId })
         .eq('book', bookName)
@@ -104,7 +104,7 @@ export class AudioService {
   static async getAudioSettings(): Promise<{useDefaultAudio: boolean, defaultAudioSource: string}> {
     try {
       // Fetch audio settings from the database
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from('audio_settings')
         .select('*')
         .single();
@@ -134,11 +134,11 @@ export class AudioService {
   static async updateAudioSettings(settings: {useDefaultAudio: boolean, defaultAudioSource: string}): Promise<boolean> {
     try {
       // Get the current user ID first
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user } } = await api.auth.getUser();
       const userId = user?.id;
       
       // Then update the settings with the userId
-      const { error } = await supabase
+      const { error } = await api
         .from('audio_settings')
         .upsert({ 
           id: 1, // Single record for settings

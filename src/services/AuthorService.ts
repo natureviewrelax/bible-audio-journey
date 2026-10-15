@@ -1,11 +1,11 @@
 
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { AudioAuthor } from "@/types/bible";
 
 export class AuthorService {
   static async getAuthors(): Promise<AudioAuthor[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from('audio_authors')
         .select('*')
         .order('first_name', { ascending: true });
@@ -37,7 +37,7 @@ export class AuthorService {
 
   static async getAuthor(id: string): Promise<AudioAuthor | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from('audio_authors')
         .select('*')
         .eq('id', id)
@@ -69,7 +69,7 @@ export class AuthorService {
 
   static async createAuthor(author: Omit<AudioAuthor, 'id'>): Promise<AudioAuthor | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from('audio_authors')
         .insert({
           first_name: author.firstName,
@@ -125,7 +125,7 @@ export class AuthorService {
       if (author.youtube !== undefined) updateData.youtube = author.youtube;
       if (author.instagram !== undefined) updateData.instagram = author.instagram;
 
-      const { error } = await supabase
+      const { error } = await api
         .from('audio_authors')
         .update(updateData)
         .eq('id', id);
@@ -145,13 +145,13 @@ export class AuthorService {
   static async deleteAuthor(id: string): Promise<boolean> {
     try {
       // First update any verse_audio records to remove this author reference
-      await supabase
+      await api
         .from('verse_audio')
         .update({ author_id: null })
         .eq('author_id', id);
       
       // Then delete the author
-      const { error } = await supabase
+      const { error } = await api
         .from('audio_authors')
         .delete()
         .eq('id', id);

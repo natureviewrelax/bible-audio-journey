@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { useAuth } from "@/components/AuthProvider";
 import { AuthGuard } from "@/components/AuthGuard";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/integrations/api/client";
 import { Loader2, Trash2, Plus, Edit, Save } from "lucide-react";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -38,7 +38,7 @@ export default function VideosAdmin() {
   async function fetchVideos() {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from('bible_videos')
         .select('id, youtube_id, title, description');
       
@@ -77,7 +77,7 @@ export default function VideosAdmin() {
         throw new Error("Você não tem permissão para adicionar vídeos.");
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await api
         .from('bible_videos')
         .insert([{
           youtube_id: newVideo.youtube_id,
@@ -123,7 +123,7 @@ export default function VideosAdmin() {
         throw new Error("Apenas administradores podem excluir vídeos.");
       }
       
-      const { error } = await supabase
+      const { error } = await api
         .from('bible_videos')
         .delete()
         .eq('id', id);
@@ -166,7 +166,7 @@ export default function VideosAdmin() {
         throw new Error("Você não tem permissão para editar vídeos.");
       }
       
-      const { error } = await supabase
+      const { error } = await api
         .from('bible_videos')
         .update({
           youtube_id: editingVideo.youtube_id,
