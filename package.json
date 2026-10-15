@@ -10,7 +10,12 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "node server/index.js",
-    "dev:all": "concurrently -k \"npm:server\" \"npm:dev\""
+    "dev:all": "concurrently -k \"npm:server\" \"npm:dev\"",
+    "db:migrate": "node server/scripts/db.js migrate",
+    "db:seed": "node server/scripts/db.js seed",
+    "db:setup": "node server/scripts/db.js setup",
+    "db:status": "node server/scripts/db.js status",
+    "db:reset": "node server/scripts/db.js reset"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.1",

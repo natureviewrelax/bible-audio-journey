@@ -125,3 +125,17 @@ O projeto usa uma API própria (Node + SQLite, em `server/`) no lugar do Supabas
 - Banco: `server/data/bible.db`. Áudios enviados: `server/uploads/`. Ambos ficam fora do git.
 - Variáveis opcionais: `API_PORT`, `DB_FILE`, `UPLOAD_DIR`, `JWT_SECRET` (API) e `VITE_API_URL` (frontend, ex.: build Capacitor).
 - Requer Node 22.5+ (usa `node:sqlite`).
+
+### Scripts de banco
+
+A estrutura fica em `server/`: `config.js` (variáveis), `db/connection.js`, `db/migrations/*.sql` (esquema versionado), `db/seeds/` (dados iniciais em JSON, veja o README da pasta) e `scripts/db.js`.
+
+| Comando | O que faz |
+|---|---|
+| `npm run db:migrate` | Aplica as migrations pendentes |
+| `npm run db:seed` | Aplica migrations e insere os dados iniciais que faltam (idempotente) |
+| `npm run db:setup` | Migrations + seed |
+| `npm run db:status` | Lista as migrations aplicadas |
+| `CONFIRM_RESET=yes npm run db:reset` | Apaga o banco e recria do zero |
+
+Ao subir, a API roda migrations e seed sozinha (`SEED_ON_START=false` desliga o seed). `ADMIN_EMAIL`/`ADMIN_PASSWORD` definem o administrador inicial; sem senha, uma é gerada e mostrada no log. Para mudar o esquema, crie uma nova migration numerada, como `003_nome.sql`.

@@ -2,63 +2,21 @@ import express from "express";
 import cors from "cors";
 import jwt from "jsonwebtoken";
 import multer from "multer";
-import { DatabaseSync } from "node:sqlite";
-import { randomUUID, scryptSync, randomBytes, timingSafeEqual } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { seed } from "./seed.js";
+import { PORT, DB_FILE, UPLOAD_DIR, DIST_DIR, SEED_ON_START, getJwtSecret } from "./config.js";
+import { openDb } from "./db/connection.js";
+import { migrate } from "./db/migrate.js";
+import { seed } from "./db/seed.js";
+import { hashPw, checkPw } from "./auth/password.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = process.env.API_PORT || 3001;
-const DB_FILE = process.env.DB_FILE || path.join(__dirname, "data", "bible.db");
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, "uploads");
-const SECRET_FILE = path.join(path.dirname(DB_FILE), ".jwt-secret");
-
-fs.mkdirSync(path.dirname(DB_FILE), { recursive: true });
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+const JWT_SECRET = getJwtSecret();
 
-if (!process.env.JWT_SECRET && !fs.existsSync(SECRET_FILE)) {
-  fs.writeFileSync(SECRET_FILE, randomBytes(32).toString("hex"));
-}
-const JWT_SECRET = process.env.JWT_SECRET || fs.readFileSync(SECRET_FILE, "utf8");
-
-const db = new DatabaseSync(DB_FILE);
-db.exec(`
-PRAGMA foreign_keys = ON;
-CREATE TABLE IF NOT EXISTS users (
-  id TEXT PRIMARY KEY,
-  email TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-);
-CREATE TABLE IF NOT EXISTS audio_authors (
-  id TEXT PRIMARY KEY,
-  first_name TEXT NOT NULL,
-  last_name TEXT NOT NULL,
-  ministry_role TEXT, biography TEXT, email TEXT, phone TEXT,
-  website TEXT, facebook TEXT, youtube TEXT, instagram TEXT,
-  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-);
-CREATE TABLE IF NOT EXISTS verse_audio (
-  id TEXT PRIMARY KEY,
-  book TEXT NOT NULL,
-  chapter INTEGER NOT NULL,
-  verse INTEGER NOT NULL,
-  audio_path TEXT NOT NULL,
-  author_id TEXT REFERENCES audio_authors(id) ON DELETE SET NULL,
-  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
-  UNIQUE (book, chapter, verse, author_id)
-);
-CREATE TABLE IF NOT EXISTS bible_videos (
-  id TEXT PRIMARY KEY,
-  youtube_id TEXT NOT NULL,
-  title TEXT NOT NULL,
-  description TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
-  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
-);
-`);
+const db = openDb();
+migrate(db);
+if (SEED_ON_START) seed(db);
 
 // Tabelas expostas, colunas permitidas, PK e colunas booleanas
 const TABLES = {
@@ -135,16 +93,6 @@ function insertRow(t, row, upsert) {
 }
 
 // ---------- auth ----------
-const hashPw = (pw) => {
-  const salt = randomBytes(16);
-  return `${salt.toString("hex")}:${scryptSync(pw, salt, 64).toString("hex")}`;
-};
-const checkPw = (pw, stored) => {
-  const [salt, hash] = stored.split(":");
-  const h = scryptSync(pw, Buffer.from(salt, "hex"), 64);
-  return timingSafeEqual(h, Buffer.from(hash, "hex"));
-};
-seed(db, hashPw);
 const sign = (u) => jwt.sign({ sub: u.id, email: u.email }, JWT_SECRET, { expiresIn: "7d" });
 const publicUser = (u) => ({ id: u.id, email: u.email, created_at: u.created_at });
 
@@ -249,10 +197,9 @@ app.post("/api/storage/upload", auth, upload.single("file"), (req, res) => {
 });
 
 // Frontend compilado (imagem Docker): serve o app e faz fallback de SPA
-const DIST = process.env.DIST_DIR || path.join(__dirname, "..", "dist");
-if (fs.existsSync(DIST)) {
-  app.use(express.static(DIST));
-  app.get(/^\/(?!api\/|uploads\/).*/, (_req, res) => res.sendFile(path.join(DIST, "index.html")));
+if (fs.existsSync(DIST_DIR)) {
+  app.use(express.static(DIST_DIR));
+  app.get(/^\/(?!api\/|uploads\/).*/, (_req, res) => res.sendFile(path.join(DIST_DIR, "index.html")));
 }
 
 app.listen(PORT, () => console.log(`API em http://localhost:${PORT} (banco: ${DB_FILE})`));
