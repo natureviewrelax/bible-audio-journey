@@ -91,25 +91,6 @@ export const Navigation = ({
     }
     onChapterChange(chapter);
   };
-  {onVerseChange && (
-    <Select
-      value={currentVerse.toString()}
-      onValueChange={(value) => onVerseChange(parseInt(value))}
-    >
-      <SelectTrigger className="w-[100px]">
-        <SelectValue placeholder="Versículo" />
-      </SelectTrigger>
-      <SelectContent>
-        {verses.map((verse) => (
-          <SelectItem key={verse} value={verse.toString()}>
-            {verse}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )}
-
-
   return (
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-3">
@@ -210,13 +191,29 @@ export const Navigation = ({
         </Button>
 
         <div className="flex items-center gap-2">
+        <Select
+          value={currentChapter.toString()}
+          onValueChange={(value) => onChapterChange(parseInt(value))}
+        >
+          <SelectTrigger className="w-[140px]" aria-label="Escolher capítulo">
+            <SelectValue placeholder="Capítulo">Capítulo {currentChapter}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {chapters.map((chapter) => (
+              <SelectItem key={chapter} value={chapter.toString()}>
+                {chapter}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         {onVerseChange && (
           <Select
             value={currentVerse.toString()}
             onValueChange={(value) => onVerseChange(parseInt(value))}
           >
-            <SelectTrigger className="w-[100px]">
-              <SelectValue placeholder="Versículo" />
+            <SelectTrigger className="w-[130px]" aria-label="Escolher versículo">
+              <SelectValue placeholder="Versículo">Versículo {currentVerse}</SelectValue>
             </SelectTrigger>
             <SelectContent>
               {verses.map((verse) => (
