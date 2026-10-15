@@ -22,7 +22,6 @@ export class BibleService {
         return [];
       }
 
-      const defaultAudioUrl = AudioService.getBookAudioUrl(bookName);
       const settings = SettingsService.getSettings();
       const preferredAuthorId = settings?.selectedAuthorId;
 
@@ -48,7 +47,6 @@ export class BibleService {
           chapter,
           verse: verseNumber,
           text: verse,
-          defaultAudioUrl,
           audio: customAudio || undefined,
           authorId,
           authorName,
@@ -78,7 +76,6 @@ export class BibleService {
 
       for (const book of bibleData) {
         if (!book.chapters) continue;
-        const defaultAudioUrl = AudioService.getBookAudioUrl(book.name);
 
         for (let chapterIndex = 0; chapterIndex < book.chapters.length; chapterIndex++) {
           const chapter = book.chapters[chapterIndex];
@@ -106,7 +103,6 @@ export class BibleService {
                 chapter: chapterIndex + 1,
                 verse: verseNumber,
                 text: verse,
-                defaultAudioUrl,
                 audio: customAudio || undefined,
                 authorId,
                 authorName,

@@ -2,9 +2,7 @@
 import AudioPlayer from "react-h5-audio-player";
 import "react-h5-audio-player/lib/styles.css";
 import { BibleVerse } from "@/types/bible";
-import { useEffect, useState } from "react";
-import { AudioService } from "@/services/AudioService";
-import { SettingsService } from "@/services/SettingsService";
+import { useEffect } from "react";
 
 interface Props {
   verse: BibleVerse;
@@ -13,47 +11,23 @@ interface Props {
 }
 
 export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) => {
-  const [useDefaultAudio, setUseDefaultAudio] = useState<boolean>(true);
-  const [audioSource, setAudioSource] = useState<string>("");
-  
-  useEffect(() => {
-    const loadAudioSettings = async () => {
-      const settings = await AudioService.getAudioSettings();
-      setUseDefaultAudio(settings.useDefaultAudio);
-      
-      // Determine the audio source with priority:
-      // 1. Custom uploaded audio for this verse
-      // 2. Default audio source (if useDefaultAudio is true)
-      if (verse.audio) {
-        setAudioSource(verse.audio);
-      } else if (settings.useDefaultAudio) {
-        setAudioSource(verse.defaultAudioUrl || "");
-      } else {
-        setAudioSource("");
-      }
-    };
-    
-    loadAudioSettings();
-  }, [verse]);
-  
+  const audioSource = verse.audio || "";
+
   useEffect(() => {
     console.log("AudioPlayer - Current verse:", {
       book: verse.book,
       chapter: verse.chapter,
       verse: verse.verse,
       audio: verse.audio,
-      defaultAudioUrl: verse.defaultAudioUrl,
       authorId: verse.authorId,
-      authorName: verse.authorName,
-      usingAudio: verse.audio ? "Upload" : (useDefaultAudio ? "Default" : "None")
+      authorName: verse.authorName
     });
-    console.log("AudioPlayer - Using audio source:", audioSource);
-  }, [verse, audioSource, useDefaultAudio]);
+  }, [verse]);
 
   const handlePlay = () => {
     console.log("Audio started playing:", {
       source: audioSource,
-      type: verse.audio ? "Upload" : "Default"
+      type: "Upload"
     });
   };
 
@@ -70,7 +44,7 @@ export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) =>
   const handleLoadStart = () => {
     console.log("Audio loading started:", {
       source: audioSource,
-      type: verse.audio ? "Upload" : "Default"
+      type: "Upload"
     });
   };
 
@@ -79,7 +53,7 @@ export const VerseAudioPlayer = ({ verse, onEnded, isVisible = true }: Props) =>
   }
 
   if (!audioSource) {
-    return <div className="w-full text-sm text-muted-foreground">Áudio não disponível</div>;
+    return null;
   }
 
   return (

@@ -35,7 +35,7 @@ export const VerseDisplay = forwardRef<HTMLDivElement, Props>(
 
     useEffect(() => {
       // Use custom audio if available, otherwise fall back to default
-      setAudioUrl(verse.audio || verse.defaultAudioUrl || null);
+      setAudioUrl(verse.audio || null);
     }, [verse]);
 
     const handleAudioUploaded = (url: string, authorId?: string, authorName?: string) => {

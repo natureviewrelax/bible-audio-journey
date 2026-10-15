@@ -50,13 +50,6 @@ CREATE TABLE IF NOT EXISTS verse_audio (
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
   UNIQUE (book, chapter, verse, author_id)
 );
-CREATE TABLE IF NOT EXISTS audio_settings (
-  id INTEGER PRIMARY KEY,
-  use_default_audio INTEGER NOT NULL DEFAULT 1,
-  default_audio_source TEXT NOT NULL DEFAULT '',
-  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
-  updated_by TEXT
-);
 CREATE TABLE IF NOT EXISTS bible_videos (
   id TEXT PRIMARY KEY,
   youtube_id TEXT NOT NULL,
@@ -77,11 +70,6 @@ const TABLES = {
     pk: "id", uuid: true,
     cols: ["id", "book", "chapter", "verse", "audio_path", "author_id", "created_at"],
     conflict: ["book", "chapter", "verse", "author_id"],
-  },
-  audio_settings: {
-    pk: "id", uuid: false,
-    cols: ["id", "use_default_audio", "default_audio_source", "updated_at", "updated_by"],
-    bool: ["use_default_audio"],
   },
   bible_videos: {
     pk: "id", uuid: true,

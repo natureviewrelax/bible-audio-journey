@@ -10,11 +10,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export function seed(db, hashPw) {
   const data = JSON.parse(fs.readFileSync(path.join(__dirname, "seed.json"), "utf8"));
 
-  const s = data.audio_settings;
-  db.prepare(
-    "INSERT OR IGNORE INTO audio_settings (id, use_default_audio, default_audio_source) VALUES (1, ?, ?)",
-  ).run(s.use_default_audio ? 1 : 0, s.default_audio_source);
-
   const authorIds = {};
   for (const a of data.audio_authors) {
     const found = db.prepare("SELECT id FROM audio_authors WHERE first_name=? AND last_name=?").get(a.first_name, a.last_name);
