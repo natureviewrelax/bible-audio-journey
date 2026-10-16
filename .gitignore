@@ -28,3 +28,4 @@ server/data/
 server/uploads/
 server/node_modules/
 audios/
+target/

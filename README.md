@@ -139,3 +139,13 @@ A estrutura fica em `server/`: `config.js` (variáveis), `db/connection.js`, `db
 | `CONFIRM_RESET=yes npm run db:reset` | Apaga o banco e recria do zero |
 
 Ao subir, a API roda migrations e seed sozinha (`SEED_ON_START=false` desliga o seed). `ADMIN_EMAIL`/`ADMIN_PASSWORD` definem o administrador inicial; sem senha, uma é gerada e mostrada no log. Para mudar o esquema, crie uma nova migration numerada, como `003_nome.sql`.
+
+## Backend em Rust
+
+A API também existe em Rust (workspace na raiz), com o mesmo contrato HTTP da API Node em `server/`. Convenções e camadas em [AGENTS.md](AGENTS.md).
+
+```sh
+cargo run -p bible-server              # API em :3001 (mesmos DB_FILE/UPLOAD_DIR/API_PORT da API Node)
+cargo run -p bible-server -- setup     # migrations + seeds
+cargo test --workspace
+```

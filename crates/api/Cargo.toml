@@ -1,0 +1,28 @@
+[package]
+name = "bible-api"
+description = "L2: API HTTP (axum) — autenticação, dados, upload e frontend estático"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+axum = { workspace = true, features = ["macros"] }
+bible-core = { workspace = true }
+bible-db = { workspace = true }
+hex = { workspace = true }
+jsonwebtoken = { workspace = true }
+rand = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tower-http = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tower = { workspace = true, features = ["util"] }

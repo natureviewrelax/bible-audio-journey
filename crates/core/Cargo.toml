@@ -1,0 +1,17 @@
+[package]
+name = "bible-core"
+description = "L0: configuração, definição das tabelas expostas e hash de senha"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+hex = { workspace = true }
+rand = { workspace = true }
+scrypt = { workspace = true }
+subtle = { workspace = true }
+thiserror = { workspace = true }

@@ -1,0 +1,4 @@
+[
+  { "table": "audio_authors", "file": "audio_authors.json", "key": ["first_name", "last_name"] },
+  { "table": "bible_videos", "file": "bible_videos.json", "key": ["youtube_id"] }
+]

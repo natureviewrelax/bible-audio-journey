@@ -1,0 +1,20 @@
+[package]
+name = "bible-server"
+description = "Binário: servidor HTTP e comandos de banco (migrate, seed, setup, status, reset)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+bible-api = { workspace = true }
+bible-core = { workspace = true }
+bible-db = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
