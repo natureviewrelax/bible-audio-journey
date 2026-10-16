@@ -119,33 +119,31 @@ Após abrir o projeto no Android Studio ou Xcode, você poderá compilar e execu
 
 ## Banco de dados e API
 
-O projeto usa uma API própria (Node + SQLite, em `server/`) no lugar do Supabase.
+O projeto usa uma API própria em Rust (axum + SQLite) no lugar do Supabase. Veja [AGENTS.md](AGENTS.md) para camadas e convenções.
 
-- `npm run dev:all` sobe a API (porta 3001) e o Vite (porta 8080, com proxy para `/api` e `/uploads`).
-- Banco: `server/data/bible.db`. Áudios enviados: `server/uploads/`. Ambos ficam fora do git.
+- `npm run dev:all` sobe a API (porta 3001, `cargo run -p bible-server`) e o Vite (porta 8080, com proxy para `/api` e `/uploads`).
+- Banco: `data/bible.db`. Áudios enviados: `uploads/`. Ambos ficam fora do git.
 - Variáveis opcionais: `API_PORT`, `DB_FILE`, `UPLOAD_DIR`, `JWT_SECRET` (API) e `VITE_API_URL` (frontend, ex.: build Capacitor).
-- Requer Node 22.5+ (usa `node:sqlite`).
+- Requer Rust (toolchain estável) e Node.
 
-### Scripts de banco
+### Comandos de banco
 
-A estrutura fica em `server/`: `config.js` (variáveis), `db/connection.js`, `db/migrations/*.sql` (esquema versionado), `db/seeds/` (dados iniciais em JSON, veja o README da pasta) e `scripts/db.js`.
+Esquema em `crates/db/migrations/*.sql` e dados iniciais em `crates/db/seeds/` (JSON; veja o README da pasta). Ambos são embutidos no binário.
 
 | Comando | O que faz |
 |---|---|
-| `npm run db:migrate` | Aplica as migrations pendentes |
-| `npm run db:seed` | Aplica migrations e insere os dados iniciais que faltam (idempotente) |
+| `cargo run -p bible-server -- migrate` | Aplica as migrations pendentes |
+| `cargo run -p bible-server -- seed` | Aplica migrations e insere os dados iniciais que faltam (idempotente) |
 | `npm run db:setup` | Migrations + seed |
 | `npm run db:status` | Lista as migrations aplicadas |
-| `CONFIRM_RESET=yes npm run db:reset` | Apaga o banco e recria do zero |
-
-Ao subir, a API roda migrations e seed sozinha (`SEED_ON_START=false` desliga o seed). `ADMIN_EMAIL`/`ADMIN_PASSWORD` definem o administrador inicial; sem senha, uma é gerada e mostrada no log. Para mudar o esquema, crie uma nova migration numerada, como `003_nome.sql`.
+| `CONFIRM_RESET=yes cargo run -p bible-server -- reset` | Apaga o banco e recria do zero |
 
 ## Backend em Rust
 
-A API também existe em Rust (workspace na raiz), com o mesmo contrato HTTP da API Node em `server/`. Convenções e camadas em [AGENTS.md](AGENTS.md).
+A API é em Rust (workspace na raiz); o contrato HTTP é o consumido por `src/integrations/api/client.ts`. Convenções e camadas em [AGENTS.md](AGENTS.md).
 
 ```sh
-cargo run -p bible-server              # API em :3001 (mesmos DB_FILE/UPLOAD_DIR/API_PORT da API Node)
+cargo run -p bible-server              # API em :3001 (banco em data/, uploads em uploads/)
 cargo run -p bible-server -- setup     # migrations + seeds
 cargo test --workspace
 ```

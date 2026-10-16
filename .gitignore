@@ -24,8 +24,7 @@ dist-ssr
 *.sw?
 
 # API local
-server/data/
-server/uploads/
-server/node_modules/
+data/
+uploads/
 audios/
 target/

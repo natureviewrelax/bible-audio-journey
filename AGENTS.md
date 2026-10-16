@@ -13,7 +13,7 @@ camadas explícitas, zero pânico em código de produção, lints como gate e in
 | App | `apps/bible-server` | Binário: `serve`, `migrate`, `seed`, `setup`, `status`, `reset` |
 
 - Dependências só apontam para baixo (L2 → L1 → L0). Um crate nunca importa de uma camada acima.
-- `src/` (React/Vite) é o frontend; o backend Node em `server/` é legado e será removido depois da paridade validada.
+- `src/` (React/Vite) é o frontend. O antigo backend Node (`server/`) foi removido; o Rust é o único backend.
 - O contrato HTTP é o que `src/integrations/api/client.ts` consome. Mudou rota ou formato → mude o cliente na mesma PR.
 
 ## Erros e prevenção de crash
@@ -46,12 +46,11 @@ cargo test --workspace
 - Migrations em `crates/db/migrations/NNN_nome.sql`, aplicadas em ordem e registradas em `schema_migrations`. **Nunca edite uma migration já aplicada**: crie a próxima.
 - Seeds em `crates/db/seeds/` (`index.json` define tabela, arquivo e chave natural). São idempotentes e embutidos no binário (`include_dir`).
 - Nova tabela exposta ao cliente → adicionar um `TableSpec` em `crates/core/src/tables.rs` (lista de colunas permitidas) e teste.
-- Os arquivos em `crates/db/{migrations,seeds}` são cópias dos de `server/db/` enquanto os dois backends coexistirem; mantenha-os idênticos.
 
 ## Configuração (ambiente)
 
-`API_PORT` (3001), `DB_FILE` (`server/data/bible.db`), `UPLOAD_DIR` (`server/uploads`), `DIST_DIR` (`dist`), `SEED_ON_START` (`true`), `JWT_SECRET` (gerado e salvo em `.jwt-secret` ao lado do banco), `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
-Os hashes de senha são compatíveis com os da API Node: usuários existentes continuam entrando.
+`API_PORT` (3001), `DB_FILE` (`data/bible.db`), `UPLOAD_DIR` (`uploads`), `DIST_DIR` (`dist`), `SEED_ON_START` (`true`), `JWT_SECRET` (gerado e salvo em `.jwt-secret` ao lado do banco), `ADMIN_EMAIL`, `ADMIN_PASSWORD`.
+Os hashes de senha são compatíveis com os da antiga API Node: usuários existentes continuam entrando. Dados antigos de `server/data` e `server/uploads` passam a ficar em `data/` e `uploads/`.
 
 ## Comandos
 

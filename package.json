@@ -9,13 +9,10 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "node server/index.js",
+    "server": "cargo run -p bible-server",
     "dev:all": "concurrently -k \"npm:server\" \"npm:dev\"",
-    "db:migrate": "node server/scripts/db.js migrate",
-    "db:seed": "node server/scripts/db.js seed",
-    "db:setup": "node server/scripts/db.js setup",
-    "db:status": "node server/scripts/db.js status",
-    "db:reset": "node server/scripts/db.js reset"
+    "db:setup": "cargo run -p bible-server -- setup",
+    "db:status": "cargo run -p bible-server -- status"
   },
   "dependencies": {
     "@capacitor/android": "^7.0.1",
