@@ -111,11 +111,6 @@ export const Navigation = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64 p-3 shadow-lg rounded-lg border-border/50 bg-background/95 backdrop-blur-sm">
-              <DropdownMenuItem onClick={toggleTheme} className="flex items-center cursor-pointer hover:bg-accent/50 rounded-lg transition-all duration-200 px-3 py-2 mb-1 group">
-                {darkTheme ? <Sun className="h-4 w-4 mr-2 text-primary group-hover:scale-110 transition-transform" /> : <Moon className="h-4 w-4 mr-2 text-primary group-hover:scale-110 transition-transform" />}
-                <span className="font-medium">{darkTheme ? 'Tema Claro' : 'Tema Escuro'}</span>
-              </DropdownMenuItem>
-              
               <DropdownMenuItem onClick={toggleConfig} className="flex items-center cursor-pointer hover:bg-accent/50 rounded-lg transition-all duration-200 px-3 py-2 mb-1 group">
                 <Settings className="h-4 w-4 mr-2 text-primary group-hover:scale-110 transition-transform" />
                 <span className="font-medium">Configurações</span>
@@ -175,16 +170,16 @@ export const Navigation = ({
                   </DropdownMenuItem>
                 </>
               ))}
-              
+
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
-      <div className="flex items-center gap-4">
-        <Button 
+      <div className="flex flex-1 items-center justify-center gap-4">
+        <Button
           variant="outline" 
           onClick={() => setIsModalOpen(true)}
-          className="flex-1 justify-start hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg shadow-sm border-primary/20 font-medium"
+          className="justify-start hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg shadow-sm border-primary/20 font-medium"
         >
           <BookOpen className="h-4 w-4 mr-2 text-primary" />
           {currentBook} {currentChapter}
@@ -244,9 +239,19 @@ export const Navigation = ({
             
             <ChevronRight className="h-5 w-5 text-primary" />
           </Button>
-          
         </div>
       </div>
+
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={toggleTheme}
+        aria-label={darkTheme ? 'Tema Claro' : 'Tema Escuro'}
+        title={darkTheme ? 'Tema Claro' : 'Tema Escuro'}
+        className="hover:bg-accent hover:text-accent-foreground transition-colors rounded-full shadow-sm border-primary/20"
+      >
+        {darkTheme ? <Sun className="h-5 w-5 text-primary" /> : <Moon className="h-5 w-5 text-primary" />}
+      </Button>
 
       <ChapterSelectionModal
         isOpen={isModalOpen}
