@@ -1,118 +1,100 @@
-# Welcome to your Lovable project
+# Bíblia em Áudio JFAC 1848
 
-## Project info
+App Android nativo em React Native (Expo), sem WebView. Traz a tradução João Ferreira de Almeida Corrigida de 1848 embutida no app (funciona sem internet), com leitor por livro/capítulo/versículo, busca, tema claro/escuro e tela Sobre.
 
-**URL**: https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249d2d4f66
+Esta primeira versão não tem áudio, login nem vídeos. O app web e a API (Node + SQLite) que existiam antes foram removidos desta branch e continuam no histórico do git (branches anteriores, como `ajusteClaude`).
 
-## How can I edit this code?
+## Estrutura
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249d2d4f66) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+app/            projeto Expo
+  App.js        telas Home, Configurações e Sobre, tema, fonte e posição salvos (AsyncStorage)
+  src/Config.js tema e tamanho da fonte
+  src/Reader.js leitor, busca e navegação
+  src/Picker.js seleção de livro, capítulo e versículo
+  src/bible.js  acesso ao texto
+  assets/biblia.json   texto da Bíblia
 ```
 
-**Edit a file directly in GitHub**
+## Como rodar a versão web (navegador)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Serve para validar a interface rápido, sem celular (usa react-native-web). Requisito: Node.js.
 
-**Use GitHub Codespaces**
+```sh
+cd app
+npm ci --no-audit --no-fund
+npx expo start --web --port 8081
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Abra http://localhost:8081 no navegador. As alterações no código recarregam sozinhas; `Ctrl+C` encerra o servidor. Pelo Claude Code, o servidor também está configurado em `.claude/launch.json` (nome `web`).
 
-## What technologies are used for this project?
+Observação: o visual do `Switch` e da barra de status pode diferir um pouco do Android; a validação final é no aparelho.
 
-This project is built with .
+## Como compilar e instalar (passo a passo)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Requisitos: Node.js, JDK 17 e Android SDK. No Git Bash do Windows:
 
-## How can I deploy this project?
+```sh
+export ANDROID_HOME="$LOCALAPPDATA/Android/Sdk"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+```
 
-Simply open [Lovable](https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249d2d4f66) and click on Share -> Publish.
+**1. Instalar as dependências** (a pasta `app/node_modules` é recriada)
 
-## I want to use a custom domain - is that possible?
+```sh
+cd app
+rm -rf node_modules android
+npm ci --no-audit --no-fund
+```
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+**2. Gerar o projeto nativo** (cria `app/android`; ele não vai para o git)
 
+```sh
+npx expo prebuild --platform android --clean
+```
 
-## Para gerar as versões mobile do seu aplicativo, siga estas etapas:
+**3. Compilar o APK de release** (só arm64; leva alguns minutos)
 
-**Exporte o projeto para o GitHub:**
+```sh
+cd android
+./gradlew.bat assembleRelease -PreactNativeArchitectures=arm64-v8a
+```
 
-Clique no botão "Exportar para GitHub" no topo da interface do Lovable
-Siga as instruções para completar a exportação
-Clone o projeto para o seu computador:
+Para todas as arquiteturas (APK maior), use o comando completo sem o `-P...`:
 
+```sh
+cd android
+./gradlew.bat assembleRelease
+```
 
-git clone [URL-DO-SEU-REPOSITÓRIO]
-cd [NOME-DO-PROJETO]
-Instale as dependências:
+O APK sai em `app/android/app/build/outputs/apk/release/app-release.apk`.
 
+**4. Conectar o celular**
 
-npm install
-Adicione as plataformas iOS e/ou Android:
+Ative a Depuração USB (Opções do desenvolvedor), conecte o cabo, escolha "Transferência de arquivos" e aceite "Permitir depuração USB?". Confira:
 
+```sh
+adb devices -l
+```
 
-npx cap add ios
-npx cap add android
-Construa o projeto:
+Se o mesmo aparelho aparecer duas vezes (cabo e Wi-Fi), use o serial do cabo em todos os comandos com `-s SERIAL`, por exemplo `adb -s RQ8RA00QQ9M ...`.
 
+**5. Instalar e abrir** (dentro de `app/android`)
 
-npm run build
-Sincronize o projeto com as plataformas nativas:
+```sh
+adb install -r app/build/outputs/apk/release/app-release.apk
+adb shell monkey -p com.bibliaudio.app -c android.intent.category.LAUNCHER 1
+```
 
+**6. Ver erros no aparelho**
 
-npx cap sync
-Execute o aplicativo:
+```sh
+adb logcat -c
+adb logcat -s ReactNativeJS
+```
 
-Para Android (requer Android Studio):
+O log mostra `Running "main"` quando o app sobe sem erro. Se fechar logo ao abrir, procure `Abort message` ou `FATAL` com `adb logcat -d | grep -E "FATAL|Abort message"`.
 
-npx cap open android
-Para iOS (requer Mac com Xcode):
+**Atalho (debug, com o celular conectado):** `cd app && npm run prebuild && npm run android` compila a versão debug, instala e abre o app.
 
-npx cap open ios
-Importante:
-
-Para iOS, você precisa de um Mac com Xcode instalado
-Para Android, você precisa do Android Studio instalado
-Sempre que fizer alterações no código, execute npm run build seguido de npx cap sync para atualizar as versões nativas
-O arquivo capacitor.config.ts que configurei inclui:
-
-ID e nome do aplicativo
-URL para desenvolvimento hot-reload
-Configurações da tela de splash
-Após abrir o projeto no Android Studio ou Xcode, você poderá compilar e executar o aplicativo em um emulador ou dispositivo físico.
+Se o Gradle reclamar de versão de Java (`invalid source release`), confira com `java -version` se o JDK ativo é o 17.
