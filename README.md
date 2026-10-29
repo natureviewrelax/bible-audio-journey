@@ -1,5 +1,38 @@
 # Welcome to your Lovable project
 
+## Como rodar o app
+
+Requisitos: Node.js e npm (Android Studio para rodar no Android).
+
+**Web (desenvolvimento)** — abre em http://localhost:8080
+
+```sh
+npm install
+npm run dev
+```
+
+**Android** (a pasta `android/` já existe, não precisa de `npx cap add android`)
+
+```sh
+npm install
+npm run build
+npx cap sync android
+npx cap open android   # abre o Android Studio; clique em Run
+# ou, com um emulador/dispositivo conectado:
+npx cap run android
+```
+
+Sempre que alterar o código, repita `npm run build` e `npx cap sync android`.
+
+**Outros comandos**
+
+```sh
+npm run lint      # verifica o código
+npm run preview   # serve o build de produção
+```
+
+Se o `npm run dev` falhar com erro de módulo não encontrado (ex.: `esbuild`, `react`), apague `node_modules` e rode `npm ci`.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249d2d4f66
