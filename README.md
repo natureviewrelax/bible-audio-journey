@@ -1,5 +1,42 @@
 # Welcome to your Lovable project
 
+## Como rodar o app
+
+Requisitos: Node.js 22.5+ e npm (Android Studio para o Android).
+
+```sh
+npm install
+```
+
+**Web (desenvolvimento)**
+
+```sh
+npm run dev:all   # API (porta 3001) + Vite (http://localhost:8080)
+```
+
+Só o front, sem login/upload/áudios da API: `npm run dev`. Só a API: `npm run server`.
+
+**Android** (a pasta `android/` já existe, não precisa de `npx cap add android`)
+
+```sh
+npm run build
+npx cap sync android
+npx cap open android   # abre o Android Studio; clique em Run
+# ou, com emulador/dispositivo conectado:
+npx cap run android
+```
+
+No app o front não tem o proxy do Vite: defina `VITE_API_URL` (ex.: `http://IP-DO-PC:3001`) antes do `npm run build` e deixe a API rodando (`npm run server`). Sempre que alterar o código, repita `npm run build` e `npx cap sync android`.
+
+**Outros comandos**
+
+```sh
+npm run lint      # verifica o código
+npm run preview   # serve o build de produção
+```
+
+Se o `npm run dev` falhar com módulo não encontrado (ex.: `esbuild`, `react`), apague `node_modules` e rode `npm ci`.
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249d2d4f66
@@ -84,11 +121,10 @@ Instale as dependências:
 
 
 npm install
-Adicione as plataformas iOS e/ou Android:
+Adicione a plataforma iOS (o Android já existe em `android/`):
 
 
 npx cap add ios
-npx cap add android
 Construa o projeto:
 
 
