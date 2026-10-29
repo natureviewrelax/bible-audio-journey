@@ -15,31 +15,71 @@ app/            projeto Expo
   assets/biblia.json   texto da Bíblia
 ```
 
-## Como rodar
+## Como compilar e instalar (passo a passo)
 
-Requisitos: Node.js, JDK 17 e Android SDK (variável `ANDROID_HOME`).
+Requisitos: Node.js, JDK 17 e Android SDK. No Git Bash do Windows:
+
+```sh
+export ANDROID_HOME="$LOCALAPPDATA/Android/Sdk"
+export PATH="$PATH:$ANDROID_HOME/platform-tools"
+```
+
+**1. Instalar as dependências** (a pasta `app/node_modules` é recriada)
 
 ```sh
 cd app
-npm ci
-npm run prebuild   # gera app/android (nativo)
+rm -rf node_modules android
+npm ci --no-audit --no-fund
 ```
 
-**Celular conectado por cabo** (depuração USB ativada):
+**2. Gerar o projeto nativo** (cria `app/android`; ele não vai para o git)
 
 ```sh
-npm run android    # compila a versão debug, instala e abre o app
+npx expo prebuild --platform android --clean
 ```
 
-**Gerar o APK de release** (arm64):
+**3. Compilar o APK de release** (só arm64; leva alguns minutos)
 
 ```sh
-cd app/android
-./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
-# APK: app/android/app/build/outputs/apk/release/app-release.apk
+cd android
+./gradlew.bat assembleRelease -PreactNativeArchitectures=arm64-v8a
+```
+
+Para todas as arquiteturas (APK maior), use o comando completo sem o `-P...`:
+
+```sh
+cd android
+./gradlew.bat assembleRelease
+```
+
+O APK sai em `app/android/app/build/outputs/apk/release/app-release.apk`.
+
+**4. Conectar o celular**
+
+Ative a Depuração USB (Opções do desenvolvedor), conecte o cabo, escolha "Transferência de arquivos" e aceite "Permitir depuração USB?". Confira:
+
+```sh
+adb devices -l
+```
+
+Se o mesmo aparelho aparecer duas vezes (cabo e Wi-Fi), use o serial do cabo em todos os comandos com `-s SERIAL`, por exemplo `adb -s RQ8RA00QQ9M ...`.
+
+**5. Instalar e abrir** (dentro de `app/android`)
+
+```sh
 adb install -r app/build/outputs/apk/release/app-release.apk
+adb shell monkey -p com.bibliaudio.app -c android.intent.category.LAUNCHER 1
 ```
 
-Todas as arquiteturas: rode o `gradlew` sem o `-P`. Com mais de um dispositivo no `adb` (cabo e Wi-Fi), use `adb -s SERIAL install ...`.
+**6. Ver erros no aparelho**
 
-Para ver erros no aparelho: `adb logcat -s ReactNativeJS`.
+```sh
+adb logcat -c
+adb logcat -s ReactNativeJS
+```
+
+O log mostra `Running "main"` quando o app sobe sem erro. Se fechar logo ao abrir, procure `Abort message` ou `FATAL` com `adb logcat -d | grep -E "FATAL|Abort message"`.
+
+**Atalho (debug, com o celular conectado):** `cd app && npm run prebuild && npm run android` compila a versão debug, instala e abre o app.
+
+Se o Gradle reclamar de versão de Java (`invalid source release`), confira com `java -version` se o JDK ativo é o 17.
