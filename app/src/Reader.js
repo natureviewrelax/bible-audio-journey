@@ -8,6 +8,7 @@ export default function Reader({ t, dark, onToggleTheme, pos, onPos, onMenu }) {
   const [picker, setPicker] = useState(null); // 'book' | 'chapter' | 'verse'
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
+  const [searching, setSearching] = useState(false); // campo de busca em foco: ocupa a linha toda
   const list = useRef(null);
 
   const book = BOOKS.find(b => b.name === pos.book) ?? BOOKS[0];
@@ -29,8 +30,8 @@ export default function Reader({ t, dark, onToggleTheme, pos, onPos, onMenu }) {
   };
   const search = () => setResults(query.trim() ? searchVerses(query) : null);
 
-  const Btn = ({ label, onPress, flex }) => (
-    <Pressable onPress={onPress} style={[s.btn, { borderColor: t.border, backgroundColor: t.card }, flex && { flex: 1 }]}>
+  const Btn = ({ label, onPress, flex, w }) => (
+    <Pressable onPress={onPress} style={[s.btn, { borderColor: t.border, backgroundColor: t.card }, flex && { flex: 1 }, w && { width: w, paddingHorizontal: 0 }]}>
       <Text numberOfLines={1} style={{ color: t.text, fontSize: 14 }}>{label}</Text>
     </Pressable>
   );
@@ -40,24 +41,31 @@ export default function Reader({ t, dark, onToggleTheme, pos, onPos, onMenu }) {
     <View style={[s.root, { backgroundColor: t.bg }]}>
       <View style={[s.bar, { borderColor: t.border }]}>
         <View style={s.row}>
-          <Pressable onPress={onMenu} hitSlop={10}><Text style={{ color: t.text, fontSize: 24 }}>≡</Text></Pressable>
+          <Pressable onPress={onMenu} hitSlop={10} style={s.menu}><Text style={{ color: t.text, fontSize: 24 }}>≡</Text></Pressable>
           <Btn flex label={`${pos.book} ${pos.chapter}`} onPress={() => setPicker('book')} />
-          <Btn label={`Cap. ${pos.chapter}`} onPress={() => setPicker('chapter')} />
-          <Btn label={`Vers. ${pos.verse}`} onPress={() => setPicker('verse')} />
+          <Btn w={76} label={`Cap. ${pos.chapter}`} onPress={() => setPicker('chapter')} />
+          <Btn w={76} label={`Vers. ${pos.verse}`} onPress={() => setPicker('verse')} />
         </View>
         <View style={s.row}>
+          {!searching && <View style={s.menu} />}
           <TextInput
             value={query}
             onChangeText={setQuery}
             onSubmitEditing={search}
+            onFocus={() => setSearching(true)}
+            onBlur={() => setSearching(false)}
             returnKeyType="search"
             placeholder="Pesquisar versículos..."
             placeholderTextColor={t.muted}
             style={[s.input, { color: t.text, borderColor: t.border, backgroundColor: t.card }]}
           />
-          <Btn label="‹" onPress={prev} />
-          <Btn label="›" onPress={next} />
-          <Btn label={dark ? '☀' : '☾'} onPress={onToggleTheme} />
+          {!searching && (
+            <View style={s.actions}>
+              <Btn w={48} label="‹" onPress={prev} />
+              <Btn w={48} label="›" onPress={next} />
+              <Btn w={48} label={dark ? '☀︎' : '☾︎'} onPress={onToggleTheme} />
+            </View>
+          )}
         </View>
       </View>
 
@@ -99,6 +107,8 @@ const s = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   btn: { paddingHorizontal: 12, height: 40, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
   input: { flex: 1, height: 40, borderWidth: 1, borderRadius: 10, paddingHorizontal: 12 },
+  menu: { width: 28 },
+  actions: { width: 160, flexDirection: 'row', justifyContent: 'space-between' },
   heading: { fontSize: 14, marginBottom: 8 },
   verse: { paddingVertical: 8, paddingHorizontal: 8, borderRadius: 8 },
 });

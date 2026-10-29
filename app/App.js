@@ -52,7 +52,7 @@ export default function App() {
             </>
           ) : (
             <>
-              <Text style={[s.text, { color: t.muted }]}>A Bíblia em Áudio JFAC 1848 é um projeto dedicado a tornar a Palavra de Deus mais acessível, combinando a histórica tradução João Ferreira de Almeida Corrigida de 1848 com narração em áudio de alta qualidade.</Text>
+              <Text style={[s.text, { color: t.muted }]}>A Bíblia em Áudio JFAC 1848 é um projeto dedicado a tornar a Palavra de Deus mais acessível, combinando a histórica tradução João Ferreira de Almeida Corrigida de 1848.</Text>
               <Text style={[s.text, { color: t.muted }]}>Nossa missão é proporcionar uma experiência única de estudo bíblico, permitindo que você acompanhe a leitura do texto enquanto ouve a narração.</Text>
               <Text style={[s.text, { color: t.muted }]}>Este projeto é uma iniciativa em parceria com <Text style={{ color: t.primary }} onPress={() => Linking.openURL('http://www.feedz360.com.br')}>Feedz360</Text>.</Text>
               <Pressable style={[s.cta, { backgroundColor: t.primary }]} onPress={() => setScreen('home')}>
