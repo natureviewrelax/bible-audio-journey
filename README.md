@@ -8,12 +8,27 @@ Esta primeira versão não tem áudio, login nem vídeos. O app web e a API (Nod
 
 ```
 app/            projeto Expo
-  App.js        telas Home e Sobre, tema e posição salvos (AsyncStorage)
+  App.js        telas Home, Configurações e Sobre, tema, fonte e posição salvos (AsyncStorage)
+  src/Config.js tema e tamanho da fonte
   src/Reader.js leitor, busca e navegação
   src/Picker.js seleção de livro, capítulo e versículo
   src/bible.js  acesso ao texto
   assets/biblia.json   texto da Bíblia
 ```
+
+## Como rodar a versão web (navegador)
+
+Serve para validar a interface rápido, sem celular (usa react-native-web). Requisito: Node.js.
+
+```sh
+cd app
+npm ci --no-audit --no-fund
+npx expo start --web --port 8081
+```
+
+Abra http://localhost:8081 no navegador. As alterações no código recarregam sozinhas; `Ctrl+C` encerra o servidor. Pelo Claude Code, o servidor também está configurado em `.claude/launch.json` (nome `web`).
+
+Observação: o visual do `Switch` e da barra de status pode diferir um pouco do Android; a validação final é no aparelho.
 
 ## Como compilar e instalar (passo a passo)
 

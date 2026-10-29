@@ -3,42 +3,47 @@ import { BackHandler, Linking, Pressable, ScrollView, StyleSheet, Text, View } f
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Reader from './src/Reader';
+import Config, { FONT_DEFAULT } from './src/Config';
 import { THEMES } from './src/theme';
 
 const KEY = 'bibliaudio_app';
 
 export default function App() {
-  const [screen, setScreen] = useState('home'); // home | reader | about
+  const [screen, setScreen] = useState('home'); // home | reader | about | config
   const [dark, setDark] = useState(false);
+  const [fontSize, setFontSize] = useState(FONT_DEFAULT);
+  const [configFrom, setConfigFrom] = useState('home'); // tela para onde as Configurações voltam
+  const openConfig = () => { setConfigFrom(screen); setScreen('config'); };
   const [pos, setPos] = useState({ book: 'Gênesis', chapter: 1, verse: 1 });
   const [ready, setReady] = useState(false);
   const t = THEMES[dark ? 'dark' : 'light'];
 
   useEffect(() => {
     AsyncStorage.getItem(KEY).then(v => {
-      if (v) { const o = JSON.parse(v); if (o.pos) setPos(o.pos); if (typeof o.dark === 'boolean') setDark(o.dark); }
+      if (v) { const o = JSON.parse(v); if (o.pos) setPos(o.pos); if (typeof o.dark === 'boolean') setDark(o.dark); if (typeof o.fontSize === 'number') setFontSize(o.fontSize); }
     }).catch(() => {}).finally(() => setReady(true));
   }, []);
 
-  useEffect(() => { if (ready) AsyncStorage.setItem(KEY, JSON.stringify({ dark, pos })).catch(() => {}); }, [dark, pos, ready]);
+  useEffect(() => { if (ready) AsyncStorage.setItem(KEY, JSON.stringify({ dark, pos, fontSize })).catch(() => {}); }, [dark, pos, fontSize, ready]);
 
   // «Voltar» do Android: sai do leitor/Sobre para a tela inicial; na inicial, fecha o app.
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (screen === 'home') return false;
-      setScreen('home');
+      setScreen(screen === 'config' ? configFrom : 'home');
       return true;
     });
     return () => sub.remove();
-  }, [screen]);
+  }, [screen, configFrom]);
 
   if (!ready) return <View style={{ flex: 1, backgroundColor: t.bg }} />;
 
   return (
     <View style={{ flex: 1, backgroundColor: t.bg }}>
       <StatusBar style={dark ? 'light' : 'dark'} />
-      {screen === 'reader' && <Reader t={t} dark={dark} onToggleTheme={() => setDark(!dark)} pos={pos} onPos={setPos} onMenu={() => setScreen('home')} />}
-      {screen !== 'reader' && (
+      {screen === 'reader' && <Reader t={t} dark={dark} fontSize={fontSize} onToggleTheme={() => setDark(!dark)} pos={pos} onPos={setPos} onMenu={openConfig} />}
+      {screen === 'config' && <Config t={t} dark={dark} onToggleTheme={() => setDark(!dark)} fontSize={fontSize} onFontSize={setFontSize} onClose={() => setScreen(configFrom)} />}
+      {(screen === 'home' || screen === 'about') && (
         <ScrollView contentContainerStyle={s.page}>
           <Text style={[s.title, { color: t.primary }]}>{screen === 'about' ? 'Sobre a Bíblia em Áudio JFAC 1848' : 'Bem-vindo à Bíblia em Áudio JFAC 1848'}</Text>
           {screen === 'home' ? (
@@ -47,6 +52,7 @@ export default function App() {
               <Pressable style={[s.cta, { backgroundColor: t.primary }]} onPress={() => setScreen('reader')}>
                 <Text style={{ color: t.onPrimary, fontSize: 17, fontWeight: '600' }}>Começar a Leitura</Text>
               </Pressable>
+              <Pressable onPress={openConfig}><Text style={{ color: t.primary, marginTop: 20, fontSize: 16 }}>Configurações</Text></Pressable>
               <Pressable onPress={() => setScreen('about')}><Text style={{ color: t.primary, marginTop: 20, fontSize: 16 }}>Sobre</Text></Pressable>
               <Pressable onPress={() => setDark(!dark)}><Text style={{ color: t.muted, marginTop: 20, fontSize: 16 }}>{dark ? 'Tema claro' : 'Tema escuro'}</Text></Pressable>
             </>

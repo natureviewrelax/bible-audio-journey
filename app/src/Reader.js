@@ -4,7 +4,7 @@ import { BOOKS, getChapter, searchVerses } from './bible';
 import Picker from './Picker';
 
 // Leitor: escolha de livro/capítulo/versículo, navegação entre capítulos, busca e alternância de tema.
-export default function Reader({ t, dark, onToggleTheme, pos, onPos, onMenu }) {
+export default function Reader({ t, dark, fontSize = 17, onToggleTheme, pos, onPos, onMenu }) {
   const [picker, setPicker] = useState(null); // 'book' | 'chapter' | 'verse'
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
@@ -75,6 +75,7 @@ export default function Reader({ t, dark, onToggleTheme, pos, onPos, onMenu }) {
         keyExtractor={v => `${v.book}-${v.chapter}-${v.verse}`}
         onScrollToIndexFailed={() => {}}
         contentContainerStyle={{ padding: 16 }}
+        ListFooterComponent={<Text style={[s.version, { color: t.muted }]}>Tradução João Ferreira de Almeida Corrigida (JFAC 1848)</Text>}
         ListHeaderComponent={<Text style={[s.heading, { color: t.muted }]}>{results ? `${results.length} resultado(s)` : `${pos.book} ${pos.chapter}`}</Text>}
         renderItem={({ item }) => (
           <Pressable
@@ -82,8 +83,8 @@ export default function Reader({ t, dark, onToggleTheme, pos, onPos, onMenu }) {
             style={[s.verse, !results && item.verse === pos.verse && { backgroundColor: t.hl }]}
           >
             {results && <Text style={{ color: t.primary, fontWeight: '600', marginBottom: 2 }}>{item.book} {item.chapter}:{item.verse}</Text>}
-            <Text style={{ color: t.text, fontSize: 17, lineHeight: 26 }}>
-              {!results && <Text style={{ color: t.muted, fontSize: 13 }}>{item.verse}  </Text>}
+            <Text style={{ color: t.text, fontSize, lineHeight: Math.round(fontSize * 1.5) }}>
+              {!results && <Text style={{ color: t.muted, fontSize: Math.max(11, Math.round(fontSize * 0.75)) }}>{item.verse}  </Text>}
               {item.text}
             </Text>
           </Pressable>
@@ -110,5 +111,6 @@ const s = StyleSheet.create({
   menu: { width: 28 },
   actions: { width: 160, flexDirection: 'row', justifyContent: 'space-between' },
   heading: { fontSize: 14, marginBottom: 8 },
+  version: { fontSize: 13, textAlign: 'center', marginTop: 16, marginBottom: 24 },
   verse: { paddingVertical: 8, paddingHorizontal: 8, borderRadius: 8 },
 });
