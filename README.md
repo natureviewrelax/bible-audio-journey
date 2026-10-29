@@ -1,177 +1,45 @@
-# Welcome to your Lovable project
+# Bíblia em Áudio JFAC 1848
 
-## Como rodar o app
+App Android nativo em React Native (Expo), sem WebView. Traz a tradução João Ferreira de Almeida Corrigida de 1848 embutida no app (funciona sem internet), com leitor por livro/capítulo/versículo, busca, tema claro/escuro e tela Sobre.
 
-Requisitos: Node.js 22.5+ e npm (Android Studio para o Android).
+Esta primeira versão não tem áudio, login nem vídeos. O app web e a API (Node + SQLite) que existiam antes foram removidos desta branch e continuam no histórico do git (branches anteriores, como `ajusteClaude`).
 
-```sh
-npm install
+## Estrutura
+
+```
+app/            projeto Expo
+  App.js        telas Home e Sobre, tema e posição salvos (AsyncStorage)
+  src/Reader.js leitor, busca e navegação
+  src/Picker.js seleção de livro, capítulo e versículo
+  src/bible.js  acesso ao texto
+  assets/biblia.json   texto da Bíblia
 ```
 
-**Web (desenvolvimento)**
+## Como rodar
+
+Requisitos: Node.js, JDK 17 e Android SDK (variável `ANDROID_HOME`).
 
 ```sh
-npm run dev:all   # API (porta 3001) + Vite (http://localhost:8080)
+cd app
+npm ci
+npm run prebuild   # gera app/android (nativo)
 ```
 
-Só o front, sem login/upload/áudios da API: `npm run dev`. Só a API: `npm run server`.
-
-**Android** (a pasta `android/` já existe, não precisa de `npx cap add android`)
+**Celular conectado por cabo** (depuração USB ativada):
 
 ```sh
-npm run build
-npx cap sync android
-npx cap open android   # abre o Android Studio; clique em Run
-# ou, com emulador/dispositivo conectado:
-npx cap run android
+npm run android    # compila a versão debug, instala e abre o app
 ```
 
-No app o front não tem o proxy do Vite: defina `VITE_API_URL` (ex.: `http://IP-DO-PC:3001`) antes do `npm run build` e deixe a API rodando (`npm run server`). Sempre que alterar o código, repita `npm run build` e `npx cap sync android`.
-
-**Outros comandos**
+**Gerar o APK de release** (arm64):
 
 ```sh
-npm run lint      # verifica o código
-npm run preview   # serve o build de produção
+cd app/android
+./gradlew assembleRelease -PreactNativeArchitectures=arm64-v8a
+# APK: app/android/app/build/outputs/apk/release/app-release.apk
+adb install -r app/build/outputs/apk/release/app-release.apk
 ```
 
-Se o `npm run dev` falhar com módulo não encontrado (ex.: `esbuild`, `react`), apague `node_modules` e rode `npm ci`.
+Todas as arquiteturas: rode o `gradlew` sem o `-P`. Com mais de um dispositivo no `adb` (cabo e Wi-Fi), use `adb -s SERIAL install ...`.
 
-## Project info
-
-**URL**: https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249d2d4f66
-
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249d2d4f66) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/7db395c8-4e8b-4852-896c-62249d2d4f66) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
-
-
-## Para gerar as versões mobile do seu aplicativo, siga estas etapas:
-
-**Exporte o projeto para o GitHub:**
-
-Clique no botão "Exportar para GitHub" no topo da interface do Lovable
-Siga as instruções para completar a exportação
-Clone o projeto para o seu computador:
-
-
-git clone [URL-DO-SEU-REPOSITÓRIO]
-cd [NOME-DO-PROJETO]
-Instale as dependências:
-
-
-npm install
-Adicione a plataforma iOS (o Android já existe em `android/`):
-
-
-npx cap add ios
-Construa o projeto:
-
-
-npm run build
-Sincronize o projeto com as plataformas nativas:
-
-
-npx cap sync
-Execute o aplicativo:
-
-Para Android (requer Android Studio):
-
-npx cap open android
-Para iOS (requer Mac com Xcode):
-
-npx cap open ios
-Importante:
-
-Para iOS, você precisa de um Mac com Xcode instalado
-Para Android, você precisa do Android Studio instalado
-Sempre que fizer alterações no código, execute npm run build seguido de npx cap sync para atualizar as versões nativas
-O arquivo capacitor.config.ts que configurei inclui:
-
-ID e nome do aplicativo
-URL para desenvolvimento hot-reload
-Configurações da tela de splash
-Após abrir o projeto no Android Studio ou Xcode, você poderá compilar e executar o aplicativo em um emulador ou dispositivo físico.
-
-## Banco de dados e API
-
-O projeto usa uma API própria (Node + SQLite, em `server/`) no lugar do Supabase.
-
-- `npm run dev:all` sobe a API (porta 3001) e o Vite (porta 8080, com proxy para `/api` e `/uploads`).
-- Banco: `server/data/bible.db`. Áudios enviados: `server/uploads/`. Ambos ficam fora do git.
-- Variáveis opcionais: `API_PORT`, `DB_FILE`, `UPLOAD_DIR`, `JWT_SECRET` (API) e `VITE_API_URL` (frontend, ex.: build Capacitor).
-- Requer Node 22.5+ (usa `node:sqlite`).
-
-### Scripts de banco
-
-A estrutura fica em `server/`: `config.js` (variáveis), `db/connection.js`, `db/migrations/*.sql` (esquema versionado), `db/seeds/` (dados iniciais em JSON, veja o README da pasta) e `scripts/db.js`.
-
-| Comando | O que faz |
-|---|---|
-| `npm run db:migrate` | Aplica as migrations pendentes |
-| `npm run db:seed` | Aplica migrations e insere os dados iniciais que faltam (idempotente) |
-| `npm run db:setup` | Migrations + seed |
-| `npm run db:status` | Lista as migrations aplicadas |
-| `CONFIRM_RESET=yes npm run db:reset` | Apaga o banco e recria do zero |
-
-Ao subir, a API roda migrations e seed sozinha (`SEED_ON_START=false` desliga o seed). `ADMIN_EMAIL`/`ADMIN_PASSWORD` definem o administrador inicial; sem senha, uma é gerada e mostrada no log. Para mudar o esquema, crie uma nova migration numerada, como `003_nome.sql`.
+Para ver erros no aparelho: `adb logcat -s ReactNativeJS`.
