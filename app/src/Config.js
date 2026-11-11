@@ -5,7 +5,7 @@ export const FONT_MAX = 32;
 export const FONT_DEFAULT = 17;
 
 // Configurações do aplicativo: tema e tamanho da fonte do texto bíblico (salvos automaticamente).
-export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, onClose }) {
+export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, onAbout, onClose }) {
   const set = n => onFontSize(Math.max(FONT_MIN, Math.min(FONT_MAX, n)));
 
   const Step = ({ label, onPress, disabled }) => (
@@ -54,6 +54,10 @@ export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, o
       </View>
 
       <Text style={[s.note, { color: t.muted }]}>Suas configurações são salvas automaticamente no aparelho.</Text>
+
+      <Pressable onPress={onAbout} hitSlop={12}>
+        <Text style={{ color: t.primary, fontSize: 16, textAlign: 'center', marginTop: 24 }}>Sobre</Text>
+      </Pressable>
     </ScrollView>
   );
 }
