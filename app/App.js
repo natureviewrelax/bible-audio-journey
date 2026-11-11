@@ -47,7 +47,7 @@ export default function App() {
           <Text style={[s.text, { color: t.muted }]}>A Bíblia JFAC 1848 é um projeto dedicado a tornar a Palavra de Deus mais acessível, combinando a histórica tradução João Ferreira de Almeida Corrigida de 1848.</Text>
           <Text style={[s.text, { color: t.muted }]}>Nossa missão é proporcionar uma experiência única de estudo bíblico, permitindo que você acompanhe a leitura.</Text>
           <Text style={[s.text, { color: t.muted }]}>Desenvolvido e mantido por <Text style={{ color: t.primary }} onPress={() => Linking.openURL('https://github.com/wendercorrea/Biblia_JFAC_1848')}>github wendercorrea </Text>.</Text>
-          <Text style={[s.text, { color: t.muted }]}>Link arquivo github Json Biblia_JFAC_1848.json <Text style={{ color: t.primary }} onPress={() => Linking.openURL('https://raw.githubusercontent.com/wendercorrea/Biblia_JFAC_1848/refs/heads/main/bibliaJFAC1848.json?token=GHSAT0AAAAAAEPVVD5WZWM7RJ3HMFJWLF3C2XT5ATA')}>github wendercorrea</Text>.</Text>
+          <Text style={[s.text, { color: t.muted }]}>Link arquivo github Json Biblia_JFAC_1848.json <Text style={{ color: t.primary }} onPress={() => Linking.openURL('https://github.com/wendercorrea/Biblia_JFAC_1848/blob/main/bibliaJFAC1848.json')}>github wendercorrea</Text>.</Text>
           <Pressable style={[s.cta, { backgroundColor: t.primary }]} onPress={() => setScreen('config')}>
             <Text style={{ color: t.onPrimary, fontSize: 17, fontWeight: '600' }}>Voltar</Text>
           </Pressable>
