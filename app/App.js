@@ -47,7 +47,7 @@ export default function App() {
           <Text style={[s.text, { color: t.muted }]}>A Bíblia Almeida 1911 é um projeto dedicado a tornar a Palavra de Deus mais acessível, combinando a histórica tradução João Ferreira de Almeida, edição de 1911.</Text>
           <Text style={[s.text, { color: t.muted }]}>Nossa missão é proporcionar uma experiência única de estudo bíblico, permitindo que você acompanhe a leitura.</Text>
           <Text style={[s.text, { color: t.muted }]}>Desenvolvido e mantido por <Text style={{ color: t.primary }} onPress={() => Linking.openURL('https://github.com/wendercorrea/theBible')}>theBible</Text>.</Text>
-          <Text style={[s.text, { color: t.muted, fontSize: 14, lineHeight: 21 }]}>Texto: módulo PorAlmeida1911 do projeto SWORD/CrossWire, distribuído sob a licença GNU GPL (fonte: sites.google.com/site/manuscript4u/download). Convertido para o formato JSON deste app; o JSON continua sob a mesma licença.</Text>
+          <Text style={[s.text, { color: t.muted, fontSize: 14, lineHeight: 21 }]}>Texto: <Text style={{ color: t.primary }} onPress={() => Linking.openURL('https://crosswire.org/sword/modules/ModInfo.jsp?modName=PorAlmeida1911')}>crosswire.org/sword/modules/ModInfo.jsp?modName=PorAlmeida1911</Text></Text>
           <Pressable style={[s.cta, { backgroundColor: t.primary }]} onPress={() => setScreen('config')}>
             <Text style={{ color: t.onPrimary, fontSize: 17, fontWeight: '600' }}>Voltar</Text>
           </Pressable>

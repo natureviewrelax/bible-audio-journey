@@ -101,4 +101,10 @@ Se o Gradle reclamar de versão de Java (`invalid source release`), confira com 
 
 ## Texto e licença
 
-O texto vem do módulo **PorAlmeida1911** do projeto [SWORD/CrossWire](https://www.crosswire.org/sword/servlet/SwordMod.Verify?modName=PorAlmeida1911&pkgType=raw), distribuído sob a licença **GNU GPL** (fonte original: https://sites.google.com/site/manuscript4u/download). `app/assets/biblia.json` é uma conversão desse módulo para o formato do app e permanece sob a GPL.
+- **Nome:** Ferreira de Almeida Bíblia (Portuguese Bible 1911), idioma português (por); Portugal, Brasil e África lusófona.
+- **Direitos:** Creative Commons Attribution 4.0 International, 2026 (The Bible).
+- **Fonte:** João Ferreira de Almeida, editado e reimpresso; versão da fonte 17/08/2022; publicado em 1681 e 1911.
+- **URL da fonte:** https://crosswire.org/sword/modules/ModInfo.jsp?modName=PorAlmeida1911
+- **Direitos da fonte:** General Public License.
+
+`app/assets/biblia.json` é uma conversão desse texto para o formato do app.
