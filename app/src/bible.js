@@ -1,5 +1,5 @@
 // Texto da Bíblia (Almeida 1911) embutido no app; cada livro tem name e chapters (lista de capítulos, cada um com os versículos).
-const data = require('../assets/biblia.json');
+const data = require('../assets/porAlmeida1911.json');
 
 export const BOOKS = data.map(b => ({ name: b.name, chapters: b.chapters.length }));
 

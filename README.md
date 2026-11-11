@@ -13,7 +13,7 @@ app/            projeto Expo
   src/Reader.js leitor, busca e navegação
   src/Picker.js seleção de livro, capítulo e versículo
   src/bible.js  acesso ao texto
-  assets/biblia.json   texto da Bíblia
+  assets/porAlmeida1911.json   texto da Bíblia
 ```
 
 ## Como rodar a versão web (navegador)
@@ -107,4 +107,4 @@ Se o Gradle reclamar de versão de Java (`invalid source release`), confira com 
 - **URL da fonte:** https://crosswire.org/sword/modules/ModInfo.jsp?modName=PorAlmeida1911
 - **Direitos da fonte:** General Public License.
 
-`app/assets/biblia.json` é uma conversão desse texto para o formato do app.
+`app/assets/porAlmeida1911.json` é uma conversão desse texto para o formato do app.
