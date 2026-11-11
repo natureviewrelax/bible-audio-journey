@@ -38,7 +38,7 @@ export default function Reader({ t, dark, fontSize = 17, onToggleTheme, pos, onP
   const selText = () => {
     const picked = verses.filter(v => sel.includes(v.verse));
     const body = picked.length === 1 ? picked[0].text : picked.map(v => `${v.verse} ${v.text}`).join('\n');
-    return `${body}\n\n${pos.book} ${pos.chapter}:${ranges(sel)} (JFAC 1848)`;
+    return `${body}\n\n${pos.book} ${pos.chapter}:${ranges(sel)} (Almeida 1911)`;
   };
   const copy = () => Clipboard.setStringAsync(selText()).then(() => setCopied(true)).catch(() => {});
   // Abre o menu de compartilhamento do sistema (WhatsApp, e-mail etc.).
@@ -128,7 +128,7 @@ export default function Reader({ t, dark, fontSize = 17, onToggleTheme, pos, onP
           keyExtractor={v => `${v.book}-${v.chapter}-${v.verse}`}
           onScrollToIndexFailed={() => {}}
           contentContainerStyle={{ padding: 16, paddingBottom: 72 }}
-          ListFooterComponent={<Text style={[s.version, { color: t.muted }]}>Tradução João Ferreira de Almeida Corrigida (JFAC 1848)</Text>}
+          ListFooterComponent={<Text style={[s.version, { color: t.muted }]}>Tradução João Ferreira de Almeida, edição de 1911</Text>}
           ListHeaderComponent={<Text style={[s.heading, { color: t.muted }]}>{results ? `${results.length} resultado(s)` : `${pos.book} ${pos.chapter}`}</Text>}
           renderItem={({ item }) => (
             <Pressable

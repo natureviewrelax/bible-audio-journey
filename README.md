@@ -1,6 +1,6 @@
-# Bíblia em Áudio JFAC 1848
+# Bíblia em Áudio Almeida 1911
 
-App Android nativo em React Native (Expo), sem WebView. Traz a tradução João Ferreira de Almeida Corrigida de 1848 embutida no app (funciona sem internet), com leitor por livro/capítulo/versículo, busca, tema claro/escuro e tela Sobre.
+App Android nativo em React Native (Expo), sem WebView. Traz a tradução João Ferreira de Almeida, edição de 1911, embutida no app (funciona sem internet), com leitor por livro/capítulo/versículo, busca, tema claro/escuro e tela Sobre.
 
 Esta primeira versão não tem áudio, login nem vídeos. O app web e a API (Node + SQLite) que existiam antes foram removidos desta branch e continuam no histórico do git (branches anteriores, como `ajusteClaude`).
 
@@ -98,3 +98,7 @@ O log mostra `Running "main"` quando o app sobe sem erro. Se fechar logo ao abri
 **Atalho (debug, com o celular conectado):** `cd app && npm run prebuild && npm run android` compila a versão debug, instala e abre o app.
 
 Se o Gradle reclamar de versão de Java (`invalid source release`), confira com `java -version` se o JDK ativo é o 17.
+
+## Texto e licença
+
+O texto vem do módulo **PorAlmeida1911** do projeto [SWORD/CrossWire](https://www.crosswire.org/sword/servlet/SwordMod.Verify?modName=PorAlmeida1911&pkgType=raw), distribuído sob a licença **GNU GPL** (fonte original: https://sites.google.com/site/manuscript4u/download). `app/assets/biblia.json` é uma conversão desse módulo para o formato do app e permanece sob a GPL.
