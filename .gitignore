@@ -28,3 +28,9 @@ server/data/
 server/uploads/
 server/node_modules/
 audios/
+
+# artefatos de release e chaves (nunca versionar)
+*.apk
+*.aab
+*.jks
+*.keystore

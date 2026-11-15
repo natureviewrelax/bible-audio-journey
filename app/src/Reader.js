@@ -162,7 +162,7 @@ export default function Reader({ t, dark, fontSize = 17, onToggleTheme, pos, onP
 
       <Picker t={t} visible={picker === 'book'} title="Livro" selected={pos.book} onClose={() => setPicker(null)}
         items={BOOKS.map(b => ({ value: b.name, label: b.name }))}
-        onSelect={v => { setPicker(null); go({ book: v, chapter: 1 }); }} />
+        onSelect={v => { go({ book: v, chapter: 1 }); setPicker('chapter'); }} />
       <Picker t={t} visible={picker === 'chapter'} title="Capítulo" columns={5} selected={pos.chapter} onClose={() => setPicker(null)}
         items={seq(book.chapters)} onSelect={v => { setPicker(null); go({ chapter: v }); }} />
       <Picker t={t} visible={picker === 'verse'} title="Versículo" columns={5} selected={pos.verse} onClose={() => setPicker(null)}
