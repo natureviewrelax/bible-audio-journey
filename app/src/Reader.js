@@ -164,7 +164,7 @@ export default function Reader({ t, dark, fontSize = 17, onToggleTheme, pos, onP
         items={BOOKS.map(b => ({ value: b.name, label: b.name }))}
         onSelect={v => { go({ book: v, chapter: 1 }); setPicker('chapter'); }} />
       <Picker t={t} visible={picker === 'chapter'} title="Capítulo" columns={5} selected={pos.chapter} onClose={() => setPicker(null)}
-        items={seq(book.chapters)} onSelect={v => { setPicker(null); go({ chapter: v }); }} />
+        items={seq(book.chapters)} onSelect={v => { go({ chapter: v }); setPicker('verse'); }} />
       <Picker t={t} visible={picker === 'verse'} title="Versículo" columns={5} selected={pos.verse} onClose={() => setPicker(null)}
         items={seq(verses.length)} onSelect={v => { setPicker(null); onPos({ ...pos, verse: v }); }} />
     </View>
