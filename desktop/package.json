@@ -1,0 +1,35 @@
+{
+  "name": "biblia-em-audio-almeida-1911",
+  "version": "2.0.8",
+  "description": "Bíblia em Áudio Almeida 1911",
+  "main": "main.js",
+  "scripts": {
+    "build:win": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.bibliaudio.app",
+    "productName": "Bíblia em Áudio Almeida 1911",
+    "directories": {
+      "output": "dist-installer"
+    },
+    "files": [
+      "main.js",
+      "package.json",
+      "web/**/*",
+      "icon.ico"
+    ],
+    "win": {
+      "target": "nsis",
+      "signAndEditExecutable": false,
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  }
+}

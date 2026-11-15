@@ -34,3 +34,7 @@ audios/
 *.aab
 *.jks
 *.keystore
+
+# build do instalador Windows (gerado, não versionar)
+desktop/web/
+desktop/dist-installer/
