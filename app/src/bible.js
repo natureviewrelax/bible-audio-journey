@@ -22,3 +22,18 @@ export function searchVerses(query, limit = 100) {
   }
   return out;
 }
+
+// Revisão grafia: compara, na hora, duas versões do JSON (listas de livros baixadas do histórico)
+// e devolve os versículos que diferem.
+export function comparar(antes, depois) {
+  const out = [];
+  depois.forEach(b => {
+    const o = antes.find(x => x.name === b.name);
+    if (!o) return;
+    b.chapters.forEach((cap, c) => cap.forEach((txt, v) => {
+      const velho = o.chapters[c]?.[v];
+      if (velho !== undefined && velho !== txt) out.push({ book: b.name, chapter: c + 1, verse: v + 1, antes: velho, depois: txt });
+    }));
+  });
+  return out;
+}

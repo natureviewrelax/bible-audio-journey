@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
 import { BackHandler, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Reader from './src/Reader';
+import Changes from './src/Changes';
 import Config, { FONT_DEFAULT } from './src/Config';
 import { THEMES } from './src/theme';
 
 const KEY = 'bibliaudio_app';
+// Versão do app: vem do app.json (version e android.versionCode).
+const VERSAO = [Constants.expoConfig?.version, Constants.expoConfig?.android?.versionCode && `(${Constants.expoConfig.android.versionCode})`].filter(Boolean).join(' ');
 
 export default function App() {
-  const [screen, setScreen] = useState('reader'); // reader | config | about
+  const [screen, setScreen] = useState('reader'); // reader | config | about | changes
   const [dark, setDark] = useState(false);
   const [fontSize, setFontSize] = useState(FONT_DEFAULT);
   const [pos, setPos] = useState({ book: 'Gênesis', chapter: 1, verse: 1 });
@@ -24,11 +28,11 @@ export default function App() {
 
   useEffect(() => { if (ready) AsyncStorage.setItem(KEY, JSON.stringify({ dark, pos, fontSize })).catch(() => {}); }, [dark, pos, fontSize, ready]);
 
-  // «Voltar» do Android: Sobre → Configurações → leitor; no leitor, fecha o app.
+  // «Voltar» do Android: Sobre/Revisão grafia → Configurações → leitor; no leitor, fecha o app.
   useEffect(() => {
     const sub = BackHandler.addEventListener('hardwareBackPress', () => {
       if (screen === 'reader') return false;
-      setScreen(screen === 'about' ? 'config' : 'reader');
+      setScreen(screen === 'about' || screen === 'changes' ? 'config' : 'reader');
       return true;
     });
     return () => sub.remove();
@@ -40,7 +44,8 @@ export default function App() {
     <View style={{ flex: 1, backgroundColor: t.bg }}>
       <StatusBar style={dark ? 'light' : 'dark'} />
       {screen === 'reader' && <Reader t={t} dark={dark} fontSize={fontSize} onToggleTheme={() => setDark(!dark)} pos={pos} onPos={setPos} onMenu={() => setScreen('config')} />}
-      {screen === 'config' && <Config t={t} dark={dark} onToggleTheme={() => setDark(!dark)} fontSize={fontSize} onFontSize={setFontSize} onAbout={() => setScreen('about')} onClose={() => setScreen('reader')} />}
+      {screen === 'config' && <Config t={t} dark={dark} onToggleTheme={() => setDark(!dark)} fontSize={fontSize} onFontSize={setFontSize} onAbout={() => setScreen('about')} onChanges={() => setScreen('changes')} onClose={() => setScreen('reader')} />}
+      {screen === 'changes' && <Changes t={t} fontSize={fontSize} onClose={() => setScreen('config')} />}
       {screen === 'about' && (
         <ScrollView contentContainerStyle={s.page}>
           <Text style={[s.title, { color: t.primary }]}>Sobre a Bíblia Almeida 1911</Text>
@@ -48,6 +53,7 @@ export default function App() {
           <Text style={[s.text, { color: t.muted }]}>Nossa missão é proporcionar uma experiência única de estudo bíblico, permitindo que você acompanhe a leitura.</Text>
           <Text style={[s.text, { color: t.muted }]}>Desenvolvido e mantido por <Text style={{ color: t.primary }} onPress={() => Linking.openURL('https://github.com/wendercorrea/theBible')}>theBible</Text>.</Text>
           <Text style={[s.text, { color: t.muted, fontSize: 14, lineHeight: 21 }]}>Texto: <Text style={{ color: t.primary }} onPress={() => Linking.openURL('https://crosswire.org/sword/modules/ModInfo.jsp?modName=PorAlmeida1911')}>crosswire.org/sword/modules/ModInfo.jsp?modName=PorAlmeida1911</Text></Text>
+          <Text style={[s.text, { color: t.muted, fontSize: 14, lineHeight: 21 }]}>Versão {VERSAO}</Text>
           <Pressable style={[s.cta, { backgroundColor: t.primary }]} onPress={() => setScreen('config')}>
             <Text style={{ color: t.onPrimary, fontSize: 17, fontWeight: '600' }}>Voltar</Text>
           </Pressable>

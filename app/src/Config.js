@@ -5,7 +5,7 @@ export const FONT_MAX = 32;
 export const FONT_DEFAULT = 17;
 
 // Configurações do aplicativo: tema e tamanho da fonte do texto bíblico (salvos automaticamente).
-export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, onAbout, onClose }) {
+export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, onAbout, onChanges, onClose }) {
   const set = n => onFontSize(Math.max(FONT_MIN, Math.min(FONT_MAX, n)));
 
   const Step = ({ label, onPress, disabled }) => (
@@ -53,6 +53,14 @@ export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, o
         </Pressable>
       </View>
 
+      <Pressable onPress={onChanges} accessibilityRole="button" style={[s.link, { backgroundColor: t.card, borderColor: t.border }]}>
+        <View style={{ flex: 1 }}>
+          <Text style={[s.label, { color: t.text }]}>Revisão grafia</Text>
+          <Text style={{ color: t.muted, fontSize: 13 }}>Ver a grafia de 1911 e a grafia atual, versículo a versículo</Text>
+        </View>
+        <Text style={{ color: t.muted, fontSize: 20 }}>›</Text>
+      </Pressable>
+
       <Text style={[s.note, { color: t.muted }]}>Suas configurações são salvas automaticamente no aparelho.</Text>
 
       <Pressable onPress={onAbout} hitSlop={12}>
@@ -74,5 +82,6 @@ const s = StyleSheet.create({
   step: { width: 44, height: 40, borderWidth: 1, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
   value: { minWidth: 28, textAlign: 'center', fontSize: 16, fontWeight: '600' },
   preview: { paddingVertical: 8 },
+  link: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderRadius: 12, padding: 16, marginTop: 14, gap: 8 },
   note: { fontSize: 13, textAlign: 'center', marginTop: 12 },
 });
