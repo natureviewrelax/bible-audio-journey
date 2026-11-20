@@ -3,10 +3,21 @@ const REPO = 'wendercorrea/TheBible';
 const PATH = 'PorAlmeida1911.json';
 export const BRANCH_PADRAO = 'main';
 
+const TEMPO_MAX = 45000; // sem resposta em 45 s: falha em vez de ficar carregando para sempre
+
 const api = async url => {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`GitHub respondeu ${r.status}`);
-  return r.json();
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), TEMPO_MAX);
+  try {
+    const r = await fetch(url, { signal: ctrl.signal });
+    if (!r.ok) throw new Error(`GitHub respondeu ${r.status}`);
+    return await r.json();
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('tempo esgotado ao falar com o GitHub');
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
 };
 
 export async function listarBranches() {

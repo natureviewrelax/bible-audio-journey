@@ -17,6 +17,8 @@ export default function Changes({ t, fontSize = 17, onClose }) {
   const [estado, setEstado] = useState('carregando'); // carregando | ok | erro | semArquivo
   const [erro, setErro] = useState('');
   const [tentativa, setTentativa] = useState(0);
+  const [rodada, setRodada] = useState(0); // força nova comparação mesmo quando De/Para não mudam
+  const [etapa, setEtapa] = useState('');
   const [picker, setPicker] = useState(null); // 'branch' | 'de' | 'para' | 'livro'
   const [book, setBook] = useState('');
   const [query, setQuery] = useState('');
@@ -24,6 +26,7 @@ export default function Changes({ t, fontSize = 17, onClose }) {
   // 1) branches do repositório (o padrão é a main).
   useEffect(() => {
     let vivo = true;
+    setEtapa('Lendo os branches no GitHub…');
     listarBranches()
       .then(n => { if (vivo) setBranches(n.includes(BRANCH_PADRAO) ? n : [BRANCH_PADRAO, ...n]); })
       .catch(e => { if (vivo) { setErro(String(e.message ?? e)); setEstado('erro'); } });
@@ -35,6 +38,7 @@ export default function Changes({ t, fontSize = 17, onClose }) {
     if (!branches.length) return;
     let vivo = true;
     setEstado('carregando');
+    setEtapa(`Lendo os commits do arquivo (${branch})…`);
     commitsDoArquivo(branch)
       .then(async lista => {
         if (!vivo) return;
@@ -47,6 +51,7 @@ export default function Changes({ t, fontSize = 17, onClose }) {
         setCommits(lista);
         setDe(lista[lista.length - 1].sha); // original = commit mais antigo do arquivo
         setPara(lista[0].sha);              // atual = commit mais novo
+        setRodada(r => r + 1);              // garante que a comparação rode de novo
       })
       .catch(e => { if (vivo) { setErro(String(e.message ?? e)); setEstado('erro'); } });
     return () => { vivo = false; };
@@ -57,11 +62,12 @@ export default function Changes({ t, fontSize = 17, onClose }) {
     if (!de || !para) return;
     let vivo = true;
     setEstado('carregando');
+    setEtapa('Baixando as duas versões do texto e comparando…');
     Promise.all([baixarVersao(de), baixarVersao(para)])
       .then(([a, b]) => { if (vivo) { setAll(comparar(a, b)); setEstado('ok'); } })
       .catch(e => { if (vivo) { setErro(String(e.message ?? e)); setEstado('erro'); } });
     return () => { vivo = false; };
-  }, [de, para, tentativa]);
+  }, [de, para, rodada, tentativa]);
 
   const counts = useMemo(() => {
     const c = {};
@@ -137,7 +143,7 @@ export default function Changes({ t, fontSize = 17, onClose }) {
           {aviso === 'carregando' && (
             <>
               <ActivityIndicator color={t.primary} />
-              <Text style={[s.nota, { color: t.muted }]}>Buscando o histórico e comparando…</Text>
+              <Text style={[s.nota, { color: t.muted }]}>{etapa || 'Buscando o histórico e comparando…'}</Text>
             </>
           )}
           {aviso === 'semArquivo' && (
