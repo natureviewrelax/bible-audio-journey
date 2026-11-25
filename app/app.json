@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bíblia em Áudio Almeida 1911",
     "slug": "biblia-audio",
-    "version": "1.2.0.1",
+    "version": "1.2.0.2",
     "orientation": "portrait",
     "platforms": [
       "android",
