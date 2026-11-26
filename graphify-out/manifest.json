@@ -1,0 +1,206 @@
+{
+  ".claude/launch.json": {
+    "mtime": 1793303556.4397905,
+    "seen": 1795657287.5037477,
+    "ast_hash": "fe6b616d7722049f7bed05ba3bed9580",
+    "semantic_hash": "fe6b616d7722049f7bed05ba3bed9580"
+  },
+  ".vscode/settings.json": {
+    "mtime": 1793303556.451566,
+    "seen": 1795657287.503764,
+    "ast_hash": "2d06b60b7caf61c40b4ebbd7f8a1afa2",
+    "semantic_hash": "2d06b60b7caf61c40b4ebbd7f8a1afa2"
+  },
+  "app/App.js": {
+    "mtime": 1795130923.6181133,
+    "seen": 1795657287.5037713,
+    "ast_hash": "4f5aa9c8d2e5dc52261edce73bc96ccb",
+    "semantic_hash": "4f5aa9c8d2e5dc52261edce73bc96ccb"
+  },
+  "app/app.json": {
+    "mtime": 1795136889.205336,
+    "seen": 1795657287.503776,
+    "ast_hash": "dfddbacb236a0bef29562584ba277341",
+    "semantic_hash": "dfddbacb236a0bef29562584ba277341"
+  },
+  "app/assets/porAlmeida1911.json": {
+    "mtime": 1795128234.2502823,
+    "seen": 1795657287.5037806,
+    "ast_hash": "4850deca6a38772e3b5e0128dea38995",
+    "semantic_hash": "4850deca6a38772e3b5e0128dea38995"
+  },
+  "app/babel.config.js": {
+    "mtime": 1793303556.491371,
+    "seen": 1795657287.5037842,
+    "ast_hash": "aa817d60c378c8786e6723ae2defa83c",
+    "semantic_hash": "aa817d60c378c8786e6723ae2defa83c"
+  },
+  "app/index.js": {
+    "mtime": 1793303556.491371,
+    "seen": 1795657287.5037882,
+    "ast_hash": "5a42a67f480f1c9436423d5c1d48d852",
+    "semantic_hash": "5a42a67f480f1c9436423d5c1d48d852"
+  },
+  "app/package.json": {
+    "mtime": 1795129545.2261655,
+    "seen": 1795657287.5037916,
+    "ast_hash": "803f233ae4c80940bc20751b060b2d05",
+    "semantic_hash": "803f233ae4c80940bc20751b060b2d05"
+  },
+  "app/plugins/with-optional-hardware.js": {
+    "mtime": 1795020227.7846332,
+    "seen": 1795657287.5037951,
+    "ast_hash": "2dec9432823a2e878b5bcb1b05c73202",
+    "semantic_hash": "2dec9432823a2e878b5bcb1b05c73202"
+  },
+  "app/src/Changes.js": {
+    "mtime": 1795136838.136825,
+    "seen": 1795657287.5037987,
+    "ast_hash": "6792c14ad04c194d59dbc64604287c92",
+    "semantic_hash": "6792c14ad04c194d59dbc64604287c92"
+  },
+  "app/src/Config.js": {
+    "mtime": 1795128808.8641133,
+    "seen": 1795657287.5038023,
+    "ast_hash": "7fc8dcb067170c47b153dea17c2082d9",
+    "semantic_hash": "7fc8dcb067170c47b153dea17c2082d9"
+  },
+  "app/src/Picker.js": {
+    "mtime": 1793303556.491371,
+    "seen": 1795657287.5038064,
+    "ast_hash": "b87f9819705e993bac51bc251aa3b5cb",
+    "semantic_hash": "b87f9819705e993bac51bc251aa3b5cb"
+  },
+  "app/src/Reader.js": {
+    "mtime": 1794708728.0698895,
+    "seen": 1795657287.5038095,
+    "ast_hash": "a3d80139ec33fb33c650420f48fcf5a5",
+    "semantic_hash": "a3d80139ec33fb33c650420f48fcf5a5"
+  },
+  "app/src/bible.js": {
+    "mtime": 1795128956.8474233,
+    "seen": 1795657287.5038128,
+    "ast_hash": "c6d3812bc3f68e540a9c8afd0814624b",
+    "semantic_hash": "c6d3812bc3f68e540a9c8afd0814624b"
+  },
+  "app/src/diff.js": {
+    "mtime": 1795128256.7206407,
+    "seen": 1795657287.5038166,
+    "ast_hash": "0ffd160818d791504a07ff69b983ac27",
+    "semantic_hash": "0ffd160818d791504a07ff69b983ac27"
+  },
+  "app/src/history.js": {
+    "mtime": 1795136838.1348252,
+    "seen": 1795657287.50382,
+    "ast_hash": "936ae1ffea3d23d39f4a5f53a49a1011",
+    "semantic_hash": "936ae1ffea3d23d39f4a5f53a49a1011"
+  },
+  "app/src/theme.js": {
+    "mtime": 1793303556.491371,
+    "seen": 1795657287.5038233,
+    "ast_hash": "6450d8f28344e965eed4d90e4c94ebcc",
+    "semantic_hash": "6450d8f28344e965eed4d90e4c94ebcc"
+  },
+  "desktop/main.js": {
+    "mtime": 1794709372.16165,
+    "seen": 1795657287.5038266,
+    "ast_hash": "af73169bb0a1a843dd02c340dfcb4b7c",
+    "semantic_hash": "af73169bb0a1a843dd02c340dfcb4b7c"
+  },
+  "desktop/package.json": {
+    "mtime": 1794708812.4279625,
+    "seen": 1795657287.5038302,
+    "ast_hash": "4a444e0ebdb331e9bf22fccf1fc1e265",
+    "semantic_hash": "4a444e0ebdb331e9bf22fccf1fc1e265"
+  },
+  "src/pages/Biblia.tsx": {
+    "mtime": 1793303535.545326,
+    "seen": 1795657287.5038335,
+    "ast_hash": "44fec80dab379c78cf381faafa133cf3",
+    "semantic_hash": "44fec80dab379c78cf381faafa133cf3"
+  },
+  "src/pages/Sobre.tsx": {
+    "mtime": 1793303535.546816,
+    "seen": 1795657287.503837,
+    "ast_hash": "a22f4bb619c3abfdc79b6ea5762b96d2",
+    "semantic_hash": "a22f4bb619c3abfdc79b6ea5762b96d2"
+  },
+  "src/pages/Videos.tsx": {
+    "mtime": 1793303535.546816,
+    "seen": 1795657287.503841,
+    "ast_hash": "aca4835fd786c83eb6a9a93a08a6aadb",
+    "semantic_hash": "aca4835fd786c83eb6a9a93a08a6aadb"
+  },
+  "README.md": {
+    "mtime": 1794399045.3569765,
+    "seen": 1795657287.503847,
+    "ast_hash": "82f5bf8d3a8f5015d2edd9921a5d5c07",
+    "semantic_hash": "82f5bf8d3a8f5015d2edd9921a5d5c07"
+  },
+  "play-store/PRIVACY.md": {
+    "mtime": 1794972152.8464255,
+    "seen": 1795657287.50385,
+    "ast_hash": "85b17d573e42174ebc0fea7bdeb8d695",
+    "semantic_hash": "85b17d573e42174ebc0fea7bdeb8d695"
+  },
+  "play-store/listing.md": {
+    "mtime": 1794969563.8288295,
+    "seen": 1795657287.5038533,
+    "ast_hash": "12e182af6097802b1f26c7d4422aec22",
+    "semantic_hash": "12e182af6097802b1f26c7d4422aec22"
+  },
+  "app/assets/adaptive-icon.png": {
+    "mtime": 1794708183.4073012,
+    "seen": 1795657287.5038571,
+    "ast_hash": "bb96a272bb7cab20dc448b733b6251cf",
+    "semantic_hash": "bb96a272bb7cab20dc448b733b6251cf"
+  },
+  "app/assets/icon.png": {
+    "mtime": 1794708183.1563795,
+    "seen": 1795657287.5038614,
+    "ast_hash": "6541f9ed595d23c078b358a90a6d5fe2",
+    "semantic_hash": "6541f9ed595d23c078b358a90a6d5fe2"
+  },
+  "artefatos/Pomba Azul com Ramo de Oliveira.png": {
+    "mtime": 1793303556.5069911,
+    "seen": 1795657287.5038645,
+    "ast_hash": "ad0edc69049f76d6355adbeb89041a10",
+    "semantic_hash": "ad0edc69049f76d6355adbeb89041a10"
+  },
+  "desktop/icon.png": {
+    "mtime": 1794708183.5905414,
+    "seen": 1795657287.5038676,
+    "ast_hash": "d6b5beec5ad52617d44af28eb0696bea",
+    "semantic_hash": "d6b5beec5ad52617d44af28eb0696bea"
+  },
+  "play-store/feature-graphic-1024x500.png": {
+    "mtime": 1794969563.749787,
+    "seen": 1795657287.503871,
+    "ast_hash": "040b0854e06408774094c8ee3e086779",
+    "semantic_hash": "040b0854e06408774094c8ee3e086779"
+  },
+  "play-store/icon-512.png": {
+    "mtime": 1794969546.175579,
+    "seen": 1795657287.503874,
+    "ast_hash": "a5ee0104462c5459f3a737e60cf1e2f5",
+    "semantic_hash": "a5ee0104462c5459f3a737e60cf1e2f5"
+  },
+  "play-store/screenshots/01.png": {
+    "mtime": 1794969630.500979,
+    "seen": 1795657287.5038772,
+    "ast_hash": "ce84aa328da9ba185beb823d16dbfc95",
+    "semantic_hash": "ce84aa328da9ba185beb823d16dbfc95"
+  },
+  "play-store/screenshots/02.png": {
+    "mtime": 1794969675.9389615,
+    "seen": 1795657287.5038803,
+    "ast_hash": "1190c8995d17aedb798f7f84b84078ea",
+    "semantic_hash": "1190c8995d17aedb798f7f84b84078ea"
+  },
+  "play-store/screenshots/03.png": {
+    "mtime": 1794969688.2229946,
+    "seen": 1795657287.5038838,
+    "ast_hash": "0f31318f0c2b963102493566dc6d4468",
+    "semantic_hash": "0f31318f0c2b963102493566dc6d4468"
+  }
+}
