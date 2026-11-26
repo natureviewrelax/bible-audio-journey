@@ -5,7 +5,7 @@ export const FONT_MAX = 32;
 export const FONT_DEFAULT = 17;
 
 // Configurações do aplicativo: tema e tamanho da fonte do texto bíblico (salvos automaticamente).
-export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, onAbout, onChanges, onClose }) {
+export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, justify, onJustify, onAbout, onChanges, onClose }) {
   const set = n => onFontSize(Math.max(FONT_MIN, Math.min(FONT_MAX, n)));
 
   const Step = ({ label, onPress, disabled }) => (
@@ -44,7 +44,20 @@ export default function Config({ t, dark, onToggleTheme, fontSize, onFontSize, o
           </View>
         </View>
 
-        <Text style={[s.preview, { color: t.text, fontSize, lineHeight: Math.round(fontSize * 1.5) }]}>
+        <View style={[s.row, s.sep, { borderColor: t.border }]}>
+          <Text style={[s.label, { color: t.text }]}>Justificar texto</Text>
+          <View style={s.right}>
+            <Text style={{ color: t.muted }}>{justify ? 'Sim' : 'Não'}</Text>
+            <Switch
+              value={justify}
+              onValueChange={onJustify}
+              trackColor={{ true: t.primary, false: t.border }}
+              thumbColor={justify ? t.onPrimary : '#FFFFFF'}
+            />
+          </View>
+        </View>
+
+        <Text style={[s.preview, { color: t.text, fontSize, lineHeight: Math.round(fontSize * 1.5), textAlign: justify ? 'justify' : 'left' }]}>
           No princípio, criou Deus os céus e a terra.
         </Text>
 

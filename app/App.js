@@ -16,17 +16,18 @@ export default function App() {
   const [screen, setScreen] = useState('reader'); // reader | config | about | changes
   const [dark, setDark] = useState(false);
   const [fontSize, setFontSize] = useState(FONT_DEFAULT);
+  const [justify, setJustify] = useState(false);
   const [pos, setPos] = useState({ book: 'Gênesis', chapter: 1, verse: 1 });
   const [ready, setReady] = useState(false);
   const t = THEMES[dark ? 'dark' : 'light'];
 
   useEffect(() => {
     AsyncStorage.getItem(KEY).then(v => {
-      if (v) { const o = JSON.parse(v); if (o.pos) setPos(o.pos); if (typeof o.dark === 'boolean') setDark(o.dark); if (typeof o.fontSize === 'number') setFontSize(o.fontSize); }
+      if (v) { const o = JSON.parse(v); if (o.pos) setPos(o.pos); if (typeof o.dark === 'boolean') setDark(o.dark); if (typeof o.fontSize === 'number') setFontSize(o.fontSize); if (typeof o.justify === 'boolean') setJustify(o.justify); }
     }).catch(() => {}).finally(() => setReady(true));
   }, []);
 
-  useEffect(() => { if (ready) AsyncStorage.setItem(KEY, JSON.stringify({ dark, pos, fontSize })).catch(() => {}); }, [dark, pos, fontSize, ready]);
+  useEffect(() => { if (ready) AsyncStorage.setItem(KEY, JSON.stringify({ dark, pos, fontSize, justify })).catch(() => {}); }, [dark, pos, fontSize, justify, ready]);
 
   // «Voltar» do Android: Sobre/Revisão grafia → Configurações → leitor; no leitor, fecha o app.
   useEffect(() => {
@@ -43,8 +44,8 @@ export default function App() {
   return (
     <View style={{ flex: 1, backgroundColor: t.bg }}>
       <StatusBar style={dark ? 'light' : 'dark'} />
-      {screen === 'reader' && <Reader t={t} dark={dark} fontSize={fontSize} onToggleTheme={() => setDark(!dark)} pos={pos} onPos={setPos} onMenu={() => setScreen('config')} />}
-      {screen === 'config' && <Config t={t} dark={dark} onToggleTheme={() => setDark(!dark)} fontSize={fontSize} onFontSize={setFontSize} onAbout={() => setScreen('about')} onChanges={() => setScreen('changes')} onClose={() => setScreen('reader')} />}
+      {screen === 'reader' && <Reader t={t} dark={dark} fontSize={fontSize} justify={justify} onToggleTheme={() => setDark(!dark)} pos={pos} onPos={setPos} onMenu={() => setScreen('config')} />}
+      {screen === 'config' && <Config t={t} dark={dark} onToggleTheme={() => setDark(!dark)} fontSize={fontSize} onFontSize={setFontSize} justify={justify} onJustify={setJustify} onAbout={() => setScreen('about')} onChanges={() => setScreen('changes')} onClose={() => setScreen('reader')} />}
       {screen === 'changes' && <Changes t={t} fontSize={fontSize} onClose={() => setScreen('config')} />}
       {screen === 'about' && (
         <ScrollView contentContainerStyle={s.page}>

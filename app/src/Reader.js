@@ -16,7 +16,7 @@ const ranges = nums => nums
 
 // Leitor: escolha de livro/capítulo/versículo, navegação entre capítulos, busca, alternância de tema
 // e seleção de versículos (toque) para copiar ou compartilhar.
-export default function Reader({ t, dark, fontSize = 17, onToggleTheme, pos, onPos, onMenu }) {
+export default function Reader({ t, dark, fontSize = 17, justify = false, onToggleTheme, pos, onPos, onMenu }) {
   const [picker, setPicker] = useState(null); // 'book' | 'chapter' | 'verse'
   const [query, setQuery] = useState('');
   const [results, setResults] = useState(null);
@@ -140,7 +140,7 @@ export default function Reader({ t, dark, fontSize = 17, onToggleTheme, pos, onP
               ]}
             >
               {results && <Text style={{ color: t.primary, fontWeight: '600', marginBottom: 2 }}>{item.book} {item.chapter}:{item.verse}</Text>}
-              <Text style={{ color: t.text, fontSize, lineHeight: Math.round(fontSize * 1.5) }}>
+              <Text style={{ color: t.text, fontSize, lineHeight: Math.round(fontSize * 1.5), textAlign: justify ? 'justify' : 'left' }}>
                 {!results && <Text style={{ color: t.muted, fontSize: Math.max(11, Math.round(fontSize * 0.75)) }}>{item.verse}  </Text>}
                 {item.text}
               </Text>
